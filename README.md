@@ -1,0 +1,2 @@
+# Bot
+CORA Bot
