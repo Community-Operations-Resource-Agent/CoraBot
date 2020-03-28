@@ -7,11 +7,13 @@ namespace Shared.Prompts
     {
         public static string ChoicePrompt = "ChoicePrompt";
         public static string ConfirmPrompt = "ConfirmPrompt";
-        public static string GreetingTextPrompt = "GreetingTextPrompt";
         public static string IntPrompt = "IntPrompt";
-        public static string LocationTextPrompt = "LocationTextPrompt";
-        public static string LessThanOrEqualPrompt = "LessThanOrEqualPrompt";
         public static string TextPrompt = "TextPrompt";
+        public static string KeywordTextPrompt = "KeywordTextPrompt";
+        public static string LocationTextPrompt = "LocationTextPrompt";
+        public static string HourPrompt = "HourPrompt";
+        public static string HourMinutePrompt = "HourMinutePrompt";
+        public static string DaysPrompt = "DaysPrompt";
 
         /// <summary>
         /// Adds each prompt to the master dialog set
@@ -23,9 +25,11 @@ namespace Shared.Prompts
             dialogs.Add(new CustomConfirmPrompt(ConfirmPrompt));
             dialogs.Add(new NumberPrompt<int>(IntPrompt));
             dialogs.Add(new TextPrompt(TextPrompt));
-            dialogs.Add(new TextPrompt(GreetingTextPrompt, GreetingPromptValidator.Create()));
-            dialogs.Add(new TextPrompt(LessThanOrEqualPrompt, LessThanOrEqualPromptValidator.Create()));
+            dialogs.Add(new TextPrompt(KeywordTextPrompt, KeywordPromptValidator.Create()));
             dialogs.Add(new TextPrompt(LocationTextPrompt, LocationPromptValidator.Create(configuration)));
+            dialogs.Add(new TextPrompt(HourPrompt, HourPromptValidator.Create()));
+            dialogs.Add(new TextPrompt(HourMinutePrompt, HourMinutePromptValidator.Create()));
+            dialogs.Add(new TextPrompt(DaysPrompt, DaysPromptValidator.Create()));
         }
     }
 }

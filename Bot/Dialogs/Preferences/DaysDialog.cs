@@ -1,4 +1,5 @@
 ﻿using Bot.State;
+using EntityModel.Helpers;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
@@ -8,13 +9,13 @@ using Shared.Prompts;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Bot.Dialogs
+namespace Bot.Dialogs.Preferences
 {
-    public class FeedbackDialog : DialogBase
+    public class DaysDialog : DialogBase
     {
-        public static string Name = typeof(FeedbackDialog).FullName;
+        public static string Name = typeof(DaysDialog).FullName;
 
-        public FeedbackDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
+        public DaysDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
             : base(state, dialogs, api, configuration) { }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
@@ -25,26 +26,27 @@ namespace Bot.Dialogs
                 {
                     async (dialogContext, cancellationToken) =>
                     {
-                        // Prompt for feedback.
+                        // Get which days they want to be contacted.
                         return await dialogContext.PromptAsync(
-                            Prompt.TextPrompt,
+                            Prompt.DaysPrompt,
                             new PromptOptions {
-                                Prompt = Phrases.Feedback.GetFeedback
+                                Prompt = Phrases.Preferences.GetUpdateDays,
+                                RetryPrompt = Phrases.Preferences.GetUpdateDaysRetry
                             },
                             cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        var user = await this.api.GetUser(dialogContext.Context);
+                        // Get the result. This was already validated by the prompt.
+                        DayFlagsHelpers.FromString((string)dialogContext.Result, ",", out DayFlags dayFlags);
 
-                        // Save the feedback.
-                        var feedback = new EntityModel.Feedback();
-                        feedback.SenderId = user.Id;
-                        feedback.Text = (string)dialogContext.Result;
-                        await this.api.Create(feedback);
+                        // Update the user's preference.
+                        var user = await api.GetUser(dialogContext.Context);
+                        user.ReminderFrequency = dayFlags;
+                        await this.api.Update(user);
 
-                        // Send thanks.
-                        await Messages.SendAsync(Phrases.Feedback.Thanks, dialogContext.Context, cancellationToken);
+                        // Send a confirmation message.
+                        await Messages.SendAsync(Phrases.Preferences.UpdateDaysUpdated(dayFlags), dialogContext.Context, cancellationToken);
 
                         // End this dialog to pop it off the stack.
                         return await dialogContext.EndDialogAsync(null, cancellationToken);

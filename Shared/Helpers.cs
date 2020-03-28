@@ -19,6 +19,12 @@ namespace Shared
     public static class Helpers
     {
         /// <summary>
+        /// Twilio is currently the only supported interface and it does not support
+        /// "\r\n" from Environment.NewLine. We need to use "\n" instead.
+        /// </summary>
+        public static string NewLine { get { return "\n"; } }
+
+        /// <summary>
         /// Gets a user token from the turn context.
         /// This will vary based on the channel the message is rec.
         /// </summary>

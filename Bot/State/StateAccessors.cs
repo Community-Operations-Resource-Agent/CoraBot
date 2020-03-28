@@ -34,6 +34,14 @@ namespace Bot.State
         public IStatePropertyAccessor<DialogState> DialogContextAccessor { get; set; }
 
         /// <summary>
+        /// Gets or sets the <see cref="IStatePropertyAccessor{T}"/> for UserContext.
+        /// </summary>
+        /// <value>
+        /// The accessor stores the user context for the conversation.
+        /// </value>
+        public IStatePropertyAccessor<UserContext> UserContextAccessor { get; set; }
+
+        /// <summary>
         /// Gets the <see cref="ConversationState"/> object for the conversation.
         /// </summary>
         /// <value>The <see cref="ConversationState"/> object.</value>
@@ -48,6 +56,18 @@ namespace Bot.State
         {
             this.ConversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
             this.DialogContextAccessor = conversationState.CreateProperty<DialogState>(DialogContextName);
+            this.UserContextAccessor = conversationState.CreateProperty<UserContext>(UserContextName);
+        }
+
+        public async Task<UserContext> GetUserContext(ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            return await this.UserContextAccessor.GetAsync(turnContext, () =>
+            { return new UserContext(); }, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task ClearUserContext(ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            await this.UserContextAccessor.DeleteAsync(turnContext, cancellationToken);
         }
 
         /// <summary>

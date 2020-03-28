@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Shared.Prompts
 {
-    public static class GreetingPromptValidator
+    public static class KeywordPromptValidator
     {
         public static PromptValidator<string> Create()
         {

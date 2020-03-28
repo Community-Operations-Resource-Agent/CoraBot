@@ -10,6 +10,7 @@ using Shared.Prompts;
 using System;
 using EntityModel;
 using Bot.State;
+using Bot.Dialogs.Preferences;
 
 namespace Bot.Dialogs
 {
@@ -47,16 +48,15 @@ namespace Bot.Dialogs
                             bool isKeyword = Phrases.Keywords.List.Any(k => string.Equals(incomingMessage, k, StringComparison.OrdinalIgnoreCase));
                             if (isKeyword)
                             {
-                                return await dialogContext.NextAsync(incomingMessage);
+                                return await dialogContext.NextAsync(incomingMessage, cancellationToken);
                             }
                         }
 
                         // Prompt for a keyword.
                         return await dialogContext.PromptAsync(
-                            Prompt.GreetingTextPrompt,
+                            Prompt.KeywordTextPrompt,
                             new PromptOptions {
-                                Prompt = Phrases.Greeting.GetKeywords(),
-                                RetryPrompt = Phrases.Greeting.GetKeywords()
+                                Prompt = Phrases.Greeting.GetKeywords()
                             },
                             cancellationToken);
                     },
@@ -77,7 +77,39 @@ namespace Bot.Dialogs
                         else if (string.Equals(result, Phrases.Keywords.Options, StringComparison.OrdinalIgnoreCase))
                         {
                             // Push the options dialog onto the stack.
-                            //return await BeginDialogAsync(dialogContext, OptionsDialog.Name, null, cancellationToken);
+                            return await BeginDialogAsync(dialogContext, OptionsDialog.Name, null, cancellationToken);
+
+                        }
+                        else if (string.Equals(result, Phrases.Keywords.Enable, StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(result, Phrases.Keywords.Disable, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Enable/disable contact.
+                            var enable = string.Equals(result, Phrases.Keywords.Enable, StringComparison.OrdinalIgnoreCase);
+
+                            var user = await api.GetUser(dialogContext.Context);
+                            if (user.ContactEnabled != enable)
+                            {
+                                user.ContactEnabled = enable;
+                                await this.api.Update(user);
+                            }
+
+                            await Messages.SendAsync(Phrases.Preferences.ContactEnabledUpdated(user.ContactEnabled), dialogContext.Context, cancellationToken);
+                            return await dialogContext.EndDialogAsync(cancellationToken);
+                        }
+                        else if (string.Equals(result, Phrases.Keywords.Days, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Push the update days dialog onto the stack.
+                            return await BeginDialogAsync(dialogContext, DaysDialog.Name, null, cancellationToken);
+                        }
+                        else if (string.Equals(result, Phrases.Keywords.Time, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Push the update time dialog onto the stack.
+                            return await BeginDialogAsync(dialogContext, TimeDialog.Name, null, cancellationToken);
+                        }
+                        else if (string.Equals(result, Phrases.Keywords.Feedback, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Push the feedback dialog onto the stack.
+                            return await BeginDialogAsync(dialogContext, FeedbackDialog.Name, null, cancellationToken);
                         }
 
                         return await dialogContext.NextAsync(null, cancellationToken);

@@ -64,6 +64,9 @@ namespace Bot
                 // Start a new conversation if there isn't one already.
                 if (result.Status == DialogTurnStatus.Empty)
                 {
+                    // Clear the user context when a new converation begins.
+                    await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
+
                     await masterDialog.BeginDialogAsync(dialogContext, MasterDialog.Name, null, cancellationToken);
                 }
             }
