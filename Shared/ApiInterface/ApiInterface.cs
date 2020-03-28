@@ -1,5 +1,8 @@
 ﻿using EntityModel;
+using EntityModel.Helpers;
 using Microsoft.Bot.Builder;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Shared.ApiInterface
@@ -30,5 +33,10 @@ namespace Shared.ApiInterface
         /// Gets a resource for a user.
         /// </summary>
         Task<Resource> GetResourceForUser(User user, string category, string resource);
+
+        /// <summary>
+        /// Gets all resources of a given type.
+        /// </summary>
+        Task<List<UserResourcePair>> GetResources(string category, string resource);
     }
 }

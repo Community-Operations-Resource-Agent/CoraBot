@@ -11,8 +11,9 @@ using System;
 using EntityModel;
 using Bot.State;
 using Bot.Dialogs.Request;
-using Bot.Dialogs.Preferences;
 using Bot.Dialogs.Provide;
+using System.Collections.Generic;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 
 namespace Bot.Dialogs
 {
@@ -50,81 +51,59 @@ namespace Bot.Dialogs
                             bool isKeyword = Phrases.Keywords.List.Any(k => string.Equals(incomingMessage, k, StringComparison.OrdinalIgnoreCase));
                             if (isKeyword)
                             {
-                                return await dialogContext.NextAsync(incomingMessage, cancellationToken);
+                                if (string.Equals(incomingMessage, Phrases.Keywords.Update, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    // Push the provide dialog onto the stack.
+                                    return await BeginDialogAsync(dialogContext, ProvideDialog.Name, null, cancellationToken);
+                                }
                             }
                         }
 
-                        // Prompt for a keyword.
+                        // Prompt for an option.
+                        var choices = new List<Choice>();
+                        Phrases.Greeting.GetOptionsList().ForEach(s => choices.Add(new Choice { Value = s }));
+
                         return await dialogContext.PromptAsync(
-                            Prompt.KeywordTextPrompt,
-                            new PromptOptions {
-                                Prompt = Phrases.Greeting.GetKeywords()
+                            Prompt.ChoicePrompt,
+                            new PromptOptions()
+                            {
+                                Prompt = Phrases.Greeting.GetOptions,
+                                Choices = choices
                             },
                             cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        var result = dialogContext.Result as string;
+                        if (dialogContext.Result is FoundChoice choice)
+                        {
+                            var result = choice.Value;
 
-                        if (string.Equals(result, Phrases.Keywords.Request, StringComparison.OrdinalIgnoreCase))
-                        {
-                            // Push the request dialog onto the stack.
-                            return await BeginDialogAsync(dialogContext, RequestDialog.Name, null, cancellationToken);
-                        }
-                        else if (string.Equals(result, Phrases.Keywords.Provide, StringComparison.OrdinalIgnoreCase))
-                        {
-                            // Push the provide dialog onto the stack.
-                            return await BeginDialogAsync(dialogContext, ProvideDialog.Name, null, cancellationToken);
-                        }
-                        else if (string.Equals(result, Phrases.Keywords.Options, StringComparison.OrdinalIgnoreCase))
-                        {
-                            // Push the options dialog onto the stack.
-                            return await BeginDialogAsync(dialogContext, OptionsDialog.Name, null, cancellationToken);
-
-                        }
-                        else if (string.Equals(result, Phrases.Keywords.Enable, StringComparison.OrdinalIgnoreCase) ||
-                            string.Equals(result, Phrases.Keywords.Disable, StringComparison.OrdinalIgnoreCase))
-                        {
-                            // Enable/disable contact.
-                            var enable = string.Equals(result, Phrases.Keywords.Enable, StringComparison.OrdinalIgnoreCase);
-
-                            var user = await api.GetUser(dialogContext.Context);
-                            if (user.ContactEnabled != enable)
+                            if (string.Equals(result, Phrases.Options.Request, StringComparison.OrdinalIgnoreCase))
                             {
-                                user.ContactEnabled = enable;
-                                await this.api.Update(user);
+                                // Push the request dialog onto the stack.
+                                return await BeginDialogAsync(dialogContext, RequestDialog.Name, null, cancellationToken);
                             }
+                            else if (string.Equals(result, Phrases.Options.Provide, StringComparison.OrdinalIgnoreCase))
+                            {
+                                // Push the provide dialog onto the stack.
+                                return await BeginDialogAsync(dialogContext, ProvideDialog.Name, null, cancellationToken);
+                            }
+                            else if (string.Equals(result, Phrases.Options.MoreOptions, StringComparison.OrdinalIgnoreCase))
+                            {
+                                // Push the options dialog onto the stack.
+                                return await BeginDialogAsync(dialogContext, OptionsExtendedDialog.Name, null, cancellationToken);
 
-                            await Messages.SendAsync(Phrases.Preferences.ContactEnabledUpdated(user.ContactEnabled), dialogContext.Context, cancellationToken);
-                            return await dialogContext.EndDialogAsync(cancellationToken);
-                        }
-                        else if (string.Equals(result, Phrases.Keywords.Location, StringComparison.OrdinalIgnoreCase))
-                        {
-                            // Push the update location dialog onto the stack.
-                            return await BeginDialogAsync(dialogContext, LocationDialog.Name, null, cancellationToken);
-                        }
-                        else if (string.Equals(result, Phrases.Keywords.Days, StringComparison.OrdinalIgnoreCase))
-                        {
-                            // Push the update days dialog onto the stack.
-                            return await BeginDialogAsync(dialogContext, DaysDialog.Name, null, cancellationToken);
-                        }
-                        else if (string.Equals(result, Phrases.Keywords.Time, StringComparison.OrdinalIgnoreCase))
-                        {
-                            // Push the update time dialog onto the stack.
-                            return await BeginDialogAsync(dialogContext, TimeDialog.Name, null, cancellationToken);
-                        }
-                        else if (string.Equals(result, Phrases.Keywords.Feedback, StringComparison.OrdinalIgnoreCase))
-                        {
-                            // Push the feedback dialog onto the stack.
-                            return await BeginDialogAsync(dialogContext, FeedbackDialog.Name, null, cancellationToken);
+                            }
                         }
 
                         return await dialogContext.NextAsync(null, cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        // End this dialog to pop it off the stack.
-                        return await dialogContext.EndDialogAsync(null, cancellationToken);
+                        // Clear the user context when a new converation begins.
+                        await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
+
+                        return await dialogContext.ReplaceDialogAsync(MasterDialog.Name, null, cancellationToken);
                     }
                 });
             });

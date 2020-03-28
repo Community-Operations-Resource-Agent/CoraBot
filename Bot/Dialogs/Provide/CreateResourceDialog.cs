@@ -32,7 +32,7 @@ namespace Bot.Dialogs.Provide
 
                         var resource = new Resource();
                         resource.CreatedById = user.Id;
-                        resource.Category = userContext.Cateogry.Name;
+                        resource.Category = userContext.Category.Name;
                         resource.Name = userContext.Resource.Name;
                         resource.HasQuantity = userContext.Resource.HasQuantity;
                         await this.api.Create(resource);
@@ -56,7 +56,7 @@ namespace Bot.Dialogs.Provide
                     {
                         var user = await api.GetUser(dialogContext.Context);
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        var resource = await this.api.GetResourceForUser(user, userContext.Cateogry.Name, userContext.Resource.Name);
+                        var resource = await this.api.GetResourceForUser(user, userContext.Category.Name, userContext.Resource.Name);
 
                         // Check if the previous step had a result.
                         if (dialogContext.Result != null)

@@ -67,7 +67,7 @@ namespace Bot.Dialogs.Provide
 
                         // Store the category in the user context.
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        userContext.Cateogry = schema.Categories.FirstOrDefault(c => c.Name == selectedCategory);
+                        userContext.Category = schema.Categories.FirstOrDefault(c => c.Name == selectedCategory);
 
                         // Get the resources in the category.
                         var category = schema.Categories.FirstOrDefault(c => c.Name == selectedCategory);
@@ -93,11 +93,11 @@ namespace Bot.Dialogs.Provide
 
                         // Store the resource in the user context.
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        userContext.Resource = userContext.Cateogry.Resources.FirstOrDefault(r => r.Name == selectedResource);
+                        userContext.Resource = userContext.Category.Resources.FirstOrDefault(r => r.Name == selectedResource);
 
                         // Check if they have already added this resource.
                         var user = await api.GetUser(dialogContext.Context);
-                        var existingResource = await this.api.GetResourceForUser(user, userContext.Cateogry.Name, selectedResource);
+                        var existingResource = await this.api.GetResourceForUser(user, userContext.Category.Name, selectedResource);
 
                         if (existingResource != null)
                         {

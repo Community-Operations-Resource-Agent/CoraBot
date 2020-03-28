@@ -1,17 +1,12 @@
-﻿using EntityModel;
-using Microsoft.Bot.Builder;
+﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Shared.Models;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Shared

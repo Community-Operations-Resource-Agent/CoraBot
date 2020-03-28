@@ -28,7 +28,7 @@ namespace Bot.Dialogs.Provide
                     {
                         var user = await api.GetUser(dialogContext.Context);
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        var resource = await this.api.GetResourceForUser(user, userContext.Cateogry.Name, userContext.Resource.Name);
+                        var resource = await this.api.GetResourceForUser(user, userContext.Category.Name, userContext.Resource.Name);
 
                         if (resource.HasQuantity)
                         {
@@ -54,7 +54,7 @@ namespace Bot.Dialogs.Provide
                     {
                         var user = await api.GetUser(dialogContext.Context);
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        var resource = await this.api.GetResourceForUser(user, userContext.Cateogry.Name, userContext.Resource.Name);
+                        var resource = await this.api.GetResourceForUser(user, userContext.Category.Name, userContext.Resource.Name);
 
                         // Check the result of the previous step.
                         if ((dialogContext.Result is int quantity && quantity == 0) ||

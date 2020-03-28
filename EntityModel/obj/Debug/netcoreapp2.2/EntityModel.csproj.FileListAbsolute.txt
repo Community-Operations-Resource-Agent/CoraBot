@@ -29,3 +29,4 @@ F:\CORA\EntityModel\obj\Debug\netcoreapp2.2\EntityModel.AssemblyInfoInputs.cache
 F:\CORA\EntityModel\obj\Debug\netcoreapp2.2\EntityModel.AssemblyInfo.cs
 F:\CORA\EntityModel\obj\Debug\netcoreapp2.2\EntityModel.dll
 F:\CORA\EntityModel\obj\Debug\netcoreapp2.2\EntityModel.pdb
+F:\CORA\EntityModel\obj\Debug\netcoreapp2.2\EntityModel.csprojAssemblyReference.cache

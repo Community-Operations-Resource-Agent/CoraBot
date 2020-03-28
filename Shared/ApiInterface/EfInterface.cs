@@ -1,8 +1,12 @@
 ﻿using EntityModel;
+using EntityModel.Helpers;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shared.ApiInterface
@@ -103,6 +107,19 @@ namespace Shared.ApiInterface
         public async Task<Resource> GetResourceForUser(User user, string category, string resource)
         {
             return await this.dbContext.Resources.FirstOrDefaultAsync(r => r.CreatedById == user.Id && r.Category == category && r.Name == resource);
+        }
+
+        /// <summary>
+        /// Gets all resources of a given type.
+        /// </summary>
+        public async Task<List<UserResourcePair>> GetResources(string category, string resource)
+        {
+            return await this.dbContext.Users.Join(this.dbContext.Resources,
+                u => u.Id,
+                r => r.CreatedById,
+                (u, r) => new UserResourcePair { User = u, Resource = r })
+                .Where(p => p.Resource.Category == category && p.Resource.Name == resource)
+                .ToListAsync();
         }
     }    
 }

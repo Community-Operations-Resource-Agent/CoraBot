@@ -13,8 +13,7 @@
         { "Name": "Booties" },
         { "Name": "Respiration Tubes" },
         { "Name": "Ventilators" },
-        { "Name": "Wipes or Soaps" },
-        { "Name": "Alcohol" },
+        { "Name": "Wipes" },
         { "Name": "Intubation tubes" },
         { "Name": "Steri Strips" },
         { "Name": "Tape" },
@@ -40,7 +39,7 @@
       "Resources": [
         { "Name": "Transport", "HasQuantity": false },
         { "Name": "Meals", "HasQuantity": false },
-        { "Name": "Pickup or Delivery (groceries, medicine, etc.)", "HasQuantity": false }
+        { "Name": "Pickup or Delivery", "HasQuantity": false }
       ]
     },
     {

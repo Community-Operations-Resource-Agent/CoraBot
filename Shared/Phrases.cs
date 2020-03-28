@@ -21,27 +21,25 @@ namespace Shared
 
         public static class Keywords
         {
-            public const string Request = "request";
-            public const string Provide = "provide";
-            public const string Options = "options";
-            public const string Location = "location";
-            public const string Enable = "enable";
-            public const string Disable = "disable";
-            public const string Days = "days";
-            public const string Time = "time";
-            public const string Feedback = "feedback";
+            public const string Update = "update";
+            public static List<string> List = new List<string>() { Update };
+        }
 
-            public static List<string> List = new List<string>() { Request, Provide, Options, Location, Enable, Disable, Days, Time, Feedback };
+        public static class Options
+        {
+            public static string Request = "Request a need";
+            public static string Provide = "Meet a need or update availability";
+            public static string MoreOptions = "More options";
 
-            public static string HowToRequest = $"Send \"{Request}\" to request a need";
-            public static string HowToProvide = $"Send \"{Provide}\" to meet a need or update availability";
-            public static string HowToOptions = $"Send \"{Options}\" for more options";
-            public static string HowToUpdateLocation = $"Send \"{Location}\" to update your location";
-            public static string HowToFeedback = $"Send \"{Feedback}\" to provide feedback";
-            public static string HowToEnable = $"Send \"{Enable}\" to allow {ProjectName} to contact you";
-            public static string HowToDisable = $"Send \"{Disable}\" to stop {ProjectName} from contacting you";
-            public static string HowToChangeDays = $"Send \"{Days}\" to change the days that {ProjectName} will contact you for updates";
-            public static string HowToChangeTime = $"Send \"{Time}\" to change the time that {ProjectName} will contact you for updates";
+            public static class Extended
+            {
+                public static string UpdateLocation = "Update your location";
+                public static string ChangeDays = $"Change the days that {ProjectName} will contact you for updates";
+                public static string ChangeTime = $"Change the time that {ProjectName} will contact you for updates";
+                public static string Enable = $"Enable {ProjectName} to contact you";
+                public static string Disable = $"Stop {ProjectName} from contacting you";
+                public static string Feedback = "Provide feedback";
+            }
         }
 
         public static class Feedback
@@ -60,26 +58,20 @@ namespace Shared
                 return MessageFactory.Text($"Channel \"{turnContext.Activity.ChannelId}\" is not yet supported");
             }
 
-            public static Activity GetKeywords()
-            {
-                string greeting = "Here's what you can do:" + Helpers.NewLine +
-                                  "- " + Keywords.HowToRequest + Helpers.NewLine +
-                                  "- " + Keywords.HowToProvide + Helpers.NewLine +
-                                  "- " + Keywords.HowToOptions;
+            public static Activity GetOptions = MessageFactory.Text("Here's what you can do (enter a number)");
+            public static Activity GetOptionsExtended = MessageFactory.Text("Here are some more options (enter a number)");
 
-                return MessageFactory.Text(greeting);
+            public static List<string> GetOptionsList()
+            {
+                return new List<string> { Options.Request, Options.Provide, Options.MoreOptions };
             }
 
-            public static Activity GetOptions(User user)
+            public static List<string> GetOptionsExtendedList(User user)
             {
-                string greeting = "Here's are some more options:" + Helpers.NewLine +
-                                  "- " + Keywords.HowToUpdateLocation + Helpers.NewLine +
-                                  "- " + (user.ContactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable) + Helpers.NewLine +
-                                  "- " + Keywords.HowToChangeDays + Helpers.NewLine +
-                                  "- " + Keywords.HowToChangeTime + Helpers.NewLine +
-                                  "- " + Keywords.HowToFeedback;
-
-                return MessageFactory.Text(greeting);
+                var list = new List<string> { Options.Extended.UpdateLocation, Options.Extended.ChangeDays, Options.Extended.ChangeTime };
+                list.Add(user.ContactEnabled ? Options.Extended.Disable : Options.Extended.Enable);
+                list.Add(Options.Extended.Feedback);
+                return list;
             }
         }
 
@@ -120,20 +112,20 @@ namespace Shared
 
             public static Activity ContactEnabledUpdated(bool contactEnabled)
             {
-                return MessageFactory.Text($"{PreferenceUpdated}! " + (contactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable));
+                return MessageFactory.Text($"{PreferenceUpdated}!");
             }
         }
 
         public static class Provide
         {
-            public static Activity Categories = MessageFactory.Text("Which category of resources are you able to provide?");
+            public static Activity Categories = MessageFactory.Text("Which category of resources are you able to provide? (enter a number)");
             public static Activity GetQuantity = MessageFactory.Text("What quantity of this resource do you have available?");
             public static Activity GetAvailable = MessageFactory.Text("Do you still have this resource available?");
             public static Activity CompleteUpdate = MessageFactory.Text("Thank you for the update!");
 
             public static Activity Resources(string category)
             {
-                return MessageFactory.Text($"Which type of {category.ToLower()} are you able to provide?");
+                return MessageFactory.Text($"Which type of {category.ToLower()} are you able to provide? (enter a number)");
             }
 
             public static Activity CompleteCreate(User user)
@@ -143,11 +135,11 @@ namespace Shared
                 
                 if (user.ContactEnabled)
                 {
-                    text += $" I will contact you {user.ReminderFrequency.ToString()} to update your availability. This frequency can be customized by sending \"{Keywords.Days}\"";
+                    text += $" I will contact you {user.ReminderFrequency.ToString()} to update your availability. This frequency can be customized from the options menu";
                 }
                 else
                 {
-                    text += $" Your update preference disabled, so please make sure to update your availability if it changes - thank you!";
+                    text += $" Your contact preference is disabled, so please make sure to update your availability if it changes - thank you!";
                 }
 
                 return MessageFactory.Text(text);
@@ -156,11 +148,30 @@ namespace Shared
 
         public static class Request
         {
-            public static Activity Categories = MessageFactory.Text("Which category of resources are you looking for?");
+            public static Activity Categories = MessageFactory.Text("Which category of resource are you looking for?");
             
             public static Activity Resources(string category)
             {
                 return MessageFactory.Text($"Which type of {category.ToLower()} are you looking for?");
+            }
+
+            public static Activity Match(UserResourcePair match, double distance)
+            {
+                if (match == null)
+                {
+                    return MessageFactory.Text($"Unfortunately I was unable to find a match at this time. Please check back soon!");
+                }
+
+                var text = $"The closest match I found is { Math.Round(distance, MidpointRounding.AwayFromZero) } miles from you.";
+
+                if (match.Resource.HasQuantity)
+                {
+                    text += $" It looks like there {(match.Resource.Quantity == 1 ? "is" : "are")} {match.Resource.Quantity} available.";
+                }
+
+                text += $" Here is the contact phone number: {match.User.PhoneNumber}";
+
+                return MessageFactory.Text(text);
             }
         }
     }

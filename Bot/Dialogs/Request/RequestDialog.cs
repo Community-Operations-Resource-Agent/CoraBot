@@ -1,5 +1,6 @@
 ﻿using Bot.Dialogs.Preferences;
 using Bot.State;
+using EntityModel.Helpers;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
@@ -67,7 +68,7 @@ namespace Bot.Dialogs.Request
 
                         // Store the category in the user context.
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        userContext.Cateogry = schema.Categories.FirstOrDefault(c => c.Name == selectedCategory);
+                        userContext.Category = schema.Categories.FirstOrDefault(c => c.Name == selectedCategory);
 
                         // Get the resources in the category.
                         var category = schema.Categories.FirstOrDefault(c => c.Name == selectedCategory);
@@ -93,10 +94,45 @@ namespace Bot.Dialogs.Request
 
                         // Store the resource in the user context.
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        userContext.Resource = userContext.Cateogry.Resources.FirstOrDefault(r => r.Name == selectedResource);
+                        userContext.Resource = userContext.Category.Resources.FirstOrDefault(r => r.Name == selectedResource);
 
-                        // Use their location to make a match
-                        await Messages.SendAsync("TODO: Provide matches", turnContext, cancellationToken);
+                         return await dialogContext.NextAsync(null, cancellationToken);
+                    },
+                    async (dialogContext, cancellationToken) =>
+                    {
+                        var user = await api.GetUser(dialogContext.Context);
+                        var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+
+                        // This section is resource intensive. Should look into a way to do geofenced search.
+                        var resources = await this.api.GetResources(userContext.Category.Name, userContext.Resource.Name);
+                        UserResourcePair closestMatch = null;
+                        double closestMatchDistance = double.MaxValue;
+
+                        foreach (var resource in resources)
+                        {
+                            // TODO: Make unit of length customizable. Maybe set in helpers and have it used throughout (also in text response).
+                            Coordinates userCoordinates = new Coordinates(user.LocationLatitude, user.LocationLongitude);
+                            Coordinates resourceCoordinates = new Coordinates(resource.User.LocationLatitude, resource.User.LocationLongitude);
+                            var distance = userCoordinates.DistanceTo(resourceCoordinates, UnitOfLength.Miles);
+
+                            if (closestMatch == null || 
+                                distance < closestMatchDistance ||
+                                (distance == closestMatchDistance && resource.Resource.Quantity > closestMatch.Resource.Quantity))
+                            {
+                                closestMatch = resource;
+                                closestMatchDistance = distance;
+
+                                // Optimization? No need to search the whole world if there is something nearby.
+                                /*
+                                if (distance < 25)
+                                {
+                                    break;
+                                }
+                                */
+                            }
+                        }
+
+                        await Messages.SendAsync(Phrases.Request.Match(closestMatch, closestMatchDistance), turnContext, cancellationToken);
 
                          return await dialogContext.NextAsync(null, cancellationToken);
                     },
