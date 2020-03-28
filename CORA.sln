@@ -1,9 +1,12 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bot", "Bot\Bot.csproj", "{23F76AD8-BF59-4682-8157-E5014DE7AD1A}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29905.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bot", "Bot\Bot.csproj", "{23F76AD8-BF59-4682-8157-E5014DE7AD1A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityModel", "EntityModel\EntityModel.csproj", "{F48CA557-108A-4860-9820-FB3DE7E34899}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityModel", "EntityModel\EntityModel.csproj", "{F48CA557-108A-4860-9820-FB3DE7E34899}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{972A9695-C061-445B-89EC-EF3A85032A57}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,5 +22,15 @@ Global
 		{F48CA557-108A-4860-9820-FB3DE7E34899}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F48CA557-108A-4860-9820-FB3DE7E34899}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F48CA557-108A-4860-9820-FB3DE7E34899}.Release|Any CPU.Build.0 = Release|Any CPU
+		{972A9695-C061-445B-89EC-EF3A85032A57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{972A9695-C061-445B-89EC-EF3A85032A57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{972A9695-C061-445B-89EC-EF3A85032A57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{972A9695-C061-445B-89EC-EF3A85032A57}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B2B74186-30F3-4FBF-9D0C-19E0B8DA64F3}
 	EndGlobalSection
 EndGlobal

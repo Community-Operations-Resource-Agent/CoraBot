@@ -20,3 +20,13 @@
 /Users/jbrown/Projects/CORA/EntityModel/bin/Debug/netcoreapp2.2/EntityModel.runtimeconfig.dev.json
 /Users/jbrown/Projects/CORA/EntityModel/bin/Debug/netcoreapp2.2/EntityModel.dll
 /Users/jbrown/Projects/CORA/EntityModel/bin/Debug/netcoreapp2.2/EntityModel.pdb
+F:\CORA\EntityModel\bin\Debug\netcoreapp2.2\EntityModel.deps.json
+F:\CORA\EntityModel\bin\Debug\netcoreapp2.2\EntityModel.runtimeconfig.json
+F:\CORA\EntityModel\bin\Debug\netcoreapp2.2\EntityModel.runtimeconfig.dev.json
+F:\CORA\EntityModel\bin\Debug\netcoreapp2.2\EntityModel.dll
+F:\CORA\EntityModel\bin\Debug\netcoreapp2.2\EntityModel.pdb
+F:\CORA\EntityModel\obj\Debug\netcoreapp2.2\EntityModel.AssemblyInfoInputs.cache
+F:\CORA\EntityModel\obj\Debug\netcoreapp2.2\EntityModel.AssemblyInfo.cs
+F:\CORA\EntityModel\obj\Debug\netcoreapp2.2\EntityModel.dll
+F:\CORA\EntityModel\obj\Debug\netcoreapp2.2\EntityModel.pdb
+F:\CORA\EntityModel\obj\Debug\netcoreapp2.2\EntityModel.csprojAssemblyReference.cache

@@ -13,10 +13,16 @@ namespace EntityModel
         public string OrganizationId { get; set; }
 
         [JsonProperty(PropertyName = "")]
-        public string Name { get; set; }
+        public string PhoneNumber { get; set; }
 
         [JsonProperty(PropertyName = "")]
-        public string PhoneNumber { get; set; }
+        public string Location { get; set; }
+
+        [JsonProperty(PropertyName = "")]
+        public double LocationLatitude { get; set; }
+
+        [JsonProperty(PropertyName = "")]
+        public double LocationLongitude { get; set; }
 
         [JsonProperty(PropertyName = "")]
         public DayFlags ReminderFrequency { get; set; }

@@ -1,11 +1,10 @@
-﻿using EntityModel.Helpers;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 
 namespace EntityModel
 {
-    public abstract class Resource : Model
+    public class Resource : Model
     {
         public static string TABLE_NAME = "";
 
@@ -39,10 +38,8 @@ namespace EntityModel
         [JsonProperty(PropertyName = "")]
         public bool IsRecordComplete { get; set; }
 
-        /// <summary>
-        /// The primary key for referencing the type in the data store.
-        /// </summary>
-        public abstract string PrimaryKey();
+        public override IContractResolver ContractResolver() { return Resolver.Instance; }
+        public override string TableName() { return TABLE_NAME; }
 
         public Resource() : base()
         {

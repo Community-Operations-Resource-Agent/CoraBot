@@ -1,19 +1,17 @@
 ﻿using EntityModel;
-using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Bot.Connector.Authentication;
-using ServiceProviderBot.Bot;
-using ServiceProviderBot.Bot.State;
 using Shared.ApiInterface;
 using Shared;
 using System.Diagnostics;
 using Shared.Middleware;
+using Bot.State;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 
 namespace Bot
 {
@@ -72,7 +70,7 @@ namespace Bot
                         await context.SendActivityAsync(exception.StackTrace);
                     }
 
-                    await context.SendActivityAsync(Phrases.Exceptions.ServiceProvider);
+                    await context.SendActivityAsync(Phrases.Exceptions.Error);
                 };
 
                 // Auto-save the state after each turn.
