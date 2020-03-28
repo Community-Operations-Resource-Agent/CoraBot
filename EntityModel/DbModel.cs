@@ -7,7 +7,6 @@ namespace EntityModel
     public class DbModel : DbContext
     {
         public DbSet<User> Users { get; set; }
-        public DbSet<Organization> Organizations { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public DbSet<Feedback> Feedback { get; set; }
 

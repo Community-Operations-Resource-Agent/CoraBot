@@ -41,13 +41,13 @@ namespace Shared
         /// <summary>
         /// Retrieves the resource schema.
         /// </summary>
-        public static ResourceDefinitionsResponse GetSchema()
+        public static ResourceSchemaResponse GetSchema()
         {
             // TODO: Get from Azure
             using (StreamReader reader = new StreamReader("Schema.json"))
             {
                 string json = reader.ReadToEnd();
-                return JsonConvert.DeserializeObject<ResourceDefinitionsResponse>(json);
+                return JsonConvert.DeserializeObject<ResourceSchemaResponse>(json);
             }
         }
 

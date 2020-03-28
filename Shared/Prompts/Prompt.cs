@@ -14,6 +14,9 @@ namespace Shared.Prompts
         public static string HourPrompt = "HourPrompt";
         public static string HourMinutePrompt = "HourMinutePrompt";
         public static string DaysPrompt = "DaysPrompt";
+        public static string CategoryPrompt = "CategoryPrompt";
+        public static string ResourcePrompt = "ResourcePrompt";
+
 
         /// <summary>
         /// Adds each prompt to the master dialog set
@@ -30,6 +33,8 @@ namespace Shared.Prompts
             dialogs.Add(new TextPrompt(HourPrompt, HourPromptValidator.Create()));
             dialogs.Add(new TextPrompt(HourMinutePrompt, HourMinutePromptValidator.Create()));
             dialogs.Add(new TextPrompt(DaysPrompt, DaysPromptValidator.Create()));
+            dialogs.Add(new CustomChoicePrompt(CategoryPrompt, CategoryPromptValidator.Create()));
+            dialogs.Add(new CustomChoicePrompt(ResourcePrompt, ResourcePromptValidator.Create()));
         }
     }
 }

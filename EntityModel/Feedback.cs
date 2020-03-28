@@ -6,34 +6,8 @@ namespace EntityModel
 {
     public class Feedback : Model
     {
-        public static string TABLE_NAME = "";
+        public string CreatedById { get; set; }
 
-        [JsonIgnore]
-        [JsonProperty(PropertyName = "")]
-        public string SenderId { get; set; }
-
-        [JsonProperty(PropertyName = "")]
-        public DateTime CreatedOn { get; set; }
-
-        [JsonProperty(PropertyName = "")]
         public string Text { get; set; }
-
-        public override IContractResolver ContractResolver() { return Resolver.Instance; }
-        public override string TableName() { return TABLE_NAME; }
-
-        public Feedback() : base()
-        {
-            this.CreatedOn = DateTime.UtcNow;
-        }
-
-        public class Resolver : ContractResolver<Feedback>
-        {
-            public static Resolver Instance = new Resolver();
-
-            private Resolver()
-            {
-                AddMap(x => x.Id, "");
-            }
-        }
     }
 }

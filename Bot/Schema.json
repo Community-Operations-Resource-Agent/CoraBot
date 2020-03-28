@@ -3,184 +3,52 @@
     {
       "Name": "Medical Supplies",
       "Resources": [
-        {
-          "Name": "N-95 Masks"
-        },
-        {
-          "Name": "Face Shields"
-        },
-        {
-          "Name": "Eye Protection"
-        },
-        {
-          "Name": "Gloves"
-        },
-        {
-          "Name": "Cotton Swabs"
-        },
-        {
-          "Name": "Hand Sanitizer"
-        },
-        {
-          "Name": "Gowns"
-        },
-        {
-          "Name": "Booties"
-        },
-        {
-          "Name": "Respiration Tubes"
-        },
-        {
-          "Name": "Ventilators"
-        },
-        {
-          "Name": "Wipes or Soaps"
-        },
-        {
-          "Name": "Alcohol"
-        },
-        {
-          "Name": "Intubation tubes"
-        },
-        {
-          "Name": "Steri Strips"
-        },
-        {
-          "Name": "Tape"
-        },
-        {
-          "Name": "Syringes"
-        },
-        {
-          "Name": "Test tubes"
-        },
-        {
-          "Name": "Saline"
-        },
-        {
-          "Name": "D5"
-        }
+        { "Name": "N-95 Masks" },
+        { "Name": "Face Shields" },
+        { "Name": "Eye Protection" },
+        { "Name": "Gloves" },
+        { "Name": "Cotton Swabs" },
+        { "Name": "Hand Sanitizer" },
+        { "Name": "Gowns" },
+        { "Name": "Booties" },
+        { "Name": "Respiration Tubes" },
+        { "Name": "Ventilators" },
+        { "Name": "Wipes or Soaps" },
+        { "Name": "Alcohol" },
+        { "Name": "Intubation tubes" },
+        { "Name": "Steri Strips" },
+        { "Name": "Tape" },
+        { "Name": "Syringes" },
+        { "Name": "Test tubes" },
+        { "Name": "Saline" },
+        { "Name": "D5" }
       ]
     },
     {
       "Name": "Housing",
       "Resources": [
-        {
-          "Name": "Short-Term"
-        },
-        {
-          "Name": "Long-Term"
-        },
-        {
-          "Name": "Immigrant (undocumented, F1, work visas, etc)"
-        },
-        {
-          "Name": "Hospice"
-        },
-        {
-          "Name": "Retirement"
-        },
-        {
-          "Name": "Quarantine"
-        }
+        { "Name": "Short-Term" },
+        { "Name": "Long-Term" },
+        { "Name": "Hospice" },
+        { "Name": "Retirement" },
+        { "Name": "Immigrant" },
+        { "Name": "Quarantine" }
       ]
     },
     {
       "Name": "Community",
       "Resources": [
-        {
-          "Name": "Transport"
-        },
-        {
-          "Name": "Meals"
-        },
-        {
-          "Name": "Pickup or Delivery (groceries, medicine, etc.)"
-        },
-        {
-          "Name": "Service professional (electrician, cleaner, etc.)"
-        }
+        { "Name": "Transport", "HasQuantity": false },
+        { "Name": "Meals", "HasQuantity": false },
+        { "Name": "Pickup or Delivery (groceries, medicine, etc.)", "HasQuantity": false }
       ]
     },
     {
       "Name": "Emotional Support",
       "Resources": [
-        {
-          "Name": "Counselor"
-        },
-        {
-          "Name": "Phycological Care"
-        },
-        {
-          "Name": "Telehealth"
-        },
-        {
-          "Name": "Pharmaceutical Availability (medicine/distribution)"
-        },
-        {
-          "Name": "Hotline"
-        },
-        {
-          "Name": "Emotional Support Animals (ESA) (how to register)"
-        }
-      ]
-    },
-    {
-      "Name": "Safety",
-      "Resources": [
-        {
-          "Name": "Domestic Violence"
-        },
-        {
-          "Name": "Addresses for shelters"
-        },
-        {
-          "Name": "Hotlines for domestic abuse"
-        },
-        {
-          "Name": "Counselors for domestic abuse"
-        },
-        {
-          "Name": "Information on Lawyers"
-        },
-        {
-          "Name": "Immigrant Right Protection"
-        }
-      ]
-    },
-    {
-      "Name": "Jobs",
-      "Resources": [
-        {
-          "Name": "Virtual Career Fairs"
-        },
-        {
-          "Name": "Free services for updating resumes"
-        },
-        {
-          "Name": "Unemployment"
-        },
-        {
-          "Name": "Government Assistance"
-        },
-        {
-          "Name": "Interview practice (LinkedIn, etc)"
-        },
-        {
-          "Name": "Career Counseling"
-        },
-        {
-          "Name": "Temporary work"
-        },
-        {
-          "Name": "Online surveys to earn money"
-        },
-        {
-          "Name": "Mentoring services"
-        },
-        {
-          "Name": "Free training resources"
-        }
+        { "Name": "Counseling", "HasQuantity": false },
+        { "Name": "Psychological Care", "HasQuantity": false },
+        { "Name": "Telehealth", "HasQuantity": false }
       ]
     }
   ]

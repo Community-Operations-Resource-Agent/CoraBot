@@ -39,7 +39,7 @@ namespace Bot.Dialogs
 
                         // Save the feedback.
                         var feedback = new EntityModel.Feedback();
-                        feedback.SenderId = user.Id;
+                        feedback.CreatedById = user.Id;
                         feedback.Text = (string)dialogContext.Result;
                         await this.api.Create(feedback);
 

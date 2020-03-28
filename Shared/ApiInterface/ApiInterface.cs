@@ -7,12 +7,17 @@ namespace Shared.ApiInterface
     public interface IApiInterface
     {
         /// <summary>
-        /// Creates a new record of a model.
+        /// Creates a new record.
         /// </summary>
         Task<string> Create(Model model);
 
         /// <summary>
-        /// Saves changes to a model.
+        /// Deletes a record.
+        /// </summary>
+        Task<bool> Delete(Model model);
+
+        /// <summary>
+        /// Saves changes to a record.
         /// </summary>
         Task<bool> Update(Model model);
 
@@ -20,5 +25,10 @@ namespace Shared.ApiInterface
         /// Gets a user from a turn context.
         /// </summary>
         Task<User> GetUser(ITurnContext turnContext);
+
+        /// <summary>
+        /// Gets a resource for a user.
+        /// </summary>
+        Task<Resource> GetResourceForUser(User user, string category, string resource);
     }
 }

@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace EntityModel
@@ -8,15 +6,14 @@ namespace EntityModel
     public abstract class Model
     {
         [Key]
-        [JsonIgnore]
         public string Id { get; set; }
 
-        public abstract IContractResolver ContractResolver();
-        public abstract string TableName();
+        public DateTime CreatedOn { get; set; }
 
         public Model()
         {
             this.Id = Guid.NewGuid().ToString();
+            this.CreatedOn = DateTime.UtcNow;
         }
     }
 }

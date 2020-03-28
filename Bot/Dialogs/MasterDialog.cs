@@ -10,7 +10,9 @@ using Shared.Prompts;
 using System;
 using EntityModel;
 using Bot.State;
+using Bot.Dialogs.Request;
 using Bot.Dialogs.Preferences;
+using Bot.Dialogs.Provide;
 
 namespace Bot.Dialogs
 {
@@ -64,15 +66,15 @@ namespace Bot.Dialogs
                     {
                         var result = dialogContext.Result as string;
 
-                        if (string.Equals(result, Phrases.Keywords.Provide, StringComparison.OrdinalIgnoreCase))
-                        {
-                            // Push the provide dialog onto the stack.
-                            return await BeginDialogAsync(dialogContext, ProvideDialog.Name, null, cancellationToken);
-                        }
-                        else if (string.Equals(result, Phrases.Keywords.Request, StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(result, Phrases.Keywords.Request, StringComparison.OrdinalIgnoreCase))
                         {
                             // Push the request dialog onto the stack.
                             return await BeginDialogAsync(dialogContext, RequestDialog.Name, null, cancellationToken);
+                        }
+                        else if (string.Equals(result, Phrases.Keywords.Provide, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Push the provide dialog onto the stack.
+                            return await BeginDialogAsync(dialogContext, ProvideDialog.Name, null, cancellationToken);
                         }
                         else if (string.Equals(result, Phrases.Keywords.Options, StringComparison.OrdinalIgnoreCase))
                         {
@@ -95,6 +97,11 @@ namespace Bot.Dialogs
 
                             await Messages.SendAsync(Phrases.Preferences.ContactEnabledUpdated(user.ContactEnabled), dialogContext.Context, cancellationToken);
                             return await dialogContext.EndDialogAsync(cancellationToken);
+                        }
+                        else if (string.Equals(result, Phrases.Keywords.Location, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Push the update location dialog onto the stack.
+                            return await BeginDialogAsync(dialogContext, LocationDialog.Name, null, cancellationToken);
                         }
                         else if (string.Equals(result, Phrases.Keywords.Days, StringComparison.OrdinalIgnoreCase))
                         {

@@ -2,9 +2,7 @@
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shared.ApiInterface
@@ -22,17 +20,13 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Creates a new record of a model.
+        /// Creates a new record.
         /// </summary>
         public async Task<string> Create(Model model)
         {
             if (model is User)
             {
                 await this.dbContext.Users.AddAsync(model as User);
-            }
-            else if (model is Organization)
-            {
-                await this.dbContext.Organizations.AddAsync(model as Organization);
             }
             else if (model is Resource)
             {
@@ -53,7 +47,34 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Saves changes to a model.
+        /// Deletes a record.
+        /// </summary>
+        public async Task<bool> Delete(Model model)
+        {
+            if (model is User)
+            {
+                this.dbContext.Users.Remove(model as User);
+            }
+            else if (model is Resource)
+            {
+                this.dbContext.Resources.Remove(model as Resource);
+            }
+            else if (model is Feedback)
+            {
+                this.dbContext.Feedback.Remove(model as Feedback);
+            }
+            else
+            {
+                Debug.Assert(false, "Add the new type");
+                return false;
+            }
+
+            await this.dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        /// <summary>
+        /// Saves changes to a record.
         /// </summary>
         public async Task<bool> Update(Model model)
         {
@@ -74,6 +95,14 @@ namespace Shared.ApiInterface
                 case Channels.Sms: return await this.dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userToken);
                 default: Debug.Fail("Missing channel type"); return null;
             }
+        }
+
+        /// <summary>
+        /// Gets a resource for a user.
+        /// </summary>
+        public async Task<Resource> GetResourceForUser(User user, string category, string resource)
+        {
+            return await this.dbContext.Resources.FirstOrDefaultAsync(r => r.CreatedById == user.Id && r.Category == category && r.Name == resource);
         }
     }    
 }

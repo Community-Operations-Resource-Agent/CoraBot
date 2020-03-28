@@ -1,9 +1,9 @@
-﻿using Bot.State;
+﻿using Bot.Dialogs.Preferences;
+using Bot.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using Shared;
 using Shared.ApiInterface;
 using Shared.Prompts;
@@ -12,13 +12,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Bot.Dialogs
+namespace Bot.Dialogs.Provide
 {
-    public class RequestDialog : DialogBase
+    public class ProvideDialog : DialogBase
     {
-        public static string Name = typeof(RequestDialog).FullName;
+        public static string Name = typeof(ProvideDialog).FullName;
 
-        public RequestDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
+        public ProvideDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
             : base(state, dialogs, api, configuration) { }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
@@ -33,35 +33,11 @@ namespace Bot.Dialogs
 
                         if (string.IsNullOrEmpty(user.Location))
                         {
-                            // Prompt for the location.
-                            return await dialogContext.PromptAsync(
-                                Prompt.LocationTextPrompt,
-                                new PromptOptions
-                                {
-                                    Prompt = Phrases.Request.GetLocation,
-                                    RetryPrompt = Phrases.Request.GetLocationRetry
-                                },
-                                cancellationToken);
+                            // Push the update location dialog onto the stack.
+                            return await BeginDialogAsync(dialogContext, LocationDialog.Name, null, cancellationToken);
                         }
 
                         // Skip this step.
-                        return await dialogContext.NextAsync(null, cancellationToken);
-                    },
-                    async (dialogContext, cancellationToken) =>
-                    {
-                        if (dialogContext.Result != null)
-                        {
-                            var location = (string)dialogContext.Result;
-                            var position = await Helpers.LocationToPosition(configuration, location);
-
-                            // Save the location. It was validated by the prompt.
-                            var user = await api.GetUser(dialogContext.Context);
-                            user.Location = location;
-                            user.LocationLatitude = position.Lat;
-                            user.LocationLongitude = position.Lon;
-                            await this.api.Update(user);
-                        }
-
                         return await dialogContext.NextAsync(null, cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
@@ -74,27 +50,26 @@ namespace Bot.Dialogs
                         categories.ForEach(s => choices.Add(new Choice { Value = s }));
 
                         return await dialogContext.PromptAsync(
-                            Prompt.ChoicePrompt,
+                            Prompt.CategoryPrompt,
                             new PromptOptions()
                             {
-                                Prompt = Phrases.Request.Categories,
+                                Prompt = Phrases.Provide.Categories,
                                 Choices = choices
                             },
                             cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        // TODO: what if long delay and the categories changed?
-                        // Handle the category not being there.
-                        // Maybe in validator.
+                        var schema = Helpers.GetSchema();
 
-
-
+                        // Category was validated so it is guaranteed to be in the schema.
                         var selectedCategory = ((FoundChoice)dialogContext.Result).Value;
 
+                        // Store the category in the user context.
+                        var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+                        userContext.Cateogry = schema.Categories.FirstOrDefault(c => c.Name == selectedCategory);
+
                         // Get the resources in the category.
-                        // TODO: validate the selected category first so it is guaranteed to be present.
-                        var schema = Helpers.GetSchema();
                         var category = schema.Categories.FirstOrDefault(c => c.Name == selectedCategory);
                         List<string> resources = category.Resources.Select(r => r.Name).ToList();
 
@@ -102,28 +77,41 @@ namespace Bot.Dialogs
                         resources.ForEach(s => choices.Add(new Choice { Value = s }));
 
                         return await dialogContext.PromptAsync(
-                            Prompt.ChoicePrompt,
+                            Prompt.ResourcePrompt,
                             new PromptOptions()
                             {
-                                Prompt = Phrases.Request.Resources(selectedCategory),
-                                Choices = choices
+                                Prompt = Phrases.Provide.Resources(selectedCategory),
+                                Choices = choices,
+                                Validations = new ResourcePromptValidations { Category = selectedCategory }
                             },
                             cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
+                        // Resource was validated so it is guaranteed to be in the schema.
                         var selectedResource = ((FoundChoice)dialogContext.Result).Value;
 
-                        // Use their location to make a match
-                        await Messages.SendAsync("TODO: Provide matches", turnContext, cancellationToken);
+                        // Store the resource in the user context.
+                        var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+                        userContext.Resource = userContext.Cateogry.Resources.FirstOrDefault(r => r.Name == selectedResource);
 
-                         return await dialogContext.NextAsync(null, cancellationToken);
+                        // Check if they have already added this resource.
+                        var user = await api.GetUser(dialogContext.Context);
+                        var existingResource = await this.api.GetResourceForUser(user, userContext.Cateogry.Name, selectedResource);
+
+                        if (existingResource != null)
+                        {
+                            // If they have already added this resource, push the update resource dialog onto the stack.
+                            return await BeginDialogAsync(dialogContext, UpdateResourceDialog.Name, null, cancellationToken);
+                        }
+                        else
+                        {
+                            // Push the create resource dialog onto the stack.
+                            return await BeginDialogAsync(dialogContext, CreateResourceDialog.Name, null, cancellationToken);
+                        }
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        // TODO: Ask if there is anything else they need.
-                        // If so, repeat the dialog.
-
                         // End this dialog to pop it off the stack.
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
