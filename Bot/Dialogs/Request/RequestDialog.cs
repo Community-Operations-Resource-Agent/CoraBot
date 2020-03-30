@@ -30,31 +30,29 @@ namespace Bot.Dialogs.Request
                 {
                     async (dialogContext, cancellationToken) =>
                     {
-                        var user = await api.GetUser(dialogContext.Context);
-
-                        if (string.IsNullOrEmpty(user.Location))
-                        {
-                            // Push the update location dialog onto the stack.
-                            return await BeginDialogAsync(dialogContext, LocationDialog.Name, null, cancellationToken);
-                        }
-
-                        // Skip this step.
-                        return await dialogContext.NextAsync(null, cancellationToken);
-                    },
-                    async (dialogContext, cancellationToken) =>
-                    {
                         // Get the categories.
                         var schema = Helpers.GetSchema();
                         List<string> categories = schema.Categories.Select(c => c.Name).ToList();
 
+                        if (categories.Count == 1)
+                        {
+                            // No need to ask for a single category.
+                            var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+                            userContext.Category = schema.Categories.First().Name;
+
+                            // Skip this step.
+                            return await dialogContext.NextAsync(null, cancellationToken);
+                        }
+
                         var choices = new List<Choice>();
-                        categories.ForEach(s => choices.Add(new Choice { Value = s }));
+                        categories.ForEach(c => choices.Add(new Choice { Value = c }));
+                        choices.Add(new Choice { Value = Phrases.None });
 
                         return await dialogContext.PromptAsync(
                             Prompt.CategoryPrompt,
                             new PromptOptions()
                             {
-                                Prompt = Phrases.Request.Categories,
+                                Prompt = Phrases.Provide.GetCategory,
                                 Choices = choices
                             },
                             cancellationToken);
@@ -62,51 +60,73 @@ namespace Bot.Dialogs.Request
                     async (dialogContext, cancellationToken) =>
                     {
                         var schema = Helpers.GetSchema();
-
-                        // Category was validated so it is guaranteed to be in the schema.
-                        var selectedCategory = ((FoundChoice)dialogContext.Result).Value;
-
-                        // Store the category in the user context.
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        userContext.Category = schema.Categories.FirstOrDefault(c => c.Name == selectedCategory);
+
+                        if (dialogContext.Result is FoundChoice)
+                        {
+                            // Choice was validated in case the schema changed.
+                            var selectedCategory = ((FoundChoice)dialogContext.Result).Value;
+
+                            if (selectedCategory == Phrases.None)
+                            {
+                                return await dialogContext.EndDialogAsync(null, cancellationToken);
+                            }
+
+                            // Store the category in the user context.
+                            userContext.Category = selectedCategory;
+                        }
 
                         // Get the resources in the category.
-                        var category = schema.Categories.FirstOrDefault(c => c.Name == selectedCategory);
+                        var category = schema.Categories.FirstOrDefault(c => c.Name == userContext.Category);
                         List<string> resources = category.Resources.Select(r => r.Name).ToList();
 
                         var choices = new List<Choice>();
-                        resources.ForEach(s => choices.Add(new Choice { Value = s }));
+                        resources.ForEach(r => choices.Add(new Choice { Value = r }));
+                        choices.Add(new Choice { Value = Phrases.None });
 
                         return await dialogContext.PromptAsync(
                             Prompt.ResourcePrompt,
                             new PromptOptions()
                             {
-                                Prompt = Phrases.Request.Resources(selectedCategory),
+                                Prompt = Phrases.Request.Resources(userContext.Category),
                                 Choices = choices,
-                                Validations = new ResourcePromptValidations { Category = selectedCategory }
+                                Validations = new ResourcePromptValidations { Category = userContext.Category }
                             },
                             cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        // Resource was validated so it is guaranteed to be in the schema.
+                        // Choice was validated in case the schema changed.
                         var selectedResource = ((FoundChoice)dialogContext.Result).Value;
+
+                        if (selectedResource == Phrases.None)
+                        {
+                            return await dialogContext.EndDialogAsync(null, cancellationToken);
+                        }
 
                         // Store the resource in the user context.
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        userContext.Resource = userContext.Category.Resources.FirstOrDefault(r => r.Name == selectedResource);
+                        userContext.Resource = selectedResource;
 
-                         return await dialogContext.NextAsync(null, cancellationToken);
+                        // Ask the distance they want to broadcast to.
+                        return await dialogContext.PromptAsync(
+                                Prompt.IntPrompt,
+                                new PromptOptions
+                                {
+                                    Prompt = Phrases.Request.Distance
+                                },
+                                cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
+                        var searchDistance = (int)dialogContext.Result;
+
                         var user = await api.GetUser(dialogContext.Context);
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
 
                         // This section is resource intensive. Should look into a way to do geofenced search.
-                        var resources = await this.api.GetResources(userContext.Category.Name, userContext.Resource.Name);
-                        UserResourcePair closestMatch = null;
-                        double closestMatchDistance = double.MaxValue;
+                        var resources = await this.api.GetResources(userContext.Category, userContext.Resource);
+                        List<UserResourcePair> matches = new List<UserResourcePair>();
 
                         foreach (var resource in resources)
                         {
@@ -115,30 +135,18 @@ namespace Bot.Dialogs.Request
                             Coordinates resourceCoordinates = new Coordinates(resource.User.LocationLatitude, resource.User.LocationLongitude);
                             var distance = userCoordinates.DistanceTo(resourceCoordinates, UnitOfLength.Miles);
 
-                            if (closestMatch == null || 
-                                distance < closestMatchDistance ||
-                                (distance == closestMatchDistance && resource.Resource.Quantity > closestMatch.Resource.Quantity))
+                            // TODO: Ask for range they want to request from.
+                            if (distance < searchDistance)
                             {
-                                closestMatch = resource;
-                                closestMatchDistance = distance;
-
-                                // Optimization? No need to search the whole world if there is something nearby.
-                                /*
-                                if (distance < 25)
-                                {
-                                    break;
-                                }
-                                */
+                                matches.Add(resource);
                             }
                         }
 
-                        await Messages.SendAsync(Phrases.Request.Match(closestMatch, closestMatchDistance), turnContext, cancellationToken);
 
-                         return await dialogContext.NextAsync(null, cancellationToken);
-                    },
-                    async (dialogContext, cancellationToken) =>
-                    {
-                        // End this dialog to pop it off the stack.
+                        // TODO: add to outgoing message queue.
+
+
+                        await Messages.SendAsync(Phrases.Request.Sent(matches.Count), turnContext, cancellationToken);
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });

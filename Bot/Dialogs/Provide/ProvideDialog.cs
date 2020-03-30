@@ -29,31 +29,29 @@ namespace Bot.Dialogs.Provide
                 {
                     async (dialogContext, cancellationToken) =>
                     {
-                        var user = await api.GetUser(dialogContext.Context);
-
-                        if (string.IsNullOrEmpty(user.Location))
-                        {
-                            // Push the update location dialog onto the stack.
-                            return await BeginDialogAsync(dialogContext, LocationDialog.Name, null, cancellationToken);
-                        }
-
-                        // Skip this step.
-                        return await dialogContext.NextAsync(null, cancellationToken);
-                    },
-                    async (dialogContext, cancellationToken) =>
-                    {
                         // Get the categories.
                         var schema = Helpers.GetSchema();
-                        List<string> categories = schema.Categories.Select(c => c.Name).ToList();
+                        var categories = schema.Categories.Select(c => c.Name).ToList();
+
+                        if (categories.Count == 1)
+                        {
+                            // No need to ask for a single category.
+                            var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+                            userContext.Category = schema.Categories.First().Name;
+
+                            // Skip this step.
+                            return await dialogContext.NextAsync(null, cancellationToken);
+                        }
 
                         var choices = new List<Choice>();
-                        categories.ForEach(s => choices.Add(new Choice { Value = s }));
+                        categories.ForEach(c => choices.Add(new Choice { Value = c }));
+                        choices.Add(new Choice { Value = Phrases.None });
 
                         return await dialogContext.PromptAsync(
                             Prompt.CategoryPrompt,
                             new PromptOptions()
                             {
-                                Prompt = Phrases.Provide.Categories,
+                                Prompt = Phrases.Provide.GetCategory,
                                 Choices = choices
                             },
                             cancellationToken);
@@ -61,58 +59,69 @@ namespace Bot.Dialogs.Provide
                     async (dialogContext, cancellationToken) =>
                     {
                         var schema = Helpers.GetSchema();
-
-                        // Category was validated so it is guaranteed to be in the schema.
-                        var selectedCategory = ((FoundChoice)dialogContext.Result).Value;
-
-                        // Store the category in the user context.
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        userContext.Category = schema.Categories.FirstOrDefault(c => c.Name == selectedCategory);
+
+                        if (dialogContext.Result is FoundChoice)
+                        {
+                            // Choice was validated in case the schema changed.
+                            var selectedCategory = ((FoundChoice)dialogContext.Result).Value;
+
+                            if (selectedCategory == Phrases.None)
+                            {
+                                return await dialogContext.EndDialogAsync(null, cancellationToken);
+                            }
+
+                            // Store the category in the user context.
+                            userContext.Category = selectedCategory;
+                        }
 
                         // Get the resources in the category.
-                        var category = schema.Categories.FirstOrDefault(c => c.Name == selectedCategory);
+                        var category = schema.Categories.FirstOrDefault(c => c.Name == userContext.Category);
                         List<string> resources = category.Resources.Select(r => r.Name).ToList();
 
                         var choices = new List<Choice>();
-                        resources.ForEach(s => choices.Add(new Choice { Value = s }));
+                        resources.ForEach(r => choices.Add(new Choice { Value = r }));
+                        choices.Add(new Choice { Value = Phrases.None });
 
                         return await dialogContext.PromptAsync(
                             Prompt.ResourcePrompt,
                             new PromptOptions()
                             {
-                                Prompt = Phrases.Provide.Resources(selectedCategory),
+                                Prompt = Phrases.Provide.GetResource(userContext.Category),
                                 Choices = choices,
-                                Validations = new ResourcePromptValidations { Category = selectedCategory }
+                                Validations = new ResourcePromptValidations { Category = userContext.Category }
                             },
                             cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        // Resource was validated so it is guaranteed to be in the schema.
+                        // Choice was validated in case the schema changed.
                         var selectedResource = ((FoundChoice)dialogContext.Result).Value;
+
+                        if (selectedResource == Phrases.None)
+                        {
+                            return await dialogContext.EndDialogAsync(null, cancellationToken);
+                        }
 
                         // Store the resource in the user context.
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        userContext.Resource = userContext.Category.Resources.FirstOrDefault(r => r.Name == selectedResource);
+                        userContext.Resource = selectedResource;
 
                         // Check if they have already added this resource.
                         var user = await api.GetUser(dialogContext.Context);
-                        var existingResource = await this.api.GetResourceForUser(user, userContext.Category.Name, selectedResource);
+                        var existingResource = await this.api.GetResourceForUser(user, userContext.Category, userContext.Resource);
 
                         if (existingResource != null)
                         {
-                            // If they have already added this resource, push the update resource dialog onto the stack.
                             return await BeginDialogAsync(dialogContext, UpdateResourceDialog.Name, null, cancellationToken);
                         }
                         else
                         {
-                            // Push the create resource dialog onto the stack.
                             return await BeginDialogAsync(dialogContext, CreateResourceDialog.Name, null, cancellationToken);
                         }
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        // End this dialog to pop it off the stack.
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });

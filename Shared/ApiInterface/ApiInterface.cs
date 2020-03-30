@@ -30,6 +30,16 @@ namespace Shared.ApiInterface
         Task<User> GetUser(ITurnContext turnContext);
 
         /// <summary>
+        /// Checks if a user has any resources.
+        /// </summary>
+        Task<bool> UserHasResources(User user);
+
+        /// <summary>
+        /// Gets all resource for a user.
+        /// </summary>
+        Task<List<Resource>> GetResourcesForUser(User user);
+
+        /// <summary>
         /// Gets a resource for a user.
         /// </summary>
         Task<Resource> GetResourceForUser(User user, string category, string resource);

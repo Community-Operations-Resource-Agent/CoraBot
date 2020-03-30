@@ -36,13 +36,24 @@ namespace Shared
         /// <summary>
         /// Retrieves the resource schema.
         /// </summary>
-        public static ResourceSchemaResponse GetSchema()
+        public static SchemaResponse GetSchema()
         {
             // TODO: Get from Azure
             using (StreamReader reader = new StreamReader("Schema.json"))
             {
                 string json = reader.ReadToEnd();
-                return JsonConvert.DeserializeObject<ResourceSchemaResponse>(json);
+                var schema = JsonConvert.DeserializeObject<SchemaResponse>(json);
+
+                // Standardize all phone numbers.
+                foreach (var org in schema.VerifiedOrganizations)
+                {
+                    for (int numberIndex = 0; numberIndex < org.PhoneNumbers.Count; ++numberIndex)
+                    {
+                        org.PhoneNumbers[numberIndex] = PhoneNumber.Standardize(org.PhoneNumbers[numberIndex]);
+                    }
+                }
+
+                return schema;
             }
         }
 

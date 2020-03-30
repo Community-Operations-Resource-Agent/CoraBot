@@ -40,15 +40,11 @@ namespace Bot.Dialogs.Preferences
                         // Get the result. This was already validated by the prompt.
                         DayFlagsHelpers.FromString((string)dialogContext.Result, ",", out DayFlags dayFlags);
 
-                        // Update the user's preference.
                         var user = await api.GetUser(dialogContext.Context);
                         user.ReminderFrequency = dayFlags;
                         await this.api.Update(user);
 
-                        // Send a confirmation message.
                         await Messages.SendAsync(Phrases.Preferences.UpdateDaysUpdated(dayFlags), dialogContext.Context, cancellationToken);
-
-                        // End this dialog to pop it off the stack.
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });

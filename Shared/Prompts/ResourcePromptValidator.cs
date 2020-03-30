@@ -16,6 +16,11 @@ namespace Shared.Prompts
                     return await Task.FromResult(false);
                 }
 
+                if (promptContext.Recognized.Value.Value == Phrases.None)
+                {
+                    return await Task.FromResult(true);
+                }
+
                 var validations = (ResourcePromptValidations)promptContext.Options.Validations;
 
                 var schema = Helpers.GetSchema();

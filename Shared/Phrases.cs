@@ -5,40 +5,94 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Shared
 {
     public static class Phrases
     {
         public const string ProjectName = "CORA";
-        public const string ProjectDescription = "the COVID-19 Operations Resource Agent";
+        public const string ProjectWebsite = "Bing.com/CORA";
         public static List<string> ValidChannels = new List<string>() { Channels.Emulator, Channels.Sms };
+
+        public static string EnterNumber = "(enter a number)";
+        public static string None = "None";
 
         public static class Exceptions
         {
             public static string Error = $"Sorry, it looks like something went wrong";
         }
 
-        public static class Keywords
-        {
-            public const string Update = "update";
-            public static List<string> List = new List<string>() { Update };
-        }
-
         public static class Options
         {
-            public static string Request = "Request a need";
-            public static string Provide = "Meet a need or update availability";
+            public static string Request = "Request resources";
+            public static string Provide = "Register new resources";
+            public static string Update = "Update existing resources";
             public static string MoreOptions = "More options";
+
+            public static Activity GetOptions = MessageFactory.Text($"Here's what you can do {EnterNumber}");
+
+            public static List<string> GetOptionsList(bool isVerifiedOrganization, bool hasResources)
+            {
+                var list = new List<string>();
+
+                if (isVerifiedOrganization)
+                {
+                    list.Add(Options.Request);
+                }
+
+                list.Add(Options.Provide);
+
+                if (hasResources)
+                {
+                    list.Add(Options.Update);
+                }
+
+                list.Add(Options.MoreOptions);
+                return list;
+            }
 
             public static class Extended
             {
+                public static string ViewResources = "View your resource availability";
                 public static string UpdateLocation = "Update your location";
                 public static string ChangeDays = $"Change the days that {ProjectName} will contact you for updates";
                 public static string ChangeTime = $"Change the time that {ProjectName} will contact you for updates";
                 public static string Enable = $"Enable {ProjectName} to contact you";
                 public static string Disable = $"Stop {ProjectName} from contacting you";
                 public static string Feedback = "Provide feedback";
+                public static string GoBack = "Go back to the main menu";
+
+                public static Activity GetOptions = MessageFactory.Text($"Here are some more options {EnterNumber}");
+                public static Activity NoResources = MessageFactory.Text($"it looks like you haven't added any resources yet. You can add them from the main menu");
+
+                public static List<string> GetOptionsList(User user)
+                {
+                    var list = new List<string> { Options.Extended.ViewResources, Options.Extended.UpdateLocation, Options.Extended.ChangeDays, Options.Extended.ChangeTime };
+                    list.Add(user.ContactEnabled ? Options.Extended.Disable : Options.Extended.Enable);
+                    list.Add(Options.Extended.Feedback);
+                    list.Add(Options.Extended.GoBack);
+                    return list;
+                }
+
+                public static Activity GetResourceAvailability(List<Resource> resources)
+                {
+                    if (resources.Count == 0)
+                    {
+                        return NoResources;
+                    }
+
+                    var text = "Here are your available resources:" + Helpers.NewLine;
+
+                    foreach (var resource in resources)
+                    {
+                        // Add a newline if there is already some text.
+                        text += string.IsNullOrEmpty(text) ? string.Empty : Helpers.NewLine;
+                        text += $"{resource.Name}: {resource.Quantity}";
+                    }
+
+                    return MessageFactory.Text(text);
+                }
             }
         }
 
@@ -50,28 +104,19 @@ namespace Shared
 
         public static class Greeting
         {
-            public static string Welcome = "Welcome back!";
-            public static string WelcomeNew = $"Hi, I'm {ProjectName}, {ProjectDescription}!";
+            public static Activity Welcome = MessageFactory.Text("Welcome back!");
+            public static Activity WelcomeNew = MessageFactory.Text($"Hi, I'm {ProjectName}, a bot helping to locate critical " +
+                $"supplies in case of an emergency. Message and data rates apply. Would you like to continue? {EnterNumber}");
+
+            public static Activity Consent = MessageFactory.Text($"Great! As detailed on {ProjectWebsite}, my job is to locate critical " +
+                $"supplies in case of an emergency and notify you if they are needed by local healthcare facilities. Throughout " +
+                $"this process I will protect your privacy and not share your phone number");
+            public static Activity NoConsent = MessageFactory.Text("No problem! You can message me any time if you change your mind");
+            public static Activity Registered = MessageFactory.Text("You are now registered to help provide critical resources in case of an emergency!");
 
             public static Activity InvalidChannel(ITurnContext turnContext)
             {
                 return MessageFactory.Text($"Channel \"{turnContext.Activity.ChannelId}\" is not yet supported");
-            }
-
-            public static Activity GetOptions = MessageFactory.Text("Here's what you can do (enter a number)");
-            public static Activity GetOptionsExtended = MessageFactory.Text("Here are some more options (enter a number)");
-
-            public static List<string> GetOptionsList()
-            {
-                return new List<string> { Options.Request, Options.Provide, Options.MoreOptions };
-            }
-
-            public static List<string> GetOptionsExtendedList(User user)
-            {
-                var list = new List<string> { Options.Extended.UpdateLocation, Options.Extended.ChangeDays, Options.Extended.ChangeTime };
-                list.Add(user.ContactEnabled ? Options.Extended.Disable : Options.Extended.Enable);
-                list.Add(Options.Extended.Feedback);
-                return list;
             }
         }
 
@@ -87,7 +132,7 @@ namespace Shared
 
             private const string PreferenceUpdated = "Your contact preference has been updated";
 
-            public static Activity GetLocation = MessageFactory.Text("Where are you located? (City,State,Country)");
+            public static Activity GetLocation = MessageFactory.Text("Where are you located? (enter City,State,Country)");
             public static Activity GetLocationRetry = MessageFactory.Text($"Oops, I couldn't find that location. Please try again...");
             public static Activity LocationUpdated = MessageFactory.Text("Your location has been updated!");
 
@@ -118,60 +163,55 @@ namespace Shared
 
         public static class Provide
         {
-            public static Activity Categories = MessageFactory.Text("Which category of resources are you able to provide? (enter a number)");
-            public static Activity GetQuantity = MessageFactory.Text("What quantity of this resource do you have available?");
-            public static Activity GetAvailable = MessageFactory.Text("Do you still have this resource available?");
+            public static Activity GetCategory = MessageFactory.Text($"Which category of resource are you able to provide? {EnterNumber}");
             public static Activity CompleteUpdate = MessageFactory.Text("Thank you for the update!");
 
-            public static Activity Resources(string category)
+            public static Activity GetResource(string category)
             {
-                return MessageFactory.Text($"Which type of {category.ToLower()} are you able to provide? (enter a number)");
+                return MessageFactory.Text($"Which type of {category.ToLower()} are you able to provide? {EnterNumber}");
+            }
+
+            public static Activity GetQuantity(string resource)
+            {
+                return MessageFactory.Text($"What quantity of {resource} do you have available? {EnterNumber}");
             }
 
             public static Activity CompleteCreate(User user)
             {
-                var text = "Thank you for making your resources available to the community! " +
-                    "You may be contacted by someone if they have a need that matches your resources.";
+                var text = "Thank you for making your resources available to the community! I will reach out if a need arises that matches your resources.";
                 
                 if (user.ContactEnabled)
                 {
-                    text += $" I will contact you {user.ReminderFrequency.ToString()} to update your availability. This frequency can be customized from the options menu";
+                    text += $" I will also contact you {user.ReminderFrequency.ToString()} to update your availability. This frequency can be customized from the options menu";
                 }
                 else
                 {
-                    text += $" Your contact preference is disabled, so please make sure to update your availability if it changes - thank you!";
+                    text += $" Your contact preference is disabled, so please make sure to update your availability as it changes!";
                 }
 
                 return MessageFactory.Text(text);
+            }
+
+            public static class Update
+            {
+                public static Activity GetResource = MessageFactory.Text($"What resource would you like to update? {EnterNumber}");
+                public static Activity Another = MessageFactory.Text($"Would you like to update another resource? {EnterNumber}");
             }
         }
 
         public static class Request
         {
             public static Activity Categories = MessageFactory.Text("Which category of resource are you looking for?");
-            
+            public static Activity Distance = MessageFactory.Text("What distance would you like to broadcast your request? (enter miles)");
+
             public static Activity Resources(string category)
             {
-                return MessageFactory.Text($"Which type of {category.ToLower()} are you looking for?");
+                return MessageFactory.Text($"Which type of {category.ToLower()} are you looking for? {EnterNumber}");
             }
 
-            public static Activity Match(UserResourcePair match, double distance)
+            public static Activity Sent(int num)
             {
-                if (match == null)
-                {
-                    return MessageFactory.Text($"Unfortunately I was unable to find a match at this time. Please check back soon!");
-                }
-
-                var text = $"The closest match I found is { Math.Round(distance, MidpointRounding.AwayFromZero) } miles from you.";
-
-                if (match.Resource.HasQuantity)
-                {
-                    text += $" It looks like there {(match.Resource.Quantity == 1 ? "is" : "are")} {match.Resource.Quantity} available.";
-                }
-
-                text += $" Here is the contact phone number: {match.User.PhoneNumber}";
-
-                return MessageFactory.Text(text);
+                return MessageFactory.Text($"Your request has been sent to {num} users! You will be contacted directly by anyone who has available resources and responds to your request");
             }
         }
     }

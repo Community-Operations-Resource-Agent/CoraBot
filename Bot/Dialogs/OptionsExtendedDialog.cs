@@ -33,13 +33,13 @@ namespace Bot.Dialogs
 
                         // Prompt for an option.
                         var choices = new List<Choice>();
-                        Phrases.Greeting.GetOptionsExtendedList(user).ForEach(s => choices.Add(new Choice { Value = s }));
+                        Phrases.Options.Extended.GetOptionsList(user).ForEach(s => choices.Add(new Choice { Value = s }));
 
                         return await dialogContext.PromptAsync(
                             Prompt.ChoicePrompt,
                             new PromptOptions()
                             {
-                                Prompt = Phrases.Greeting.GetOptionsExtended,
+                                Prompt = Phrases.Options.Extended.GetOptions,
                                 Choices = choices
                             },
                             cancellationToken);
@@ -48,20 +48,11 @@ namespace Bot.Dialogs
                     {
                         var result = ((FoundChoice)dialogContext.Result).Value;
 
-                        if (string.Equals(result, Phrases.Options.Extended.Enable, StringComparison.OrdinalIgnoreCase) ||
-                            string.Equals(result, Phrases.Options.Extended.Disable, StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(result, Phrases.Options.Extended.ViewResources, StringComparison.OrdinalIgnoreCase))
                         {
-                            // Enable/disable contact.
-                            var enable = string.Equals(result, Phrases.Options.Extended.Enable, StringComparison.OrdinalIgnoreCase);
-
-                            var user = await api.GetUser(dialogContext.Context);
-                            if (user.ContactEnabled != enable)
-                            {
-                                user.ContactEnabled = enable;
-                                await this.api.Update(user);
-                            }
-
-                            await Messages.SendAsync(Phrases.Preferences.ContactEnabledUpdated(user.ContactEnabled), dialogContext.Context, cancellationToken);
+                            var user = await this.api.GetUser(dialogContext.Context);
+                            var resources = await this.api.GetResourcesForUser(user);
+                            await Messages.SendAsync(Phrases.Options.Extended.GetResourceAvailability(resources), dialogContext.Context, cancellationToken);
                         }
                         else if (string.Equals(result, Phrases.Options.Extended.UpdateLocation, StringComparison.OrdinalIgnoreCase))
                         {
@@ -75,6 +66,21 @@ namespace Bot.Dialogs
                         {
                             return await BeginDialogAsync(dialogContext, TimeDialog.Name, null, cancellationToken);
                         }
+                        else if (string.Equals(result, Phrases.Options.Extended.Enable, StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(result, Phrases.Options.Extended.Disable, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Enable/disable contact.
+                            var enable = string.Equals(result, Phrases.Options.Extended.Enable, StringComparison.OrdinalIgnoreCase);
+
+                            var user = await this.api.GetUser(dialogContext.Context);
+                            if (user.ContactEnabled != enable)
+                            {
+                                user.ContactEnabled = enable;
+                                await this.api.Update(user);
+                            }
+
+                            await Messages.SendAsync(Phrases.Preferences.ContactEnabledUpdated(user.ContactEnabled), dialogContext.Context, cancellationToken);
+                        }
                         else if (string.Equals(result, Phrases.Options.Extended.Feedback, StringComparison.OrdinalIgnoreCase))
                         {
                             return await BeginDialogAsync(dialogContext, FeedbackDialog.Name, null, cancellationToken);
@@ -84,7 +90,6 @@ namespace Bot.Dialogs
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        // End this dialog to pop it off the stack.
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });

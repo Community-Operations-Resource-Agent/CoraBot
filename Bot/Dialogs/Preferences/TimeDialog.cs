@@ -67,15 +67,11 @@ namespace Bot.Dialogs.Preferences
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
                         var reminderTimeUtc = reminderTimeLocal.AddHours(-userContext.TimezoneOffset);
 
-                        // Update the user's preference.
                         var user = await api.GetUser(dialogContext.Context);
                         user.ReminderTime = reminderTimeUtc.ToShortTimeString();
                         await this.api.Update(user);
 
-                        // Send a confirmation message.
                         await Messages.SendAsync(Phrases.Preferences.UpdateTimeUpdated(reminderTimeLocal.ToShortTimeString()), dialogContext.Context, cancellationToken);
-
-                        // End this dialog to pop it off the stack.
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });

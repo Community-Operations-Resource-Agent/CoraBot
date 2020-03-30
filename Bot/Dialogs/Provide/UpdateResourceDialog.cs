@@ -1,11 +1,11 @@
 ﻿using Bot.State;
-using EntityModel;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
 using Shared.Prompts;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,53 +28,36 @@ namespace Bot.Dialogs.Provide
                     {
                         var user = await api.GetUser(dialogContext.Context);
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        var resource = await this.api.GetResourceForUser(user, userContext.Category.Name, userContext.Resource.Name);
+                        var resource = await this.api.GetResourceForUser(user, userContext.Category, userContext.Resource);
 
-                        if (resource.HasQuantity)
-                        {
-                            // Prompt for the quantity.
-                            return await dialogContext.PromptAsync(
-                                Prompt.IntPrompt,
-                                new PromptOptions
-                                {
-                                    Prompt = Phrases.Provide.GetQuantity
-                                },
-                                cancellationToken);
-                        }
-                        else
-                        {
-                            // Ask if the resourece is still available.
-                            return await dialogContext.PromptAsync(
-                                Prompt.ConfirmPrompt,
-                                new PromptOptions { Prompt = Phrases.Provide.GetAvailable },
-                                cancellationToken);
-                        }
+                        // Prompt for the quantity.
+                        return await dialogContext.PromptAsync(
+                            Prompt.IntPrompt,
+                            new PromptOptions
+                            {
+                                Prompt = Phrases.Provide.GetQuantity(resource.Name)
+                            },
+                            cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
                         var user = await api.GetUser(dialogContext.Context);
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        var resource = await this.api.GetResourceForUser(user, userContext.Category.Name, userContext.Resource.Name);
+                        var resource = await this.api.GetResourceForUser(user, userContext.Category, userContext.Resource);
 
-                        // Check the result of the previous step.
-                        if ((dialogContext.Result is int quantity && quantity == 0) ||
-                            (dialogContext.Result is bool isAvailable && !isAvailable))
+                        var quantity = (int)dialogContext.Result;
+                        if (quantity == 0)
                         {
                             await this.api.Delete(resource);
                         }
-                        else if (dialogContext.Result is int q)
+                        else
                         {
-                            resource.Quantity = q;
+                            resource.Quantity = quantity;
+                            resource.CreatedOn = DateTime.UtcNow;
                             await this.api.Update(resource);
                         }
 
                         await Messages.SendAsync(Phrases.Provide.CompleteUpdate, dialogContext.Context, cancellationToken);
-
-                        return await dialogContext.NextAsync(null, cancellationToken);
-                    },
-                    async (dialogContext, cancellationToken) =>
-                    {
-                        // End this dialog to pop it off the stack.
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });

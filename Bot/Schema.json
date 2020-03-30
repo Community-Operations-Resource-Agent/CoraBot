@@ -1,4 +1,14 @@
 {
+  "VerifiedOrganizations": [
+    {
+      "Name": "Swedish Hospital",
+      "PhoneNumbers": [ "1-555-555-5555" ]
+    },
+    {
+      "Name": "Evergreen Hospital",
+      "PhoneNumbers": [ "1-777-777-7777" ]
+    }
+  ],
   "Categories": [
     {
       "Name": "Medical Supplies",
@@ -16,38 +26,10 @@
         { "Name": "Wipes" },
         { "Name": "Intubation tubes" },
         { "Name": "Steri Strips" },
-        { "Name": "Tape" },
         { "Name": "Syringes" },
         { "Name": "Test tubes" },
         { "Name": "Saline" },
         { "Name": "D5" }
-      ]
-    },
-    {
-      "Name": "Housing",
-      "Resources": [
-        { "Name": "Short-Term" },
-        { "Name": "Long-Term" },
-        { "Name": "Hospice" },
-        { "Name": "Retirement" },
-        { "Name": "Immigrant" },
-        { "Name": "Quarantine" }
-      ]
-    },
-    {
-      "Name": "Community",
-      "Resources": [
-        { "Name": "Transport", "HasQuantity": false },
-        { "Name": "Meals", "HasQuantity": false },
-        { "Name": "Pickup or Delivery", "HasQuantity": false }
-      ]
-    },
-    {
-      "Name": "Emotional Support",
-      "Resources": [
-        { "Name": "Counseling", "HasQuantity": false },
-        { "Name": "Psychological Care", "HasQuantity": false },
-        { "Name": "Telehealth", "HasQuantity": false }
       ]
     }
   ]

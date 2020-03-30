@@ -102,6 +102,22 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
+        /// Checks if a user has any resources.
+        /// </summary>
+        public async Task<bool> UserHasResources(User user)
+        {
+            return await this.dbContext.Resources.AnyAsync(r => r.CreatedById == user.Id);
+        }
+
+        /// <summary>
+        /// Gets all resource for a user.
+        /// </summary>
+        public async Task<List<Resource>> GetResourcesForUser(User user)
+        {
+            return await this.dbContext.Resources.Where(r => r.CreatedById == user.Id).ToListAsync();
+        }
+
+        /// <summary>
         /// Gets a resource for a user.
         /// </summary>
         public async Task<Resource> GetResourceForUser(User user, string category, string resource)

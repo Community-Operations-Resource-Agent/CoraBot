@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
 using Shared.Prompts;
+using System;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,48 +33,42 @@ namespace Bot.Dialogs.Provide
 
                         var resource = new Resource();
                         resource.CreatedById = user.Id;
-                        resource.Category = userContext.Category.Name;
-                        resource.Name = userContext.Resource.Name;
-                        resource.HasQuantity = userContext.Resource.HasQuantity;
+                        resource.Category = userContext.Category;
+                        resource.Name = userContext.Resource;
                         await this.api.Create(resource);
 
-                        if (resource.HasQuantity)
-                        {
-                            // Prompt for the quantity.
-                            return await dialogContext.PromptAsync(
-                                Prompt.IntPrompt,
-                                new PromptOptions
-                                {
-                                    Prompt = Phrases.Provide.GetQuantity
-                                },
-                                cancellationToken);
-                        }
-
-                        // Skip this step.
-                        return await dialogContext.NextAsync(null, cancellationToken);
+                        // Prompt for the quantity.
+                        return await dialogContext.PromptAsync(
+                            Prompt.IntPrompt,
+                            new PromptOptions
+                            {
+                                Prompt = Phrases.Provide.GetQuantity(resource.Name)
+                            },
+                            cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
                         var user = await api.GetUser(dialogContext.Context);
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        var resource = await this.api.GetResourceForUser(user, userContext.Category.Name, userContext.Resource.Name);
+                        var resource = await this.api.GetResourceForUser(user, userContext.Category, userContext.Resource);
 
-                        // Check if the previous step had a result.
-                        if (dialogContext.Result != null)
+                        var quantity = (int)dialogContext.Result;
+                        if (quantity == 0)
                         {
-                            resource.Quantity = (int)dialogContext.Result;
+                            await this.api.Delete(resource);
+
+                            await Messages.SendAsync(Phrases.Provide.CompleteUpdate, dialogContext.Context, cancellationToken);
+                        }
+                        else
+                        {
+                            resource.Quantity = quantity;
+                            resource.CreatedOn = DateTime.UtcNow;
+                            resource.IsRecordComplete = true;
+                            await this.api.Update(resource);
+
+                            await Messages.SendAsync(Phrases.Provide.CompleteCreate(user), dialogContext.Context, cancellationToken);
                         }
 
-                        resource.IsRecordComplete = true;
-                        await this.api.Update(resource);
-
-                        await Messages.SendAsync(Phrases.Provide.CompleteCreate(user), dialogContext.Context, cancellationToken);
-
-                        return await dialogContext.NextAsync(null, cancellationToken);
-                    },
-                    async (dialogContext, cancellationToken) =>
-                    {
-                        // End this dialog to pop it off the stack.
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });

@@ -30,7 +30,7 @@ namespace Bot
             this.api = api ?? throw new ArgumentNullException(nameof(api));
 
             // Register prompts.
-            Prompt.Register(this.dialogs, this.configuration);
+            Prompt.Register(this.dialogs, this.configuration, this.api);
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)

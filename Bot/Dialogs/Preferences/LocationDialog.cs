@@ -51,14 +51,7 @@ namespace Bot.Dialogs.Preferences
                             await this.api.Update(user);
                         }
 
-                        return await dialogContext.NextAsync(null, cancellationToken);
-                    },
-                    async (dialogContext, cancellationToken) =>
-                    {
-                        // Send a confirmation message.
                         await Messages.SendAsync(Phrases.Preferences.LocationUpdated, dialogContext.Context, cancellationToken);
-
-                        // End this dialog to pop it off the stack.
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });

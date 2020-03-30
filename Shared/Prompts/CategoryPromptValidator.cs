@@ -16,9 +16,14 @@ namespace Shared.Prompts
                     return await Task.FromResult(false);
                 }
 
+                if (promptContext.Recognized.Value.Value == Phrases.None)
+                {
+                    return await Task.FromResult(true);
+                }
+
                 var schema = Helpers.GetSchema();
-                var category = schema.Categories.FirstOrDefault(c => c.Name == promptContext.Recognized.Value.Value);
-                return await Task.FromResult(category != null);
+                var resource = schema.Categories.FirstOrDefault(r => r.Name == promptContext.Recognized.Value.Value);
+                return await Task.FromResult(resource != null);
             };
         }
     }

@@ -32,42 +32,38 @@ namespace Bot.Dialogs
                 {
                     async (dialogContext, cancellationToken) =>
                     {
-                        // Get the user.
                         var user = await api.GetUser(dialogContext.Context);
-                       
                         if (user == null)
                         {
-                            // Create a new user.
-                            user = new User { PhoneNumber = Helpers.GetUserToken(turnContext) };
-                            await this.api.Create(user);
-
-                            await Messages.SendAsync(Phrases.Greeting.WelcomeNew, turnContext, cancellationToken);
+                            return await BeginDialogAsync(dialogContext, NewUserDialog.Name, null, cancellationToken);
                         }
 
-                        // Check if the initial message is one of the keywords.
-                        var incomingMessage = dialogContext.Context.Activity.Text;
-                        if (!string.IsNullOrEmpty(incomingMessage))
+                        // Skip this step.
+                        return await dialogContext.NextAsync(null, cancellationToken);
+                    },
+                    async (dialogContext, cancellationToken) =>
+                    {
+                        // The new user flow can result in no consent. If so, end the conversation.
+                        if (dialogContext.Result is bool didConsent && !didConsent)
                         {
-                            bool isKeyword = Phrases.Keywords.List.Any(k => string.Equals(incomingMessage, k, StringComparison.OrdinalIgnoreCase));
-                            if (isKeyword)
-                            {
-                                if (string.Equals(incomingMessage, Phrases.Keywords.Update, StringComparison.OrdinalIgnoreCase))
-                                {
-                                    // Push the provide dialog onto the stack.
-                                    return await BeginDialogAsync(dialogContext, ProvideDialog.Name, null, cancellationToken);
-                                }
-                            }
+                            return await dialogContext.EndDialogAsync(null, cancellationToken);
                         }
+
+                        var user = await api.GetUser(dialogContext.Context);
+                        var phoneNumber = PhoneNumber.Standardize(user.PhoneNumber);
+                        var schema = Helpers.GetSchema();
+                        bool isVerifiedOrganization = schema.VerifiedOrganizations.Any(o => o.PhoneNumbers.Contains(phoneNumber));
+                        bool hasResources = await this.api.UserHasResources(user);
 
                         // Prompt for an option.
                         var choices = new List<Choice>();
-                        Phrases.Greeting.GetOptionsList().ForEach(s => choices.Add(new Choice { Value = s }));
+                        Phrases.Options.GetOptionsList(isVerifiedOrganization, hasResources).ForEach(s => choices.Add(new Choice { Value = s }));
 
                         return await dialogContext.PromptAsync(
                             Prompt.ChoicePrompt,
                             new PromptOptions()
                             {
-                                Prompt = Phrases.Greeting.GetOptions,
+                                Prompt = Phrases.Options.GetOptions,
                                 Choices = choices
                             },
                             cancellationToken);
@@ -80,19 +76,19 @@ namespace Bot.Dialogs
 
                             if (string.Equals(result, Phrases.Options.Request, StringComparison.OrdinalIgnoreCase))
                             {
-                                // Push the request dialog onto the stack.
                                 return await BeginDialogAsync(dialogContext, RequestDialog.Name, null, cancellationToken);
                             }
                             else if (string.Equals(result, Phrases.Options.Provide, StringComparison.OrdinalIgnoreCase))
                             {
-                                // Push the provide dialog onto the stack.
                                 return await BeginDialogAsync(dialogContext, ProvideDialog.Name, null, cancellationToken);
+                            }
+                            else if (string.Equals(result, Phrases.Options.Update, StringComparison.OrdinalIgnoreCase))
+                            {
+                                return await BeginDialogAsync(dialogContext, UpdateDialog.Name, null, cancellationToken);
                             }
                             else if (string.Equals(result, Phrases.Options.MoreOptions, StringComparison.OrdinalIgnoreCase))
                             {
-                                // Push the options dialog onto the stack.
                                 return await BeginDialogAsync(dialogContext, OptionsExtendedDialog.Name, null, cancellationToken);
-
                             }
                         }
 

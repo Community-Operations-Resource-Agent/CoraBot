@@ -37,16 +37,12 @@ namespace Bot.Dialogs
                     {
                         var user = await this.api.GetUser(dialogContext.Context);
 
-                        // Save the feedback.
                         var feedback = new EntityModel.Feedback();
                         feedback.CreatedById = user.Id;
                         feedback.Text = (string)dialogContext.Result;
                         await this.api.Create(feedback);
 
-                        // Send thanks.
                         await Messages.SendAsync(Phrases.Feedback.Thanks, dialogContext.Context, cancellationToken);
-
-                        // End this dialog to pop it off the stack.
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });
