@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EntityModel.Helpers
+namespace Shared.Models.Helpers
 {
     [Flags]
     public enum DayFlags : int

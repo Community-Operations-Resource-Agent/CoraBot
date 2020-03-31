@@ -1,6 +1,5 @@
-﻿using EntityModel.Helpers;
-using Microsoft.Bot.Builder.Dialogs;
-using System;
+﻿using Microsoft.Bot.Builder.Dialogs;
+using Shared.Models.Helpers;
 using System.Threading.Tasks;
 
 namespace Shared.Prompts

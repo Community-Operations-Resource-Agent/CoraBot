@@ -5,14 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Bot.Builder" Version="4.5.2" />
-    <PackageReference Include="Microsoft.Bot.Builder.AI.Luis" Version="4.5.2" />
-    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.5.2" />
-    <PackageReference Include="Microsoft.Bot.Schema" Version="4.5.2" />
-    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\EntityModel\EntityModel.csproj" />
+    <PackageReference Include="Microsoft.Bot.Builder" Version="4.8.0" />
+    <PackageReference Include="Microsoft.Bot.Builder.AI.Luis" Version="4.8.0" />
+    <PackageReference Include="Microsoft.Bot.Builder.Azure" Version="4.8.0" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.8.0" />
+    <PackageReference Include="Microsoft.Bot.Schema" Version="4.8.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.7" />
   </ItemGroup>
 </Project>

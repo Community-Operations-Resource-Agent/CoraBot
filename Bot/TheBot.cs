@@ -20,7 +20,7 @@ namespace Bot
         private readonly IApiInterface api;
         private readonly IConfiguration configuration;
 
-        public TheBot(IConfiguration configuration, StateAccessors state, EfInterface api)
+        public TheBot(IConfiguration configuration, StateAccessors state, CosmosInterface api)
         {
             this.configuration = configuration;
 

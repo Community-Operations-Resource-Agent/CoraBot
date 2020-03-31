@@ -1,7 +1,7 @@
-﻿using EntityModel;
-using EntityModel.Helpers;
+﻿using Microsoft.Azure.Cosmos.Spatial;
 using Microsoft.Bot.Builder;
-using System;
+using Shared.Models;
+using Shared.Models.Helpers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -30,6 +30,11 @@ namespace Shared.ApiInterface
         Task<User> GetUser(ITurnContext turnContext);
 
         /// <summary>
+        /// Gets all user within a distance from coordinates.
+        /// </summary>
+        Task<List<User>> GetUsersWithinDistance(Point coordinates, double distanceMeters);
+
+        /// <summary>
         /// Checks if a user has any resources.
         /// </summary>
         Task<bool> UserHasResources(User user);
@@ -43,10 +48,5 @@ namespace Shared.ApiInterface
         /// Gets a resource for a user.
         /// </summary>
         Task<Resource> GetResourceForUser(User user, string category, string resource);
-
-        /// <summary>
-        /// Gets all resources of a given type.
-        /// </summary>
-        Task<List<UserResourcePair>> GetResources(string category, string resource);
     }
 }

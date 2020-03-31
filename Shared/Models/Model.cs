@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace EntityModel
+namespace Shared.Models
 {
     public abstract class Model
     {
         [Key]
+        [JsonProperty("id")]
         public string Id { get; set; }
 
         public DateTime CreatedOn { get; set; }

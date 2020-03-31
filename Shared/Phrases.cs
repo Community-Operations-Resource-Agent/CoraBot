@@ -1,11 +1,9 @@
-﻿using EntityModel;
-using EntityModel.Helpers;
-using Microsoft.Bot.Builder;
+﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
-using System;
+using Shared.Models;
+using Shared.Models.Helpers;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Shared
 {
@@ -13,7 +11,7 @@ namespace Shared
     {
         public const string ProjectName = "CORA";
         public const string ProjectWebsite = "Bing.com/CORA";
-        public static List<string> ValidChannels = new List<string>() { Channels.Emulator, Channels.Sms };
+        public static List<string> ValidChannels = new List<string>() { Channels.Emulator, Channels.Sms, Channels.Webchat };
 
         public static string EnterNumber = "(enter a number)";
         public static string None = "None";
@@ -35,7 +33,7 @@ namespace Shared
             public static List<string> GetOptionsList(bool isVerifiedOrganization, bool hasResources)
             {
                 var list = new List<string>();
-
+                list.Add(Options.Request);
                 if (isVerifiedOrganization)
                 {
                     list.Add(Options.Request);
@@ -207,6 +205,11 @@ namespace Shared
             public static Activity Resources(string category)
             {
                 return MessageFactory.Text($"Which type of {category.ToLower()} are you looking for? {EnterNumber}");
+            }
+
+            public static Activity GetQuantity(string resource)
+            {
+                return MessageFactory.Text($"What quantity of {resource} do you need? {EnterNumber}");
             }
 
             public static Activity Sent(int num)

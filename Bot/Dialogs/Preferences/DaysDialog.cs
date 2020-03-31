@@ -1,10 +1,10 @@
 ﻿using Bot.State;
-using EntityModel.Helpers;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
+using Shared.Models.Helpers;
 using Shared.Prompts;
 using System.Threading;
 using System.Threading.Tasks;

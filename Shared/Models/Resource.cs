@@ -1,4 +1,4 @@
-﻿namespace EntityModel
+﻿namespace Shared.Models
 {
     public class Resource : Model
     {

@@ -92,7 +92,7 @@ namespace Bot.State
                         CosmosDbEndpoint = configuration.CosmosEndpoint(),
                         AuthKey = configuration.CosmosKey(),
                         DatabaseId = configuration.CosmosDatabase(),
-                        ContainerId = configuration.CosmosCollection(),
+                        ContainerId = configuration.CosmosConversationsCollection(),
                     });
             }
 

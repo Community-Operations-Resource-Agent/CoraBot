@@ -1,5 +1,4 @@
-﻿using EntityModel;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.TraceExtensions;
@@ -39,11 +38,8 @@ namespace Bot
             // Add the configuration.
             services.AddSingleton(this.configuration);
 
-            // Add the Common Data Service interface.
-            //services.AddScoped(_ => new CdsInterface(this.configuration));
-
             // Add the DB interface.
-            services.AddScoped(_ => new EfInterface(DbModelFactory.Create(configuration.DbModelConnectionString())));
+            services.AddScoped(_ => new CosmosInterface(this.configuration));
 
             // Create and add the state accessors.
             var state = StateAccessors.Create(this.configuration);

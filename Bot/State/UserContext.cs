@@ -7,5 +7,6 @@ namespace Bot.State
         public int TimezoneOffset { get; set; }
         public string Category { get; set; }
         public string Resource { get; set; }
+        public int RequestQuantity { get; set; }
     }
 }

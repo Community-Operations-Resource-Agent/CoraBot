@@ -2146,14 +2146,17 @@
           "lib/netstandard2.0/Microsoft.Bot.Builder.dll": {}
         }
       },
-      "Microsoft.Bot.Builder.AI.Luis/4.5.2": {
+      "Microsoft.Bot.Builder.AI.Luis/4.8.0": {
         "type": "package",
         "dependencies": {
           "Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime": "2.1.0",
-          "Microsoft.Bot.Builder": "4.5.2",
-          "Microsoft.Bot.Configuration": "4.5.2",
-          "Newtonsoft.Json": "10.0.3",
-          "SourceLink.Create.CommandLine": "2.8.3"
+          "Microsoft.Bot.Builder": "4.8.0",
+          "Microsoft.Bot.Builder.Dialogs": "4.8.0",
+          "Microsoft.Bot.Configuration": "4.8.0",
+          "Microsoft.Bot.Schema": "4.8.0",
+          "Microsoft.Extensions.Configuration": "2.1.0",
+          "Microsoft.Extensions.Configuration.Json": "2.1.0",
+          "Newtonsoft.Json": "12.0.3"
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.Bot.Builder.AI.Luis.dll": {}
@@ -3251,7 +3254,7 @@
           "lib/netstandard2.0/Microsoft.Extensions.WebEncoders.dll": {}
         }
       },
-      "Microsoft.IdentityModel.Clients.ActiveDirectory/5.2.4": {
+      "Microsoft.IdentityModel.Clients.ActiveDirectory/5.2.7": {
         "type": "package",
         "dependencies": {
           "Microsoft.CSharp": "4.3.0",
@@ -4002,15 +4005,6 @@
             "assetType": "native",
             "rid": "win-x86"
           }
-        }
-      },
-      "SourceLink.Create.CommandLine/2.8.3": {
-        "type": "package",
-        "build": {
-          "build/_._": {}
-        },
-        "buildMultiTargeting": {
-          "buildCrossTargeting/_._": {}
         }
       },
       "SQLitePCLRaw.bundle_green/1.1.12": {
@@ -6140,35 +6134,16 @@
           "lib/netstandard1.3/Microsoft.WindowsAzure.Storage.dll": {}
         }
       },
-      "EntityModel/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v2.2",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore": "2.2.6",
-          "Microsoft.EntityFrameworkCore.Design": "2.2.6",
-          "Microsoft.EntityFrameworkCore.InMemory": "2.2.6",
-          "Microsoft.EntityFrameworkCore.SqlServer": "2.2.6",
-          "Microsoft.Extensions.Configuration": "2.2.0",
-          "Microsoft.Extensions.Configuration.FileExtensions": "2.2.0",
-          "Microsoft.Extensions.Configuration.Json": "2.2.0"
-        },
-        "compile": {
-          "bin/placeholder/EntityModel.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/EntityModel.dll": {}
-        }
-      },
       "Shared/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v2.2",
         "dependencies": {
-          "EntityModel": "1.0.0",
-          "Microsoft.Bot.Builder": "4.5.2",
-          "Microsoft.Bot.Builder.AI.Luis": "4.5.2",
-          "Microsoft.Bot.Builder.Dialogs": "4.5.2",
-          "Microsoft.Bot.Schema": "4.5.2",
-          "Microsoft.IdentityModel.Clients.ActiveDirectory": "5.2.1"
+          "Microsoft.Bot.Builder": "4.8.0",
+          "Microsoft.Bot.Builder.AI.Luis": "4.8.0",
+          "Microsoft.Bot.Builder.Azure": "4.8.0",
+          "Microsoft.Bot.Builder.Dialogs": "4.8.0",
+          "Microsoft.Bot.Schema": "4.8.0",
+          "Microsoft.IdentityModel.Clients.ActiveDirectory": "5.2.7"
         },
         "compile": {
           "bin/placeholder/Shared.dll": {}
@@ -7866,17 +7841,17 @@
         "microsoft.bot.builder.nuspec"
       ]
     },
-    "Microsoft.Bot.Builder.AI.Luis/4.5.2": {
-      "sha512": "odKCt0Zy8njQnFnObiH4fuVjx0wF1cW3h0vpnkUKHRDVeHpfwIAMJuImG45Shj0MaDTjFP7GBqhpClNL/mR04w==",
+    "Microsoft.Bot.Builder.AI.Luis/4.8.0": {
+      "sha512": "bo5Usng5I9s7Qie2InjlPWDxe1Z18fU0qy8fyti473ptziswSggLdOBs3+7zBGhOHy/ZArfs3eUOqhRhUTcSkQ==",
       "type": "package",
-      "path": "microsoft.bot.builder.ai.luis/4.5.2",
+      "path": "microsoft.bot.builder.ai.luis/4.8.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
+        "icon.png",
         "lib/netstandard2.0/Microsoft.Bot.Builder.AI.Luis.dll",
-        "lib/netstandard2.0/Microsoft.Bot.Builder.AI.Luis.pdb",
         "lib/netstandard2.0/Microsoft.Bot.Builder.AI.Luis.xml",
-        "microsoft.bot.builder.ai.luis.4.5.2.nupkg.sha512",
+        "microsoft.bot.builder.ai.luis.4.8.0.nupkg.sha512",
         "microsoft.bot.builder.ai.luis.nuspec"
       ]
     },
@@ -9082,10 +9057,10 @@
         "microsoft.extensions.webencoders.nuspec"
       ]
     },
-    "Microsoft.IdentityModel.Clients.ActiveDirectory/5.2.4": {
-      "sha512": "UDn9cidGDrE46jRxyhFtsxN7CQ0uFIYmlLDsguWvRnhqlBgDugsmVVUH2jyyds2rxrfPl7EvQfyBFjfibLX8eA==",
+    "Microsoft.IdentityModel.Clients.ActiveDirectory/5.2.7": {
+      "sha512": "iR4L/pqzEYk2vhOF+2q5mIy7LqZdNz7NiorEQihDa/Fd6eddJ4CeAUpZ4XZDXwmWeyAU4s+O305k9M5RlVyRHA==",
       "type": "package",
-      "path": "microsoft.identitymodel.clients.activedirectory/5.2.4",
+      "path": "microsoft.identitymodel.clients.activedirectory/5.2.7",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -9105,7 +9080,7 @@
         "lib/xamarinios10/Microsoft.IdentityModel.Clients.ActiveDirectory.dll",
         "lib/xamarinios10/Microsoft.IdentityModel.Clients.ActiveDirectory.pdb",
         "lib/xamarinios10/Microsoft.IdentityModel.Clients.ActiveDirectory.xml",
-        "microsoft.identitymodel.clients.activedirectory.5.2.4.nupkg.sha512",
+        "microsoft.identitymodel.clients.activedirectory.5.2.7.nupkg.sha512",
         "microsoft.identitymodel.clients.activedirectory.nuspec"
       ]
     },
@@ -10347,23 +10322,6 @@
         "runtimes/win-x86/native/sni.dll",
         "useSharedDesignerContext.txt",
         "version.txt"
-      ]
-    },
-    "SourceLink.Create.CommandLine/2.8.3": {
-      "sha512": "IG9yWuEwkGDC94Be8U7XC/YwzGPGUhH7cF2/AzN3DeyJwo9Epp0kiwT8UGNg1lNkH1mXyjOTS7oN0DZSqMmoBQ==",
-      "type": "package",
-      "path": "sourcelink.create.commandline/2.8.3",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "build/SourceLink.Create.CommandLine.props",
-        "build/SourceLink.Create.CommandLine.targets",
-        "build/net461/SourceLink.Create.CommandLine.dll",
-        "build/netstandard1.4/SourceLink.Create.CommandLine.deps.json",
-        "build/netstandard1.4/SourceLink.Create.CommandLine.dll",
-        "buildCrossTargeting/SourceLink.Create.CommandLine.props",
-        "sourcelink.create.commandline.2.8.3.nupkg.sha512",
-        "sourcelink.create.commandline.nuspec"
       ]
     },
     "SQLitePCLRaw.bundle_green/1.1.12": {
@@ -15868,11 +15826,6 @@
         "windowsazure.storage.8.1.4.nupkg.sha512",
         "windowsazure.storage.nuspec"
       ]
-    },
-    "EntityModel/1.0.0": {
-      "type": "project",
-      "path": "../EntityModel/EntityModel.csproj",
-      "msbuildProject": "../EntityModel/EntityModel.csproj"
     },
     "Shared/1.0.0": {
       "type": "project",

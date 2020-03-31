@@ -1,6 +1,7 @@
-﻿using EntityModel.Helpers;
+﻿using Microsoft.Azure.Cosmos.Spatial;
+using Shared.Models.Helpers;
 
-namespace EntityModel
+namespace Shared.Models
 {
     public class User : Model
     {
@@ -8,9 +9,7 @@ namespace EntityModel
 
         public string Location { get; set; }
 
-        public double LocationLatitude { get; set; }
-
-        public double LocationLongitude { get; set; }
+        public Point LocationCoordinates { get; set; }
 
         public DayFlags ReminderFrequency { get; set; }
 

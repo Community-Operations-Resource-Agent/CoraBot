@@ -2,7 +2,7 @@
   "VerifiedOrganizations": [
     {
       "Name": "Swedish Hospital",
-      "PhoneNumbers": [ "1-555-555-5555" ]
+      "PhoneNumbers": [ "1-760-500-4495" ]
     },
     {
       "Name": "Evergreen Hospital",
@@ -16,20 +16,11 @@
         { "Name": "N-95 Masks" },
         { "Name": "Face Shields" },
         { "Name": "Eye Protection" },
-        { "Name": "Gloves" },
-        { "Name": "Cotton Swabs" },
-        { "Name": "Hand Sanitizer" },
-        { "Name": "Gowns" },
-        { "Name": "Booties" },
         { "Name": "Respiration Tubes" },
         { "Name": "Ventilators" },
-        { "Name": "Wipes" },
-        { "Name": "Intubation tubes" },
-        { "Name": "Steri Strips" },
-        { "Name": "Syringes" },
-        { "Name": "Test tubes" },
-        { "Name": "Saline" },
-        { "Name": "D5" }
+        { "Name": "Gloves" },
+        { "Name": "Hand Sanitizer" },
+        { "Name": "Wipes" }
       ]
     }
   ]

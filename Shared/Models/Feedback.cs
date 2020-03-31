@@ -1,8 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System;
-
-namespace EntityModel
+﻿namespace Shared.Models
 {
     public class Feedback : Model
     {

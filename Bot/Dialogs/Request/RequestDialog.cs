@@ -1,6 +1,4 @@
-﻿using Bot.Dialogs.Preferences;
-using Bot.State;
-using EntityModel.Helpers;
+﻿using Bot.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
@@ -108,14 +106,29 @@ namespace Bot.Dialogs.Request
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
                         userContext.Resource = selectedResource;
 
+                        // Ask how many they need.
+                        return await dialogContext.PromptAsync(
+                            Prompt.IntPrompt,
+                            new PromptOptions
+                            {
+                                Prompt = Phrases.Request.GetQuantity(selectedResource)
+                            },
+                            cancellationToken);
+                    },
+                    async (dialogContext, cancellationToken) =>
+                    {
+                        // Store the quantity in the user context.
+                        var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+                        userContext.RequestQuantity = (int)dialogContext.Result;
+
                         // Ask the distance they want to broadcast to.
                         return await dialogContext.PromptAsync(
-                                Prompt.IntPrompt,
-                                new PromptOptions
-                                {
-                                    Prompt = Phrases.Request.Distance
-                                },
-                                cancellationToken);
+                            Prompt.IntPrompt,
+                            new PromptOptions
+                            {
+                                Prompt = Phrases.Request.Distance
+                            },
+                            cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
@@ -124,29 +137,25 @@ namespace Bot.Dialogs.Request
                         var user = await api.GetUser(dialogContext.Context);
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
 
-                        // This section is resource intensive. Should look into a way to do geofenced search.
-                        var resources = await this.api.GetResources(userContext.Category, userContext.Resource);
-                        List<UserResourcePair> matches = new List<UserResourcePair>();
+                        // Get all users within the distance from the user.
+                        var usersWithinDistance = await this.api.GetUsersWithinDistance(user.LocationCoordinates, searchDistance);
 
-                        foreach (var resource in resources)
+                        // Get any matching resources for the users.
+                        int matches = 0;
+
+                        foreach (var userWithinDistance in usersWithinDistance)
                         {
-                            // TODO: Make unit of length customizable. Maybe set in helpers and have it used throughout (also in text response).
-                            Coordinates userCoordinates = new Coordinates(user.LocationLatitude, user.LocationLongitude);
-                            Coordinates resourceCoordinates = new Coordinates(resource.User.LocationLatitude, resource.User.LocationLongitude);
-                            var distance = userCoordinates.DistanceTo(resourceCoordinates, UnitOfLength.Miles);
-
-                            // TODO: Ask for range they want to request from.
-                            if (distance < searchDistance)
+                            var resource = await this.api.GetResourceForUser(userWithinDistance, userContext.Category, userContext.Resource);
+                            if (resource != null)
                             {
-                                matches.Add(resource);
+                                // TODO: add to outgoing message queue.
+                                // TODO: Use UserContext.RequestQuantity and Resource to say how many of what are needed
+
+                                matches++;
                             }
                         }
 
-
-                        // TODO: add to outgoing message queue.
-
-
-                        await Messages.SendAsync(Phrases.Request.Sent(matches.Count), turnContext, cancellationToken);
+                        await Messages.SendAsync(Phrases.Request.Sent(matches), turnContext, cancellationToken);
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });

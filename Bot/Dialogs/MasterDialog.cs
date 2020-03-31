@@ -8,7 +8,6 @@ using Shared;
 using System.Linq;
 using Shared.Prompts;
 using System;
-using EntityModel;
 using Bot.State;
 using Bot.Dialogs.Request;
 using Bot.Dialogs.Provide;

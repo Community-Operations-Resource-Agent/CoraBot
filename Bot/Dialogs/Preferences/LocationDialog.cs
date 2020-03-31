@@ -1,4 +1,5 @@
 ﻿using Bot.State;
+using Microsoft.Azure.Cosmos.Spatial;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
@@ -44,10 +45,9 @@ namespace Bot.Dialogs.Preferences
                             var position = await Helpers.LocationToPosition(configuration, location);
 
                             // Save the location. It was validated by the prompt.
-                            var user = await api.GetUser(dialogContext.Context);
+                            var user = await this.api.GetUser(dialogContext.Context);
                             user.Location = location;
-                            user.LocationLatitude = position.Lat;
-                            user.LocationLongitude = position.Lon;
+                            user.LocationCoordinates = new Point(position.Lon, position.Lat);
                             await this.api.Update(user);
                         }
 

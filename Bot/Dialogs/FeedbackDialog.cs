@@ -4,6 +4,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
+using Shared.Models;
 using Shared.Prompts;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,7 +38,7 @@ namespace Bot.Dialogs
                     {
                         var user = await this.api.GetUser(dialogContext.Context);
 
-                        var feedback = new EntityModel.Feedback();
+                        var feedback = new Feedback();
                         feedback.CreatedById = user.Id;
                         feedback.Text = (string)dialogContext.Result;
                         await this.api.Create(feedback);

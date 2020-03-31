@@ -1,4 +1,4 @@
-﻿namespace EntityModel.Helpers
+﻿namespace Shared.Models.Helpers
 {
     public class UserResourcePair
     {
