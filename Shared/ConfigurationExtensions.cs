@@ -11,11 +11,6 @@ namespace Shared
         private const string EnvironmentSettingName = "Environment";
 
         /// <summary>
-        /// The name of the app setting for the database connection string.
-        /// </summary>
-        private const string DbModelConnectionStringSettingName = "DbModel";
-
-        /// <summary>
         /// The name of the app setting for the MicrosoftAppId.
         /// </summary>
         private const string MicrosoftAppIdSettingName = "MicrosoftAppId";
@@ -24,6 +19,11 @@ namespace Shared
         /// The name of the app setting for the MicrosoftAppPassword.
         /// </summary>
         private const string MicrosoftAppPasswordSettingName = "MicrosoftAppPassword";
+
+        /// <summary>
+        /// The name of the app setting for the azure storage connection string.
+        /// </summary>
+        private const string AzureWebJobsStorageSettingName = "AzureWebJobsStorage";
 
         /// <summary>
         /// The name of the setting that contains the CosmosDB endpoint.
@@ -86,6 +86,21 @@ namespace Shared
         private const string MapsSearchUrlFormatSettingName = "Maps:SearchUrlFormat";
 
         /// <summary>
+        /// The name of the setting that contains the bot service URL.
+        /// </summary>
+        private const string ServiceUrlSettingName = "ServiceUrl";
+
+        /// <summary>
+        /// The name of the setting that contains the bot channel ID.
+        /// </summary>
+        private const string ChannelIdSettingName = "ChannelId";
+
+        /// <summary>
+        /// The name of the setting that contains the bot phone number.
+        /// </summary>
+        private const string BotPhoneNumberSettingName = "BotPhoneNumber";
+
+        /// <summary>
         /// The name of the setting that contains the channel ID for tests.
         /// </summary>
         private const string TestChannelSettingName = "TestChannel";
@@ -105,9 +120,9 @@ namespace Shared
             return configuration.GetValue<string>(MicrosoftAppPasswordSettingName);
         }
 
-        public static string DbModelConnectionString(this IConfiguration configuration)
+        public static string AzureWebJobsStorage(this IConfiguration configuration)
         {
-            return configuration.GetConnectionString(DbModelConnectionStringSettingName);
+            return configuration.GetValue<string>(AzureWebJobsStorageSettingName);
         }
 
         public static string CosmosEndpoint(this IConfiguration configuration)
@@ -168,6 +183,21 @@ namespace Shared
         public static string MapsSearchUrlFormat(this IConfiguration configuration)
         {
             return configuration.GetValue<string>(MapsSearchUrlFormatSettingName);
+        }
+
+        public static string ServiceUrl(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(ServiceUrlSettingName);
+        }
+
+        public static string ChannelId(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(ChannelIdSettingName);
+        }
+
+        public static string BotPhoneNumber(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(BotPhoneNumberSettingName);
         }
 
         public static string TestChannel(this IConfiguration configuration)

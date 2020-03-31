@@ -201,6 +201,8 @@ namespace Shared
         {
             public static Activity Categories = MessageFactory.Text("Which category of resource are you looking for?");
             public static Activity Distance = MessageFactory.Text("What distance would you like to broadcast your request? (enter miles)");
+            public static Activity Instructions = MessageFactory.Text("What are your instructions for contact or delivery? You can include things like a phone number or a location");
+            public static Activity Sent = MessageFactory.Text("Your request has been sent! You will be contacted directly by anyone who responds to your request");
 
             public static Activity Resources(string category)
             {
@@ -212,9 +214,10 @@ namespace Shared
                 return MessageFactory.Text($"What quantity of {resource} do you need? {EnterNumber}");
             }
 
-            public static Activity Sent(int num)
+            public static string GetOutgoingMessage(string name, string resource, int quantity, string instructions)
             {
-                return MessageFactory.Text($"Your request has been sent to {num} users! You will be contacted directly by anyone who has available resources and responds to your request");
+                return $"{name} has an immediate need for {quantity} {resource}. " +
+                    $"Here are their instructions: \"{instructions}\"";
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿using Microsoft.Azure.Cosmos.Spatial;
+﻿using Microsoft.Azure.Documents.Spatial;
 using Shared.Models.Helpers;
 
 namespace Shared.Models

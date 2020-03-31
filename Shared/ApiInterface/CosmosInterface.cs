@@ -1,10 +1,9 @@
-﻿using Microsoft.Azure.Cosmos.Spatial;
-using Microsoft.Azure.Documents.Client;
+﻿using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.Documents.Spatial;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.Extensions.Configuration;
 using Shared.Models;
-using Shared.Models.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,6 +24,7 @@ namespace Shared.ApiInterface
         {
             this.config = config;
             this.client = new DocumentClient(new Uri(config.CosmosEndpoint()), config.CosmosKey());
+            this.client.OpenAsync();
         }
 
         /// <summary>
@@ -113,7 +113,8 @@ namespace Shared.ApiInterface
             var result = this.client.CreateDocumentQuery<User>(
                 UriFactory.CreateDocumentCollectionUri(
                     this.config.CosmosDatabase(),
-                    this.config.CosmosUsersCollection()))
+                    this.config.CosmosUsersCollection()),
+                GetPartitionedFeedOptions())
                 .Where(u => u.LocationCoordinates.Distance(coordinates) <= 30000)
                 .ToList();
 
@@ -129,7 +130,7 @@ namespace Shared.ApiInterface
                 UriFactory.CreateDocumentCollectionUri(
                     this.config.CosmosDatabase(),
                     this.config.CosmosResourcesCollection()), 
-                 new FeedOptions { EnableCrossPartitionQuery = true })
+                 GetPartitionedFeedOptions())
                 .Where(r => r.CreatedById == user.Id)
                 .Take(1)
                 .AsEnumerable()
@@ -147,7 +148,7 @@ namespace Shared.ApiInterface
                 UriFactory.CreateDocumentCollectionUri(
                     this.config.CosmosDatabase(),
                     this.config.CosmosResourcesCollection()),
-                new FeedOptions { EnableCrossPartitionQuery = true })
+                GetPartitionedFeedOptions())
                 .Where(r => r.CreatedById == user.Id)
                 .ToList();
 
@@ -163,7 +164,7 @@ namespace Shared.ApiInterface
                 UriFactory.CreateDocumentCollectionUri(
                     this.config.CosmosDatabase(),
                     this.config.CosmosResourcesCollection()),
-                new FeedOptions { EnableCrossPartitionQuery = true })
+                GetPartitionedFeedOptions())
                 .Where(r => r.CreatedById == user.Id && r.Category == category && r.Name == resource)
                 .AsEnumerable()
                 .FirstOrDefault();
@@ -190,6 +191,24 @@ namespace Shared.ApiInterface
                 Debug.Assert(false, "Add the new type");
                 return string.Empty;
             }
+        }
+
+        private FeedOptions GetPartitionedFeedOptions()
+        {
+            // From https://docs.microsoft.com/en-us/azure/cosmos-db/performance-tips
+
+            // If you don't know the number of partitions, you can set the degree of
+            // parallelism to a high number. The system will choose the minimum
+            // (number of partitions, user provided input) as the degree of parallelism.
+
+            // When maxItemCount is set to -1, the SDK automatically finds the optimal
+            // value, depending on the document size
+            return new FeedOptions
+            {
+                EnableCrossPartitionQuery = true,
+                MaxDegreeOfParallelism = 100,
+                MaxItemCount = -1,
+            };
         }
     }
 }

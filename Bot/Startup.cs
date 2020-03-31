@@ -38,8 +38,11 @@ namespace Bot
             // Add the configuration.
             services.AddSingleton(this.configuration);
 
-            // Add the DB interface.
-            services.AddScoped(_ => new CosmosInterface(this.configuration));
+            // Add the API interface.
+            // Cosmos recommends a singleton for the lifetime of the application.
+            // Other types may need to be scoped to the request (like Entity Framework).
+            var api = new CosmosInterface(this.configuration);
+            services.AddSingleton(api);
 
             // Create and add the state accessors.
             var state = StateAccessors.Create(this.configuration);

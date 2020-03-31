@@ -1,8 +1,10 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Shared.Models;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -79,6 +81,22 @@ namespace Shared
 
             // Return the first city in the results.
             return data.Results.FirstOrDefault(r => r.EntityType == EntityType.Municipality)?.Position;
+        }
+
+        public static void LogInfo(ILogger log, string text)
+        {
+            if (log != null)
+            {
+                log.LogInformation(text);
+            }
+        }
+
+        public static void LogException(ILogger log, Exception exception)
+        {
+            if (log != null)
+            {
+                log.LogError(exception, exception.Message);
+            }
         }
     }
 }

@@ -8,5 +8,6 @@ namespace Bot.State
         public string Category { get; set; }
         public string Resource { get; set; }
         public int RequestQuantity { get; set; }
+        public int RequestDistance { get; set; }
     }
 }

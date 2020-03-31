@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
 using Shared.Prompts;
+using Shared.Storage;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -132,30 +133,59 @@ namespace Bot.Dialogs.Request
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        var searchDistance = (int)dialogContext.Result;
+                        // Store the distance in the user context.
+                        var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+                        userContext.RequestDistance = (int)dialogContext.Result;
+
+                        // Ask for any instructions.
+                        return await dialogContext.PromptAsync(
+                            Prompt.TextPrompt,
+                            new PromptOptions
+                            {
+                                Prompt = Phrases.Request.Instructions
+                            },
+                            cancellationToken);
+                    },
+                    async (dialogContext, cancellationToken) =>
+                    {
+                        var instructions = (string)dialogContext.Result;
 
                         var user = await api.GetUser(dialogContext.Context);
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
 
+
+                        // TODO! Translate distance into meters for API.
+
+
                         // Get all users within the distance from the user.
-                        var usersWithinDistance = await this.api.GetUsersWithinDistance(user.LocationCoordinates, searchDistance);
+                        var usersWithinDistance = await this.api.GetUsersWithinDistance(user.LocationCoordinates, userContext.RequestDistance);
 
-                        // Get any matching resources for the users.
-                        int matches = 0;
-
-                        foreach (var userWithinDistance in usersWithinDistance)
+                        if (usersWithinDistance.Count > 0)
                         {
-                            var resource = await this.api.GetResourceForUser(userWithinDistance, userContext.Category, userContext.Resource);
-                            if (resource != null)
-                            {
-                                // TODO: add to outgoing message queue.
-                                // TODO: Use UserContext.RequestQuantity and Resource to say how many of what are needed
+                            var schema = Helpers.GetSchema();
+                            var organization = schema.VerifiedOrganizations.FirstOrDefault();
+                            //var organization = schema.VerifiedOrganizations.FirstOrDefault(o => o.PhoneNumbers.Contains(user.PhoneNumber));
+                            var message = Phrases.Request.GetOutgoingMessage(organization.Name, userContext.Resource, userContext.RequestQuantity, instructions);
+                            var queueHelper = new OutgoingMessageQueueHelpers(this.configuration.AzureWebJobsStorage());
 
-                                matches++;
+                            // Get any matching resources for the users.
+                            foreach (var userWithinDistance in usersWithinDistance)
+                            {
+                                var resource = await this.api.GetResourceForUser(userWithinDistance, userContext.Category, userContext.Resource);
+                                if (resource != null)
+                                {
+                                    var data = new OutgoingMessageQueueData
+                                    {
+                                        PhoneNumber = userWithinDistance.PhoneNumber,
+                                        Message = message
+                                    };
+
+                                    await queueHelper.Enqueue(data);
+                                }
                             }
                         }
 
-                        await Messages.SendAsync(Phrases.Request.Sent(matches), turnContext, cancellationToken);
+                        await Messages.SendAsync(Phrases.Request.Sent, turnContext, cancellationToken);
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });

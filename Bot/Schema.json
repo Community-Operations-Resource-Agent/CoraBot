@@ -19,8 +19,7 @@
         { "Name": "Respiration Tubes" },
         { "Name": "Ventilators" },
         { "Name": "Gloves" },
-        { "Name": "Hand Sanitizer" },
-        { "Name": "Wipes" }
+        { "Name": "Hand Sanitizer" }
       ]
     }
   ]

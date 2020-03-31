@@ -1,7 +1,6 @@
-﻿using Microsoft.Azure.Cosmos.Spatial;
+﻿using Microsoft.Azure.Documents.Spatial;
 using Microsoft.Bot.Builder;
 using Shared.Models;
-using Shared.Models.Helpers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
