@@ -31,18 +31,12 @@ namespace Bot.Dialogs.Provide
                         var user = await api.GetUser(dialogContext.Context);
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
 
-                        var resource = new Resource();
-                        resource.CreatedById = user.Id;
-                        resource.Category = userContext.Category;
-                        resource.Name = userContext.Resource;
-                        await this.api.Create(resource);
-
                         // Prompt for the quantity.
                         return await dialogContext.PromptAsync(
                             Prompt.IntPrompt,
                             new PromptOptions
                             {
-                                Prompt = Phrases.Provide.GetQuantity(resource.Name)
+                                Prompt = Phrases.Provide.GetQuantity(userContext.Resource)
                             },
                             cancellationToken);
                     },
@@ -50,23 +44,22 @@ namespace Bot.Dialogs.Provide
                     {
                         var user = await api.GetUser(dialogContext.Context);
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        var resource = await this.api.GetResourceForUser(user, userContext.Category, userContext.Resource);
 
                         var quantity = (int)dialogContext.Result;
-                        if (quantity == 0)
+                        if (quantity > 0)
                         {
-                            await this.api.Delete(resource);
+                            var resource = new Resource();
+                            resource.CreatedById = user.Id;
+                            resource.Category = userContext.Category;
+                            resource.Name = userContext.Resource;
+                            resource.Quantity = quantity;
+                            await this.api.Create(resource);
 
-                            await Messages.SendAsync(Phrases.Provide.CompleteUpdate, dialogContext.Context, cancellationToken);
+                            await Messages.SendAsync(Phrases.Provide.CompleteCreate(user), dialogContext.Context, cancellationToken);
                         }
                         else
                         {
-                            resource.Quantity = quantity;
-                            resource.CreatedOn = DateTime.UtcNow;
-                            resource.IsRecordComplete = true;
-                            await this.api.Update(resource);
-
-                            await Messages.SendAsync(Phrases.Provide.CompleteCreate(user), dialogContext.Context, cancellationToken);
+                            await Messages.SendAsync(Phrases.Provide.CompleteUpdate, dialogContext.Context, cancellationToken);
                         }
 
                         return await dialogContext.EndDialogAsync(null, cancellationToken);

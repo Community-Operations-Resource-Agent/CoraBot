@@ -33,20 +33,20 @@ namespace Shared
             public static List<string> GetOptionsList(bool isVerifiedOrganization, bool hasResources)
             {
                 var list = new List<string>();
-                list.Add(Options.Request);
+
                 if (isVerifiedOrganization)
                 {
-                    list.Add(Options.Request);
+                    list.Add(Request);
                 }
 
-                list.Add(Options.Provide);
+                list.Add(Provide);
 
                 if (hasResources)
                 {
-                    list.Add(Options.Update);
+                    list.Add(Update);
                 }
 
-                list.Add(Options.MoreOptions);
+                list.Add(MoreOptions);
                 return list;
             }
 
@@ -66,10 +66,10 @@ namespace Shared
 
                 public static List<string> GetOptionsList(User user)
                 {
-                    var list = new List<string> { Options.Extended.ViewResources, Options.Extended.UpdateLocation, Options.Extended.ChangeDays, Options.Extended.ChangeTime };
-                    list.Add(user.ContactEnabled ? Options.Extended.Disable : Options.Extended.Enable);
-                    list.Add(Options.Extended.Feedback);
-                    list.Add(Options.Extended.GoBack);
+                    var list = new List<string> { ViewResources, UpdateLocation, ChangeDays, ChangeTime };
+                    list.Add(user.ContactEnabled ? Disable : Enable);
+                    list.Add(Feedback);
+                    list.Add(GoBack);
                     return list;
                 }
 
@@ -143,6 +143,11 @@ namespace Shared
             public static Activity GetUpdateDays = MessageFactory.Text($"Which days of the week would you like to be contacted? {GetUpdateDaysExample}");
             public static Activity GetUpdateDaysRetry = MessageFactory.Text($"Oops, the format is {GetUpdateDaysFormat}. {GetUpdateDaysExample}");
 
+            public static Activity GetLocationConfirm(string location)
+            {
+                return MessageFactory.Text($"I matched that to \"{location}\". Does this look correct? {EnterNumber}");
+            }
+
             public static Activity UpdateTimeUpdated(string time)
             {
                 return MessageFactory.Text($"{PreferenceUpdated} to {time}!");
@@ -162,6 +167,7 @@ namespace Shared
         public static class Provide
         {
             public static Activity GetCategory = MessageFactory.Text($"Which category of resource are you able to provide? {EnterNumber}");
+            public static Activity Another = MessageFactory.Text($"Would you like to register another resource? {EnterNumber}");
             public static Activity CompleteUpdate = MessageFactory.Text("Thank you for the update!");
 
             public static Activity GetResource(string category)
@@ -180,7 +186,7 @@ namespace Shared
                 
                 if (user.ContactEnabled)
                 {
-                    text += $" I will also contact you {user.ReminderFrequency.ToString()} to update your availability. This frequency can be customized from the options menu";
+                    text += $" I will also contact you *{user.ReminderFrequency.ToString()}* to update your availability. This frequency can be customized from the options menu";
                 }
                 else
                 {

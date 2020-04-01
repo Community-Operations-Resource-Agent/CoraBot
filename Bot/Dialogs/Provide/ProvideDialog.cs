@@ -122,6 +122,19 @@ namespace Bot.Dialogs.Provide
                     },
                     async (dialogContext, cancellationToken) =>
                     {
+                        // Check if they want to add another resource.
+                        return await dialogContext.PromptAsync(
+                            Prompt.ConfirmPrompt,
+                            new PromptOptions { Prompt = Phrases.Provide.Another },
+                            cancellationToken);
+                    },
+                    async (dialogContext, cancellationToken) =>
+                    {
+                        if ((bool)dialogContext.Result)
+                        {
+                            return await dialogContext.ReplaceDialogAsync(ProvideDialog.Name, null, cancellationToken);
+                        }
+
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });

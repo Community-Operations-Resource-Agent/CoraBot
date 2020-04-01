@@ -61,9 +61,9 @@ namespace Shared
         }
 
         /// <summary>
-        /// Looks up a position from a location.
+        /// Looks up a location from a string.
         /// </summary>
-        public static async Task<LocationPosition> LocationToPosition(IConfiguration configuration, string location)
+        public static async Task<LocationResult> StringToLocation(IConfiguration configuration, string location)
         {
             var url = string.Format(configuration.MapsSearchUrlFormat(), configuration.MapsSubscriptionKey(), location);
             var response = await new HttpClient().GetAsync(url);
@@ -80,7 +80,7 @@ namespace Shared
             }
 
             // Return the first city in the results.
-            return data.Results.FirstOrDefault(r => r.EntityType == EntityType.Municipality)?.Position;
+            return data.Results.FirstOrDefault(r => r.EntityType == EntityType.Municipality);
         }
 
         public static void LogInfo(ILogger log, string text)

@@ -38,16 +38,26 @@ namespace Bot.Dialogs.Preferences
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        if (dialogContext.Result != null)
-                        {
-                            var location = (string)dialogContext.Result;
-                            var position = await Helpers.LocationToPosition(configuration, location);
+                        // Location was validated.
+                        var locationString = (string)dialogContext.Result;
+                        var location = await Helpers.StringToLocation(configuration, locationString);
 
-                            // Save the location. It was validated by the prompt.
-                            var user = await this.api.GetUser(dialogContext.Context);
-                            user.Location = location;
-                            user.LocationCoordinates = new Point(position.Lon, position.Lat);
-                            await this.api.Update(user);
+                        var user = await this.api.GetUser(dialogContext.Context);
+                        user.Location = location.Address.ToString();
+                        user.LocationCoordinates = new Point(location.Position.Lon, location.Position.Lat);
+                        await this.api.Update(user);
+
+                        // Check if the location is correct.
+                        return await dialogContext.PromptAsync(
+                            Prompt.ConfirmPrompt,
+                            new PromptOptions { Prompt = Phrases.Preferences.GetLocationConfirm(location.Address.ToString()) },
+                            cancellationToken);
+                    },
+                    async (dialogContext, cancellationToken) =>
+                    {
+                        if (!(bool)dialogContext.Result)
+                        {
+                            return await dialogContext.ReplaceDialogAsync(LocationDialog.Name, null, cancellationToken);
                         }
 
                         await Messages.SendAsync(Phrases.Preferences.LocationUpdated, dialogContext.Context, cancellationToken);

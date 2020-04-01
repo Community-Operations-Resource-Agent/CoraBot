@@ -13,7 +13,7 @@ namespace Shared.Prompts
         {
             return async (promptContext, cancellationToken) =>
             {
-                var location = await Helpers.LocationToPosition(configuration, promptContext.Context.Activity.Text);
+                var location = await Helpers.StringToLocation(configuration, promptContext.Context.Activity.Text);
                 return await Task.FromResult(location != null);
             };
         }

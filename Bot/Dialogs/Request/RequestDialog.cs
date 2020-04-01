@@ -163,8 +163,7 @@ namespace Bot.Dialogs.Request
                         if (usersWithinDistance.Count > 0)
                         {
                             var schema = Helpers.GetSchema();
-                            var organization = schema.VerifiedOrganizations.FirstOrDefault();
-                            //var organization = schema.VerifiedOrganizations.FirstOrDefault(o => o.PhoneNumbers.Contains(user.PhoneNumber));
+                            var organization = schema.VerifiedOrganizations.FirstOrDefault(o => o.PhoneNumbers.Contains(user.PhoneNumber));
                             var message = Phrases.Request.GetOutgoingMessage(organization.Name, userContext.Resource, userContext.RequestQuantity, instructions);
                             var queueHelper = new OutgoingMessageQueueHelpers(this.configuration.AzureWebJobsStorage());
 
