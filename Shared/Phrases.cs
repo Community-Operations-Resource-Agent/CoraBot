@@ -21,6 +21,29 @@ namespace Shared
             public static string Error = $"Sorry, it looks like something went wrong";
         }
 
+        public static class Greeting
+        {
+            public static Activity Welcome = MessageFactory.Text("Welcome back!");
+            public static Activity WelcomeNew = MessageFactory.Text($"Hi, I'm {ProjectName}, a bot helping to locate critical " +
+                $"supplies in case of an emergency. Message and data rates apply. Would you like to continue? {EnterNumber}");
+
+            public static Activity Consent = MessageFactory.Text($"Great! As detailed on {ProjectWebsite}, my job is to locate critical " +
+                $"supplies in case of an emergency and notify you if they are needed by local healthcare facilities. Throughout " +
+                $"this process I will protect your privacy and not share your phone number");
+            public static Activity NoConsent = MessageFactory.Text("No problem! You can message me any time if you change your mind");
+            public static Activity Registered = MessageFactory.Text("You are now registered to help provide critical resources in case of an emergency!");
+
+            public static Activity InvalidChannel(ITurnContext turnContext)
+            {
+                return MessageFactory.Text($"Channel \"{turnContext.Activity.ChannelId}\" is not yet supported");
+            }
+
+            public static Activity InvalidSchema(string error)
+            {
+                return MessageFactory.Text($"The schema for this bot is invalid: \"{error}\"");
+            }
+        }
+
         public static class Options
         {
             public static string Request = "Request resources";
@@ -91,35 +114,6 @@ namespace Shared
 
                     return MessageFactory.Text(text);
                 }
-            }
-        }
-
-        public static class Feedback
-        {
-            public static Activity GetFeedback = MessageFactory.Text($"What would you like to let the {ProjectName} team know?");
-            public static Activity Thanks = MessageFactory.Text("Thanks for the feedback!");
-        }
-
-        public static class Greeting
-        {
-            public static Activity Welcome = MessageFactory.Text("Welcome back!");
-            public static Activity WelcomeNew = MessageFactory.Text($"Hi, I'm {ProjectName}, a bot helping to locate critical " +
-                $"supplies in case of an emergency. Message and data rates apply. Would you like to continue? {EnterNumber}");
-
-            public static Activity Consent = MessageFactory.Text($"Great! As detailed on {ProjectWebsite}, my job is to locate critical " +
-                $"supplies in case of an emergency and notify you if they are needed by local healthcare facilities. Throughout " +
-                $"this process I will protect your privacy and not share your phone number");
-            public static Activity NoConsent = MessageFactory.Text("No problem! You can message me any time if you change your mind");
-            public static Activity Registered = MessageFactory.Text("You are now registered to help provide critical resources in case of an emergency!");
-
-            public static Activity InvalidChannel(ITurnContext turnContext)
-            {
-                return MessageFactory.Text($"Channel \"{turnContext.Activity.ChannelId}\" is not yet supported");
-            }
-
-            public static Activity InvalidSchema(string error)
-            {
-                return MessageFactory.Text($"The schema for this bot is invalid: \"{error}\"");
             }
         }
 
@@ -211,7 +205,6 @@ namespace Shared
         public static class Request
         {
             public static Activity Categories = MessageFactory.Text("Which category of resource are you looking for?");
-            public static Activity Distance = MessageFactory.Text("What distance would you like to broadcast your request? (enter miles)");
             public static Activity Instructions = MessageFactory.Text("What are your instructions for contact or delivery? You can include things like a phone number or a location");
             public static Activity Sent = MessageFactory.Text("Your request has been sent! You will be contacted directly by anyone who responds to your request");
 
@@ -225,11 +218,22 @@ namespace Shared
                 return MessageFactory.Text($"What quantity of {resource} do you need? {EnterNumber}");
             }
 
+            public static Activity Distance(SchemaUnits units)
+            {
+                return MessageFactory.Text($"What distance would you like to broadcast your request? (enter {units.ToString().ToLower()})");
+            }
+
             public static string GetOutgoingMessage(string name, string resource, int quantity, string instructions)
             {
                 return $"{name} has an immediate need for {quantity} {resource}. " +
                     $"Here are their instructions: \"{instructions}\"";
             }
+        }
+
+        public static class Feedback
+        {
+            public static Activity GetFeedback = MessageFactory.Text($"What would you like to let the {ProjectName} team know?");
+            public static Activity Thanks = MessageFactory.Text("Thanks for the feedback!");
         }
     }
 }

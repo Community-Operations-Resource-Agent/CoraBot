@@ -5,6 +5,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
+using Shared.Models;
 using Shared.Prompts;
 using Shared.Storage;
 using System.Collections.Generic;
@@ -122,12 +123,14 @@ namespace Bot.Dialogs.Request
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
                         userContext.RequestQuantity = (int)dialogContext.Result;
 
+                        var schema = Helpers.GetSchema();
+
                         // Ask the distance they want to broadcast to.
                         return await dialogContext.PromptAsync(
                             Prompt.IntPrompt,
                             new PromptOptions
                             {
-                                Prompt = Phrases.Request.Distance
+                                Prompt = Phrases.Request.Distance(schema.Units)
                             },
                             cancellationToken);
                     },
@@ -150,19 +153,18 @@ namespace Bot.Dialogs.Request
                     {
                         var instructions = (string)dialogContext.Result;
 
+                        var schema = Helpers.GetSchema();
                         var user = await api.GetUser(dialogContext.Context);
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
 
-
-                        // TODO! Translate distance into meters for API.
-
+                        // The API input requires meters.
+                        double requestMeters = schema.Units.ToMeters(userContext.RequestDistance);
 
                         // Get all users within the distance from the user.
                         var usersWithinDistance = await this.api.GetUsersWithinDistance(user.LocationCoordinates, userContext.RequestDistance);
 
                         if (usersWithinDistance.Count > 0)
                         {
-                            var schema = Helpers.GetSchema();
                             var organization = schema.VerifiedOrganizations.FirstOrDefault(o => o.PhoneNumbers.Contains(user.PhoneNumber));
                             var message = Phrases.Request.GetOutgoingMessage(organization.Name, userContext.Resource, userContext.RequestQuantity, instructions);
                             var queueHelper = new OutgoingMessageQueueHelpers(this.configuration.AzureWebJobsStorage());

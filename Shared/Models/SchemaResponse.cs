@@ -46,4 +46,20 @@ namespace Shared.Models
         Miles,
         Kilometers
     }
+
+    public static class SchemaUnitsExtensions
+    {
+        const double KilometersPerMile = 1.609344;
+        const double MetersPerKilometer = 1000;
+
+        public static double ToMeters(this SchemaUnits units, int value)
+        {
+            switch (units)
+            {
+                case SchemaUnits.Miles: return value * KilometersPerMile * MetersPerKilometer;
+                case SchemaUnits.Kilometers: return value * MetersPerKilometer;
+                default: return 0;
+            }
+        }
+    }
 }

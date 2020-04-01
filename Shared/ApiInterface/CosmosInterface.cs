@@ -115,7 +115,7 @@ namespace Shared.ApiInterface
                     this.config.CosmosDatabase(),
                     this.config.CosmosUsersCollection()),
                 GetPartitionedFeedOptions())
-                .Where(u => u.LocationCoordinates.Distance(coordinates) <= 30000)
+                .Where(u => u.LocationCoordinates.Distance(coordinates) <= distanceMeters)
                 .ToList();
 
             return Task.FromResult(result);
