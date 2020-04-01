@@ -37,7 +37,23 @@ namespace Shared
         }
 
         /// <summary>
-        /// Retrieves the resource schema.
+        /// Validates the schema. Returns the error if any.
+        /// </summary>
+        public static string ValidateSchema()
+        {
+            try
+            {
+                GetSchema();
+                return string.Empty;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the schema.
         /// </summary>
         public static SchemaResponse GetSchema()
         {

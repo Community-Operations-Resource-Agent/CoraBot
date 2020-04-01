@@ -1,4 +1,9 @@
 {
+  // "Miles" or "Kilometers"
+  "Units": "Miles",
+
+  // The phone numbers for these organizations have
+  // the ability to send requests for resources.
   "VerifiedOrganizations": [
     {
       "Name": "Swedish Hospital",
@@ -9,6 +14,10 @@
       "PhoneNumbers": [ "1-777-777-7777" ]
     }
   ],
+
+  // These are the supplies that will be available
+  // for users to register and for the verified
+  // organizations to request.
   "Categories": [
     {
       "Name": "Medical Supplies",

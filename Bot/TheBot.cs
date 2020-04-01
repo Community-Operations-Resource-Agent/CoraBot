@@ -47,6 +47,13 @@ namespace Bot
                     return;
                 }
 
+                var schemaError = Helpers.ValidateSchema();
+                if (!string.IsNullOrEmpty(schemaError))
+                {
+                    await Messages.SendAsync(Phrases.Greeting.InvalidSchema(schemaError), turnContext, cancellationToken);
+                    return;
+                }
+
                 // Create the master dialog.
                 var masterDialog = new MasterDialog(this.state, this.dialogs, this.api, this.configuration);
 

@@ -116,6 +116,11 @@ namespace Shared
             {
                 return MessageFactory.Text($"Channel \"{turnContext.Activity.ChannelId}\" is not yet supported");
             }
+
+            public static Activity InvalidSchema(string error)
+            {
+                return MessageFactory.Text($"The schema for this bot is invalid: \"{error}\"");
+            }
         }
 
         public static class Preferences
@@ -130,7 +135,7 @@ namespace Shared
 
             private const string PreferenceUpdated = "Your contact preference has been updated";
 
-            public static Activity GetLocation = MessageFactory.Text("Where are you located? (enter City,State,Country)");
+            public static Activity GetLocation = MessageFactory.Text("Where are you located? (enter City, State/Province, Country)");
             public static Activity GetLocationRetry = MessageFactory.Text($"Oops, I couldn't find that location. Please try again...");
             public static Activity LocationUpdated = MessageFactory.Text("Your location has been updated!");
 
@@ -145,7 +150,7 @@ namespace Shared
 
             public static Activity GetLocationConfirm(string location)
             {
-                return MessageFactory.Text($"I matched that to \"{location}\". Does this look correct? {EnterNumber}");
+                return MessageFactory.Text($"I matched your city to \"{location}\". Does this look correct? {EnterNumber}");
             }
 
             public static Activity UpdateTimeUpdated(string time)

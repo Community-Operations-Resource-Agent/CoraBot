@@ -4,6 +4,7 @@ namespace Shared.Models
 {
     public class SchemaResponse
     {
+        public SchemaUnits Units { get; set; }
         public List<SchemaVerifiedOrganization> VerifiedOrganizations { get; set; }
         public List<SchemaCategory> Categories { get; set; }
 
@@ -38,5 +39,11 @@ namespace Shared.Models
     public class SchemaResource
     {
         public string Name { get; set; }
+    }
+
+    public enum SchemaUnits
+    {
+        Miles,
+        Kilometers
     }
 }
