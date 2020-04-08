@@ -81,6 +81,7 @@ namespace Shared
                 public static string ChangeTime = $"Change the time that {ProjectName} will contact you for updates";
                 public static string Enable = $"Enable {ProjectName} to contact you";
                 public static string Disable = $"Stop {ProjectName} from contacting you";
+                public static string Language = "Change your language";
                 public static string Feedback = "Provide feedback";
                 public static string GoBack = "Go back to the main menu";
 
@@ -91,8 +92,7 @@ namespace Shared
                 {
                     var list = new List<string> { ViewResources, UpdateLocation, ChangeDays, ChangeTime };
                     list.Add(user.ContactEnabled ? Disable : Enable);
-                    list.Add(Feedback);
-                    list.Add(GoBack);
+                    list.AddRange(new string[] { Language, Feedback, GoBack });
                     return list;
                 }
 
@@ -142,9 +142,12 @@ namespace Shared
             public static Activity GetUpdateDays = MessageFactory.Text($"Which days of the week would you like to be contacted? {GetUpdateDaysExample}");
             public static Activity GetUpdateDaysRetry = MessageFactory.Text($"Oops, the format is {GetUpdateDaysFormat}. {GetUpdateDaysExample}");
 
+            public static Activity GetLanguage = MessageFactory.Text($"Say \"hello\" in the language you prefer and I will switch to that language for you");
+            public static Activity LanguageUpdated = MessageFactory.Text($"Your language has been updated!");
+
             public static Activity GetLocationConfirm(string location)
             {
-                return MessageFactory.Text($"I matched your city to \"{location}\". Does this look correct? {EnterNumber}");
+                return MessageFactory.Text($"I matched your city to \"{location}\". Is this correct? {EnterNumber}");
             }
 
             public static Activity UpdateTimeUpdated(string time)

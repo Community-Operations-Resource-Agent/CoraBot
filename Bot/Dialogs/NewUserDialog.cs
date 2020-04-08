@@ -35,20 +35,23 @@ namespace Bot.Dialogs
                     },
                     async (dialogContext, cancellationToken) =>
                     {
+                        var user = await api.GetUser(dialogContext.Context);
+
                         if (!(bool)dialogContext.Result)
                         {
-                            // Did not consent.
-                             await Messages.SendAsync(Phrases.Greeting.NoConsent, dialogContext.Context, cancellationToken);
+                            // Did not consent. Delete their user record.
+                            await this.api.Delete(user);
+
+                            await Messages.SendAsync(Phrases.Greeting.NoConsent, dialogContext.Context, cancellationToken);
                             return await dialogContext.EndDialogAsync(false, cancellationToken);
                         }
-
-                        var user = new User();
-                        user.PhoneNumber = Helpers.GetUserToken(turnContext);
-                        await this.api.Create(user);
+                        else
+                        {
+                            user.IsConsentGiven = true;
+                            await this.api.Update(user);
+                        }
 
                         await Messages.SendAsync(Phrases.Greeting.Consent, dialogContext.Context, cancellationToken);
-
-                        // Push the update location dialog onto the stack.
                         return await BeginDialogAsync(dialogContext, LocationDialog.Name, null, cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>

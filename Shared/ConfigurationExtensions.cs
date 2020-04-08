@@ -86,6 +86,16 @@ namespace Shared
         private const string MapsSearchUrlFormatSettingName = "Maps:SearchUrlFormat";
 
         /// <summary>
+        /// The name of the setting that contains the maps subscription key.
+        /// </summary>
+        private const string TranslationSubscriptionKeySettingName = "Translation:SubscriptionKey";
+
+        /// <summary>
+        /// The name of the setting that contains the maps search URL format.
+        /// </summary>
+        private const string TranslationUrlFormatSettingName = "Translation:UrlFormat";
+
+        /// <summary>
         /// The name of the setting that contains the bot service URL.
         /// </summary>
         private const string ServiceUrlSettingName = "ServiceUrl";
@@ -183,6 +193,16 @@ namespace Shared
         public static string MapsSearchUrlFormat(this IConfiguration configuration)
         {
             return configuration.GetValue<string>(MapsSearchUrlFormatSettingName);
+        }
+
+        public static string TranslationSubscriptionKey(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(TranslationSubscriptionKeySettingName);
+        }
+
+        public static string TranslationUrlFormat(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(TranslationUrlFormatSettingName);
         }
 
         public static string ServiceUrl(this IConfiguration configuration)

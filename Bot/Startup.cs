@@ -8,9 +8,10 @@ using Microsoft.Bot.Connector.Authentication;
 using Shared.ApiInterface;
 using Shared;
 using System.Diagnostics;
-using Shared.Middleware;
 using Bot.State;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Shared.Translation;
+using Bot.Middleware;
 
 namespace Bot
 {
@@ -44,9 +45,13 @@ namespace Bot
             var api = new CosmosInterface(this.configuration);
             services.AddSingleton(api);
 
-            // Create and add the state accessors.
+            // Add the state accessors.
             var state = StateAccessors.Create(this.configuration);
             services.AddSingleton(state);
+
+            // Add the translator.
+            var translator = new Translator(this.configuration);
+            services.AddSingleton(translator);
 
             // Configure the bot.
             services.AddBot<TheBot>(options =>
@@ -78,6 +83,12 @@ namespace Bot
 
                 // Trim the incoming message.
                 options.Middleware.Add(new TrimIncomingMessageMiddleware());
+
+                // Make sure the user object is available.
+                options.Middleware.Add(new CreateUserMiddleware(api));
+
+                // Translate the messages if necessary.
+                options.Middleware.Add(new TranslationMiddleware(api, state, translator));
             });
         }
 

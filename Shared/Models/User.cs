@@ -5,6 +5,7 @@ namespace Shared.Models
 {
     public class User : Model
     {
+        public bool IsConsentGiven { get; set; }
         public string PhoneNumber { get; set; }
 
         public string Location { get; set; }
@@ -16,6 +17,8 @@ namespace Shared.Models
         public string ReminderTime { get; set; }
 
         public bool ContactEnabled { get; set; }
+
+        public string Language { get; set; }
 
         public User() : base()
         {

@@ -9,6 +9,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
+using Shared.Models;
 using Shared.Prompts;
 
 namespace Bot

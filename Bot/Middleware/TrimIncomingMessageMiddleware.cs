@@ -3,11 +3,11 @@ using Microsoft.Bot.Schema;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Shared.Middleware
+namespace Bot.Middleware
 {
     public class TrimIncomingMessageMiddleware : IMiddleware
     {
-        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
         {
             if (turnContext.Activity.Type == ActivityTypes.Message)
             {

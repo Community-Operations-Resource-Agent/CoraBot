@@ -32,7 +32,7 @@ namespace Bot.Dialogs
                     async (dialogContext, cancellationToken) =>
                     {
                         var user = await api.GetUser(dialogContext.Context);
-                        if (user == null)
+                        if (!user.IsConsentGiven)
                         {
                             return await BeginDialogAsync(dialogContext, NewUserDialog.Name, null, cancellationToken);
                         }

@@ -81,6 +81,10 @@ namespace Bot.Dialogs
 
                             await Messages.SendAsync(Phrases.Preferences.ContactEnabledUpdated(user.ContactEnabled), dialogContext.Context, cancellationToken);
                         }
+                        else if (string.Equals(result, Phrases.Options.Extended.Language, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return await BeginDialogAsync(dialogContext, LanguageDialog.Name, null, cancellationToken);
+                        }
                         else if (string.Equals(result, Phrases.Options.Extended.Feedback, StringComparison.OrdinalIgnoreCase))
                         {
                             return await BeginDialogAsync(dialogContext, FeedbackDialog.Name, null, cancellationToken);
