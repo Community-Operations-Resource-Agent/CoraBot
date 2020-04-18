@@ -30,9 +30,7 @@ namespace Bot.Dialogs.Preferences
                     {
                         return await dialogContext.PromptAsync(
                             Prompt.TextPrompt,
-                            new PromptOptions {
-                                Prompt = Phrases.Preferences.GetLanguage
-                            },
+                            new PromptOptions { Prompt = Phrases.Preferences.GetLanguage },
                             cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>

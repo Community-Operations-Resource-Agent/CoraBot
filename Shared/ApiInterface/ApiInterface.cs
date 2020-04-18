@@ -29,23 +29,33 @@ namespace Shared.ApiInterface
         Task<User> GetUser(ITurnContext turnContext);
 
         /// <summary>
+        /// Gets a user from a phone number.
+        /// </summary>
+        Task<User> GetUser(string phoneNumber);
+
+        /// <summary>
         /// Gets all user within a distance from coordinates.
         /// </summary>
         Task<List<User>> GetUsersWithinDistance(Point coordinates, double distanceMeters);
 
         /// <summary>
-        /// Checks if a user has any resources.
+        /// Gets all user within a distance from coordinates that also match the provided phone numbers.
         /// </summary>
-        Task<bool> UserHasResources(User user);
-
-        /// <summary>
-        /// Gets all resource for a user.
-        /// </summary>
-        Task<List<Resource>> GetResourcesForUser(User user);
+        Task<List<User>> GetUsersWithinDistance(Point coordinates, double distanceMeters, List<string> phoneNumbers);
 
         /// <summary>
         /// Gets a resource for a user.
         /// </summary>
         Task<Resource> GetResourceForUser(User user, string category, string resource);
+
+        /// <summary>
+        /// Gets a need for a user.
+        /// </summary>
+        Task<Need> GetNeedForUser(User user, string category, string resource);
+
+        /// <summary>
+        /// Gets a need from an ID.
+        /// </summary>
+        Task<Need> GetNeedById(string id);
     }
 }

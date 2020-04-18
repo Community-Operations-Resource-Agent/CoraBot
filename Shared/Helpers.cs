@@ -77,6 +77,19 @@ namespace Shared
         }
 
         /// <summary>
+        /// Checks if a resource matches a need
+        /// </summary>
+        public static bool DoesResourceMatchNeed(Need need, Resource resource)
+        {
+            if (need == null || resource == null)
+            {
+                return false;
+            }
+
+            return !need.UnopenedOnly || resource.IsUnopened;
+        }
+
+        /// <summary>
         /// Looks up a location from a string.
         /// </summary>
         public static async Task<LocationResult> StringToLocation(IConfiguration configuration, string location)

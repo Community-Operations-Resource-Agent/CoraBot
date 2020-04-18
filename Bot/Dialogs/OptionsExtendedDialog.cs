@@ -48,13 +48,7 @@ namespace Bot.Dialogs
                     {
                         var result = ((FoundChoice)dialogContext.Result).Value;
 
-                        if (string.Equals(result, Phrases.Options.Extended.ViewResources, StringComparison.OrdinalIgnoreCase))
-                        {
-                            var user = await this.api.GetUser(dialogContext.Context);
-                            var resources = await this.api.GetResourcesForUser(user);
-                            await Messages.SendAsync(Phrases.Options.Extended.GetResourceAvailability(resources), dialogContext.Context, cancellationToken);
-                        }
-                        else if (string.Equals(result, Phrases.Options.Extended.UpdateLocation, StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(result, Phrases.Options.Extended.UpdateLocation, StringComparison.OrdinalIgnoreCase))
                         {
                             return await BeginDialogAsync(dialogContext, LocationDialog.Name, null, cancellationToken);
                         }

@@ -17,7 +17,6 @@ namespace Shared.Prompts
         public static string DaysPrompt = "DaysPrompt";
         public static string CategoryPrompt = "CategoryPrompt";
         public static string ResourcePrompt = "ResourcePrompt";
-        public static string UpdateResourcePrompt = "UpdateResourcePrompt";
 
 
         /// <summary>
@@ -36,7 +35,6 @@ namespace Shared.Prompts
             dialogs.Add(new TextPrompt(DaysPrompt, DaysPromptValidator.Create()));
             dialogs.Add(new CustomChoicePrompt(CategoryPrompt, CategoryPromptValidator.Create()));
             dialogs.Add(new CustomChoicePrompt(ResourcePrompt, ResourcePromptValidator.Create()));
-            dialogs.Add(new CustomChoicePrompt(UpdateResourcePrompt, UpdateResourcePromptValidator.Create(api)));
         }
     }
 }

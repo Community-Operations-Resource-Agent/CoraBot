@@ -31,7 +31,6 @@ namespace Shared
                 $"supplies in case of an emergency and notify you if they are needed by local healthcare facilities. Throughout " +
                 $"this process I will protect your privacy and not share your phone number");
             public static Activity NoConsent = MessageFactory.Text("No problem! You can message me any time if you change your mind");
-            public static Activity Registered = MessageFactory.Text("You are now registered to help provide critical resources in case of an emergency!");
 
             public static Activity InvalidChannel(ITurnContext turnContext)
             {
@@ -46,14 +45,13 @@ namespace Shared
 
         public static class Options
         {
-            public static string Request = "Request resources";
-            public static string Provide = "Register new resources";
-            public static string Update = "Update existing resources";
+            public static string Request = "Register a need";
+            public static string Provide = "Register resources";
             public static string MoreOptions = "More options";
 
-            public static Activity GetOptions = MessageFactory.Text($"Here's what you can do {EnterNumber}");
+            public static Activity GetOptions = MessageFactory.Text($"Here are your options {EnterNumber}");
 
-            public static List<string> GetOptionsList(bool isVerifiedOrganization, bool hasResources)
+            public static List<string> GetOptionsList(bool isVerifiedOrganization)
             {
                 var list = new List<string>();
 
@@ -64,18 +62,12 @@ namespace Shared
 
                 list.Add(Provide);
 
-                if (hasResources)
-                {
-                    list.Add(Update);
-                }
-
                 list.Add(MoreOptions);
                 return list;
             }
 
             public static class Extended
             {
-                public static string ViewResources = "View your resource availability";
                 public static string UpdateLocation = "Update your location";
                 public static string ChangeDays = $"Change the days that {ProjectName} will contact you for updates";
                 public static string ChangeTime = $"Change the time that {ProjectName} will contact you for updates";
@@ -85,34 +77,14 @@ namespace Shared
                 public static string Feedback = "Provide feedback";
                 public static string GoBack = "Go back to the main menu";
 
-                public static Activity GetOptions = MessageFactory.Text($"Here are some more options {EnterNumber}");
-                public static Activity NoResources = MessageFactory.Text($"it looks like you haven't added any resources yet. You can add them from the main menu");
+                public static Activity GetOptions = MessageFactory.Text($"Let me know what you'd like to do. {EnterNumber}");
 
                 public static List<string> GetOptionsList(User user)
                 {
-                    var list = new List<string> { ViewResources, UpdateLocation, ChangeDays, ChangeTime };
+                    var list = new List<string> { UpdateLocation, ChangeDays, ChangeTime };
                     list.Add(user.ContactEnabled ? Disable : Enable);
                     list.AddRange(new string[] { Language, Feedback, GoBack });
                     return list;
-                }
-
-                public static Activity GetResourceAvailability(List<Resource> resources)
-                {
-                    if (resources.Count == 0)
-                    {
-                        return NoResources;
-                    }
-
-                    var text = "Here are your available resources:" + Helpers.NewLine;
-
-                    foreach (var resource in resources)
-                    {
-                        // Add a newline if there is already some text.
-                        text += string.IsNullOrEmpty(text) ? string.Empty : Helpers.NewLine;
-                        text += $"{resource.Name}: {resource.Quantity}";
-                    }
-
-                    return MessageFactory.Text(text);
                 }
             }
         }
@@ -169,8 +141,10 @@ namespace Shared
         public static class Provide
         {
             public static Activity GetCategory = MessageFactory.Text($"Which category of resource are you able to provide? {EnterNumber}");
-            public static Activity Another = MessageFactory.Text($"Would you like to register another resource? {EnterNumber}");
+            public static Activity GetIsUnopened = MessageFactory.Text($"Is this resource unopened? {EnterNumber}");
             public static Activity CompleteUpdate = MessageFactory.Text("Thank you for the update!");
+            public static Activity CompleteDelete = MessageFactory.Text("Thank you for the update! I have removed this resource from my records.");
+            public static Activity Another = MessageFactory.Text($"Would you like to register another resource? {EnterNumber}");
 
             public static Activity GetResource(string category)
             {
@@ -208,8 +182,11 @@ namespace Shared
         public static class Request
         {
             public static Activity Categories = MessageFactory.Text("Which category of resource are you looking for?");
+            public static Activity GetOpenedOkay = MessageFactory.Text("Are you willing to take items that have been opened?");
             public static Activity Instructions = MessageFactory.Text("What are your instructions for contact or delivery? You can include things like a phone number or a location");
-            public static Activity Sent = MessageFactory.Text("Your request has been sent! You will be contacted directly by anyone who responds to your request");
+            public static Activity CompleteCreate = MessageFactory.Text("Your request has been registered! You will be contacted directly by anyone who responds to your request");
+            public static Activity CompleteUpdate = MessageFactory.Text("Thank you for the update!");
+            public static Activity CompleteDelete = MessageFactory.Text("Thank you for the update! I have removed this request from my records.");
 
             public static Activity Resources(string category)
             {
@@ -220,23 +197,26 @@ namespace Shared
             {
                 return MessageFactory.Text($"What quantity of {resource} do you need? {EnterNumber}");
             }
+        }
 
-            public static Activity Distance(SchemaUnits units)
+        public static class Match
+        {
+            public static string GetMessage(string name, string resource, int quantity, string instructions)
             {
-                return MessageFactory.Text($"What distance would you like to broadcast your request? (enter {units.ToString().ToLower()})");
+                return $"{name} has a need for {quantity} {resource}. " +
+                    $"Here are their instructions: \"{instructions}\"";
             }
 
-            public static string GetOutgoingMessage(string name, string resource, int quantity, string instructions)
+            public static Activity Another(int remaining)
             {
-                return $"{name} has an immediate need for {quantity} {resource}. " +
-                    $"Here are their instructions: \"{instructions}\"";
+                return MessageFactory.Text($"Would you like me to send you another matching need? I have {remaining} more available. {EnterNumber}");
             }
         }
 
         public static class Feedback
         {
             public static Activity GetFeedback = MessageFactory.Text($"What would you like to let the {ProjectName} team know?");
-            public static Activity Thanks = MessageFactory.Text("Thanks for the feedback!");
+            public static Activity Thanks = MessageFactory.Text("Thank you for the feedback!");
         }
     }
 }

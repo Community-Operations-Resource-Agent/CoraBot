@@ -52,11 +52,10 @@ namespace Bot.Dialogs
                         var phoneNumber = PhoneNumber.Standardize(user.PhoneNumber);
                         var schema = Helpers.GetSchema();
                         bool isVerifiedOrganization = schema.VerifiedOrganizations.Any(o => o.PhoneNumbers.Contains(phoneNumber));
-                        bool hasResources = await this.api.UserHasResources(user);
 
                         // Prompt for an option.
                         var choices = new List<Choice>();
-                        Phrases.Options.GetOptionsList(isVerifiedOrganization, hasResources).ForEach(s => choices.Add(new Choice { Value = s }));
+                        Phrases.Options.GetOptionsList(isVerifiedOrganization).ForEach(s => choices.Add(new Choice { Value = s }));
 
                         return await dialogContext.PromptAsync(
                             Prompt.ChoicePrompt,
@@ -80,10 +79,6 @@ namespace Bot.Dialogs
                             else if (string.Equals(result, Phrases.Options.Provide, StringComparison.OrdinalIgnoreCase))
                             {
                                 return await BeginDialogAsync(dialogContext, ProvideDialog.Name, null, cancellationToken);
-                            }
-                            else if (string.Equals(result, Phrases.Options.Update, StringComparison.OrdinalIgnoreCase))
-                            {
-                                return await BeginDialogAsync(dialogContext, UpdateDialog.Name, null, cancellationToken);
                             }
                             else if (string.Equals(result, Phrases.Options.MoreOptions, StringComparison.OrdinalIgnoreCase))
                             {

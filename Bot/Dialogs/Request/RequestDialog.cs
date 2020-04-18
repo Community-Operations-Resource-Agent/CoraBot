@@ -8,6 +8,7 @@ using Shared.ApiInterface;
 using Shared.Models;
 using Shared.Prompts;
 using Shared.Storage;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -98,95 +99,123 @@ namespace Bot.Dialogs.Request
                     {
                         // Choice was validated in case the schema changed.
                         var selectedResource = ((FoundChoice)dialogContext.Result).Value;
-
                         if (selectedResource == Phrases.None)
                         {
                             return await dialogContext.EndDialogAsync(null, cancellationToken);
                         }
 
-                        // Store the resource in the user context.
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
                         userContext.Resource = selectedResource;
 
                         // Ask how many they need.
                         return await dialogContext.PromptAsync(
                             Prompt.IntPrompt,
-                            new PromptOptions
-                            {
-                                Prompt = Phrases.Request.GetQuantity(selectedResource)
-                            },
+                            new PromptOptions { Prompt = Phrases.Request.GetQuantity(selectedResource) },
                             cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        // Store the quantity in the user context.
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        userContext.RequestQuantity = (int)dialogContext.Result;
+                        userContext.NeedQuantity = (int)dialogContext.Result;
 
-                        var schema = Helpers.GetSchema();
+                        if (userContext.NeedQuantity == 0)
+                        {
+                            // Delete the need if it has already been added.
+                            var user = await api.GetUser(dialogContext.Context);
+                            var need = await this.api.GetNeedForUser(user, userContext.Category, userContext.Resource);
+                            if (need != null)
+                            {
+                                await this.api.Delete(need);
+                                await Messages.SendAsync(Phrases.Request.CompleteDelete, dialogContext.Context, cancellationToken);
+                            }
+                            else
+                            {
+                                await Messages.SendAsync(Phrases.Request.CompleteUpdate, dialogContext.Context, cancellationToken);
+                            }
 
-                        // Ask the distance they want to broadcast to.
+                            return await dialogContext.EndDialogAsync(null, cancellationToken);
+                        }
+
+                        // Ask whether or not they are willing to take opened items.
                         return await dialogContext.PromptAsync(
-                            Prompt.IntPrompt,
-                            new PromptOptions
-                            {
-                                Prompt = Phrases.Request.Distance(schema.Units)
-                            },
+                            Prompt.ConfirmPrompt,
+                            new PromptOptions { Prompt = Phrases.Request.GetOpenedOkay },
                             cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        // Store the distance in the user context.
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        userContext.RequestDistance = (int)dialogContext.Result;
+                        userContext.NeedUnopenedOnly = !(bool)dialogContext.Result;
 
                         // Ask for any instructions.
                         return await dialogContext.PromptAsync(
                             Prompt.TextPrompt,
-                            new PromptOptions
-                            {
-                                Prompt = Phrases.Request.Instructions
-                            },
+                            new PromptOptions { Prompt = Phrases.Request.Instructions },
                             cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        var instructions = (string)dialogContext.Result;
-
                         var schema = Helpers.GetSchema();
-                        var user = await api.GetUser(dialogContext.Context);
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
 
+                        // Check if they have already added this resource.
+                        var user = await api.GetUser(dialogContext.Context);
+                        var need = await this.api.GetNeedForUser(user, userContext.Category, userContext.Resource);
+
+                        // Create or update the need.
+                        if (need == null)
+                        {
+                            need = new Need();
+                            need.CreatedById = user.Id;
+                            need.Category = userContext.Category;
+                            need.Name = userContext.Resource;
+                            need.Quantity = userContext.NeedQuantity;
+                            need.UnopenedOnly = userContext.NeedUnopenedOnly;
+                            need.Instructions = (string)dialogContext.Result;
+                            await this.api.Create(need);
+                        }
+                        else
+                        {
+                            need.CreatedOn = DateTime.UtcNow;
+                            need.Quantity = userContext.NeedQuantity;
+                            need.UnopenedOnly = userContext.NeedUnopenedOnly;
+                            need.Instructions = (string)dialogContext.Result;
+                            await this.api.Update(need);
+                        }
+
                         // The API input requires meters.
-                        double requestMeters = schema.Units.ToMeters(userContext.RequestDistance);
+                        // Default is 50, but we could make this configurable in the future.
+                        double requestMeters = Units.Miles.ToMeters(50);
 
                         // Get all users within the distance from the user.
-                        var usersWithinDistance = await this.api.GetUsersWithinDistance(user.LocationCoordinates, userContext.RequestDistance);
-
+                        var usersWithinDistance = await this.api.GetUsersWithinDistance(user.LocationCoordinates, requestMeters);
                         if (usersWithinDistance.Count > 0)
                         {
                             var organization = schema.VerifiedOrganizations.FirstOrDefault(o => o.PhoneNumbers.Contains(user.PhoneNumber));
-                            var message = Phrases.Request.GetOutgoingMessage(organization.Name, userContext.Resource, userContext.RequestQuantity, instructions);
+                            var message = Phrases.Match.GetMessage(organization.Name, need.Name, need.Quantity, need.Instructions);
                             var queueHelper = new OutgoingMessageQueueHelpers(this.configuration.AzureWebJobsStorage());
 
                             // Get any matching resources for the users.
                             foreach (var userWithinDistance in usersWithinDistance)
                             {
-                                var resource = await this.api.GetResourceForUser(userWithinDistance, userContext.Category, userContext.Resource);
-                                if (resource != null)
-                                {
-                                    var data = new OutgoingMessageQueueData
-                                    {
-                                        PhoneNumber = userWithinDistance.PhoneNumber,
-                                        Message = message
-                                    };
+                                var resource = await this.api.GetResourceForUser(userWithinDistance, need.Category, need.Name);
 
-                                    await queueHelper.Enqueue(data);
+                                if (!Helpers.DoesResourceMatchNeed(need, resource))
+                                {
+                                    continue;
                                 }
+
+                                var data = new OutgoingMessageQueueData
+                                {
+                                    PhoneNumber = userWithinDistance.PhoneNumber,
+                                    Message = message
+                                };
+
+                                await queueHelper.Enqueue(data);
                             }
                         }
 
-                        await Messages.SendAsync(Phrases.Request.Sent, turnContext, cancellationToken);
+                        await Messages.SendAsync(Phrases.Request.CompleteCreate, turnContext, cancellationToken);
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });

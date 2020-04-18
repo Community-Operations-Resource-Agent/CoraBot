@@ -29,9 +29,7 @@ namespace Bot.Dialogs
                         // Prompt for feedback.
                         return await dialogContext.PromptAsync(
                             Prompt.TextPrompt,
-                            new PromptOptions {
-                                Prompt = Phrases.Feedback.GetFeedback
-                            },
+                            new PromptOptions { Prompt = Phrases.Feedback.GetFeedback },
                             cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>

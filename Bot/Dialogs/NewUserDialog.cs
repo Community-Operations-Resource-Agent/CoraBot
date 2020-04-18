@@ -56,7 +56,6 @@ namespace Bot.Dialogs
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        await Messages.SendAsync(Phrases.Greeting.Registered, dialogContext.Context, cancellationToken);
                         return await dialogContext.EndDialogAsync(true, cancellationToken);
                     },
                 });

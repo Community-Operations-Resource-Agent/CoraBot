@@ -1,6 +1,6 @@
 ﻿namespace Shared.Models
 {
-    public class Resource : Model
+    public class Need : Model
     {
         public string CreatedById { get; set; }
 
@@ -10,8 +10,8 @@
 
         public int Quantity { get; set; }
 
-        public bool IsUnopened { get; set; }
+        public bool UnopenedOnly { get; set; }
 
-        public bool CanShip { get; set; }
+        public string Instructions { get; set; }
     }
 }

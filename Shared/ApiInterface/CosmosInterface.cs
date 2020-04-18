@@ -78,9 +78,8 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets a user from a turn context.
         /// </summary>
-        public Task<User> GetUser(ITurnContext turnContext)
+        public async Task<User> GetUser(ITurnContext turnContext)
         {
-            User user = null;
             var userToken = Helpers.GetUserToken(turnContext);
 
             switch (turnContext.Activity.ChannelId)
@@ -88,18 +87,27 @@ namespace Shared.ApiInterface
                 case Channels.Emulator:
                 case Channels.Webchat:
                 case Channels.Sms:
-                    {
-                        user = this.client.CreateDocumentQuery<User>(
-                            UriFactory.CreateDocumentCollectionUri(
-                                this.config.CosmosDatabase(),
-                                this.config.CosmosUsersCollection()))
-                            .Where(u => u.PhoneNumber == userToken)
-                            .AsEnumerable()
-                            .FirstOrDefault();
-                    }
-                    break;
+                {
+                    return await GetUser(userToken);
+                }
                 default: Debug.Fail("Missing channel type"); break;
             }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets a user from a phone number.
+        /// </summary>
+        public Task<User> GetUser(string phoneNumber)
+        {
+            var user = this.client.CreateDocumentQuery<User>(
+                UriFactory.CreateDocumentCollectionUri(
+                    this.config.CosmosDatabase(),
+                    this.config.CosmosUsersCollection()))
+                .Where(u => u.PhoneNumber == phoneNumber)
+                .AsEnumerable()
+                .FirstOrDefault();
 
             return Task.FromResult(user);
         }
@@ -109,7 +117,6 @@ namespace Shared.ApiInterface
         /// </summary>
         public Task<List<User>> GetUsersWithinDistance(Point coordinates, double distanceMeters)
         {
-            // Get all users within the distance.
             var result = this.client.CreateDocumentQuery<User>(
                 UriFactory.CreateDocumentCollectionUri(
                     this.config.CosmosDatabase(),
@@ -122,34 +129,16 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Checks if a user has any resources.
+        /// Gets all user within a distance from coordinates that also match the provided phone numbers.
         /// </summary>
-        public Task<bool> UserHasResources(User user)
+        public Task<List<User>> GetUsersWithinDistance(Point coordinates, double distanceMeters, List<string> phoneNumbers)
         {
-            var result = this.client.CreateDocumentQuery<Resource>(
+            var result = this.client.CreateDocumentQuery<User>(
                 UriFactory.CreateDocumentCollectionUri(
                     this.config.CosmosDatabase(),
-                    this.config.CosmosResourcesCollection()), 
-                 GetPartitionedFeedOptions())
-                .Where(r => r.CreatedById == user.Id)
-                .Take(1)
-                .AsEnumerable()
-                .Any();
-
-            return Task.FromResult(result);
-        }
-
-        /// <summary>
-        /// Gets all resource for a user.
-        /// </summary>
-        public Task<List<Resource>> GetResourcesForUser(User user)
-        {
-            var result = this.client.CreateDocumentQuery<Resource>(
-                UriFactory.CreateDocumentCollectionUri(
-                    this.config.CosmosDatabase(),
-                    this.config.CosmosResourcesCollection()),
+                    this.config.CosmosUsersCollection()),
                 GetPartitionedFeedOptions())
-                .Where(r => r.CreatedById == user.Id)
+                .Where(u => phoneNumbers.Contains(u.PhoneNumber) && u.LocationCoordinates.Distance(coordinates) <= distanceMeters)
                 .ToList();
 
             return Task.FromResult(result);
@@ -172,6 +161,40 @@ namespace Shared.ApiInterface
             return Task.FromResult(result);
         }
 
+        /// <summary>
+        /// Gets a need for a user.
+        /// </summary>
+        public Task<Need> GetNeedForUser(User user, string category, string resource)
+        {
+            var result = this.client.CreateDocumentQuery<Need>(
+                UriFactory.CreateDocumentCollectionUri(
+                    this.config.CosmosDatabase(),
+                    this.config.CosmosNeedsCollection()),
+                GetPartitionedFeedOptions())
+                .Where(n => n.CreatedById == user.Id && n.Category == category && n.Name == resource)
+                .AsEnumerable()
+                .FirstOrDefault();
+
+            return Task.FromResult(result);
+        }
+
+        /// <summary>
+        /// Gets a need from an ID.
+        /// </summary>
+        public Task<Need> GetNeedById(string id)
+        {
+            var result = this.client.CreateDocumentQuery<Need>(
+                UriFactory.CreateDocumentCollectionUri(
+                    this.config.CosmosDatabase(),
+                    this.config.CosmosNeedsCollection()),
+                GetPartitionedFeedOptions())
+                .Where(n => n.Id == id)
+                .AsEnumerable()
+                .FirstOrDefault();
+
+            return Task.FromResult(result);
+        }
+
         private string GetCollection(Model model)
         {
             if (model is User)
@@ -181,6 +204,10 @@ namespace Shared.ApiInterface
             else if (model is Resource)
             {
                 return this.config.CosmosResourcesCollection();
+            }
+            else if (model is Need)
+            {
+                return this.config.CosmosNeedsCollection();
             }
             else if (model is Feedback)
             {
