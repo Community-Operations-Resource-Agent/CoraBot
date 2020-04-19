@@ -31,6 +31,9 @@ namespace Bot.Dialogs
                 {
                     async (dialogContext, cancellationToken) =>
                     {
+                        // Clear the user context when a new converation begins.
+                        await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
+
                         var user = await api.GetUser(dialogContext.Context);
                         if (!user.IsConsentGiven)
                         {
@@ -90,9 +93,6 @@ namespace Bot.Dialogs
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        // Clear the user context when a new converation begins.
-                        await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
-
                         return await dialogContext.ReplaceDialogAsync(MasterDialog.Name, null, cancellationToken);
                     }
                 });

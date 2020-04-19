@@ -58,6 +58,12 @@ namespace Bot
                 // Create the master dialog.
                 var masterDialog = new MasterDialog(this.state, this.dialogs, this.api, this.configuration);
 
+                // If the user sends the update keyword, clear the dialog stack and start a new session.
+                if (string.Equals(turnContext.Activity.Text, Phrases.Keywords.Update, StringComparison.OrdinalIgnoreCase))
+                {
+                    await dialogContext.CancelAllDialogsAsync(cancellationToken);
+                }
+
                 // Attempt to continue any existing conversation.
                 DialogTurnResult result = await masterDialog.ContinueDialogAsync(dialogContext, cancellationToken);
 

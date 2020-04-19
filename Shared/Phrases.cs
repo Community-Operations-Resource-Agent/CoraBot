@@ -22,6 +22,11 @@ namespace Shared
             public static string Error = $"Sorry, it looks like something went wrong";
         }
 
+        public static class Keywords
+        {
+            public static string Update = "Update";
+        }
+
         public static class Greeting
         {
             public static Activity Welcome = MessageFactory.Text("Welcome back!");
@@ -33,7 +38,7 @@ namespace Shared
                 $"this process I will protect your privacy and not share your phone number");
             public static Activity NoConsent = MessageFactory.Text("No problem! You can message me any time if you change your mind");
 
-            public static string RemindToUpdate = $"Hi, this is {ProjectName} reaching out for an update. Reply \"ok\" when you are ready.";
+            public static string RemindToUpdate = $"Hi, this is {ProjectName} reaching out for an update. Reply \"{Keywords.Update}\" when you are ready.";
 
             public static Activity InvalidChannel(ITurnContext turnContext)
             {
