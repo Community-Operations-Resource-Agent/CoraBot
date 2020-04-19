@@ -8,6 +8,7 @@ using Shared.ApiInterface;
 using Shared.Models;
 using Shared.Prompts;
 using Shared.Storage;
+using Shared.Translation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,8 +21,13 @@ namespace Bot.Dialogs.Request
     {
         public static string Name = typeof(RequestDialog).FullName;
 
-        public RequestDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+        Translator translator;
+
+        public RequestDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, Translator translator)
+            : base(state, dialogs, api, configuration)
+        {
+            this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
+        }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
         {
@@ -195,6 +201,9 @@ namespace Bot.Dialogs.Request
                             var message = Phrases.Match.GetMessage(organization.Name, need.Name, need.Quantity, need.Instructions);
                             var queueHelper = new OutgoingMessageQueueHelpers(this.configuration.AzureWebJobsStorage());
 
+                            // Cache any translations to limit API calls.
+                            var translationCache = new Dictionary<string, string>();
+
                             // Get any matching resources for the users.
                             foreach (var userWithinDistance in usersWithinDistance)
                             {
@@ -203,6 +212,23 @@ namespace Bot.Dialogs.Request
                                 if (!Helpers.DoesResourceMatchNeed(need, resource))
                                 {
                                     continue;
+                                }
+
+                                // Check if the user's language is already cached.
+                                if (translationCache.TryGetValue(user.Language, out var translation))
+                                {
+                                    message = translation;
+                                }
+                                else
+                                {
+                                    // Translate the message if necessary.
+                                    if (translator.IsConfigured && user.Language != Translator.DefaultLanguage)
+                                    {
+                                        message = await translator.TranslateAsync(message, user.Language);
+                                    }
+
+                                    // Cache the message
+                                    translationCache.Add(user.Language, message);
                                 }
 
                                 var data = new OutgoingMessageQueueData
@@ -215,7 +241,7 @@ namespace Bot.Dialogs.Request
                             }
                         }
 
-                        await Messages.SendAsync(Phrases.Request.CompleteCreate, turnContext, cancellationToken);
+                        await Messages.SendAsync(Phrases.Request.CompleteCreate(user), turnContext, cancellationToken);
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });

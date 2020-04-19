@@ -3,6 +3,14 @@
     public static class PhoneNumber
     {
         /// <summary>
+        /// Simple validation of a phone number.
+        /// </summary>
+        public static bool IsValid(string phoneNumber)
+        {
+            return phoneNumber.Length == 12 && phoneNumber.StartsWith("+1");
+        }
+
+        /// <summary>
         /// Converts a phone number to +1XXXYYYZZZZ format.
         /// </summary>
         public static string Standardize(string phoneNumber)

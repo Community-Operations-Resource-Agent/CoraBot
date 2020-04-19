@@ -113,6 +113,21 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
+        /// Gets all users.
+        /// </summary>
+        public Task<List<User>> GetUsers()
+        {
+            var result = this.client.CreateDocumentQuery<User>(
+                UriFactory.CreateDocumentCollectionUri(
+                    this.config.CosmosDatabase(),
+                    this.config.CosmosUsersCollection()),
+                GetPartitionedFeedOptions())
+                .ToList();
+
+            return Task.FromResult(result);
+        }
+
+        /// <summary>
         /// Gets all user within a distance from coordinates.
         /// </summary>
         public Task<List<User>> GetUsersWithinDistance(Point coordinates, double distanceMeters)

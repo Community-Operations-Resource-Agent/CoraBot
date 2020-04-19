@@ -25,7 +25,7 @@ namespace Shared.Translation
             this.IsConfigured = !string.IsNullOrEmpty(configuration.TranslationSubscriptionKey()) && !string.IsNullOrEmpty(configuration.TranslationUrlFormat());
         }
 
-        public async Task<string> TranslateAsync(string text, string targetLocale, CancellationToken cancellationToken)
+        public async Task<string> TranslateAsync(string text, string targetLocale, CancellationToken cancellationToken = default)
         {
             var result = await TranslateToDataAsync(text, targetLocale, cancellationToken);
             return result?.Translations?.FirstOrDefault()?.Text;

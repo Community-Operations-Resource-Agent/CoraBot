@@ -4,11 +4,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bot.State;
-using Microsoft.Azure.Cosmos;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Shared.ApiInterface;
-using Shared.Models;
 using Shared.Translation;
 
 namespace Bot.Middleware

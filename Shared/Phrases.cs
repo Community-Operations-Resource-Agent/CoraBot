@@ -3,6 +3,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Shared.Models;
 using Shared.Models.Helpers;
+using System;
 using System.Collections.Generic;
 
 namespace Shared
@@ -14,7 +15,7 @@ namespace Shared
         public static List<string> ValidChannels = new List<string>() { Channels.Emulator, Channels.Sms, Channels.Webchat };
 
         public static string EnterNumber = "(enter a number)";
-        public static string None = "None";
+        public static string None = "None of these";
 
         public static class Exceptions
         {
@@ -31,6 +32,8 @@ namespace Shared
                 $"supplies in case of an emergency and notify you if they are needed by local healthcare facilities. Throughout " +
                 $"this process I will protect your privacy and not share your phone number");
             public static Activity NoConsent = MessageFactory.Text("No problem! You can message me any time if you change your mind");
+
+            public static string RemindToUpdate = $"Hi, this is {ProjectName} reaching out for an update. Reply \"ok\" when you are ready.";
 
             public static Activity InvalidChannel(ITurnContext turnContext)
             {
@@ -136,6 +139,18 @@ namespace Shared
             {
                 return MessageFactory.Text($"{PreferenceUpdated}!");
             }
+
+            public static string GetReminderFrequency(User user)
+            {
+                if (user.ContactEnabled)
+                {
+                    return $"I will contact you *{user.ReminderFrequency.ToString()}* to update your need. This frequency and time can be customized from the options menu.";
+                }
+                else
+                {
+                    return "Your contact preference is disabled, so please make sure to update your availability as it changes.";
+                }
+            }
         }
 
         public static class Provide
@@ -159,16 +174,7 @@ namespace Shared
             public static Activity CompleteCreate(User user)
             {
                 var text = "Thank you for making your resources available to the community! I will reach out if a need arises that matches your resources.";
-                
-                if (user.ContactEnabled)
-                {
-                    text += $" I will also contact you *{user.ReminderFrequency.ToString()}* to update your availability. This frequency can be customized from the options menu";
-                }
-                else
-                {
-                    text += $" Your contact preference is disabled, so please make sure to update your availability as it changes!";
-                }
-
+                text += $" {Preferences.GetReminderFrequency(user)}";
                 return MessageFactory.Text(text);
             }
 
@@ -184,7 +190,6 @@ namespace Shared
             public static Activity Categories = MessageFactory.Text("Which category of resource are you looking for?");
             public static Activity GetOpenedOkay = MessageFactory.Text("Are you willing to take items that have been opened?");
             public static Activity Instructions = MessageFactory.Text("What are your instructions for contact or delivery? You can include things like a phone number or a location");
-            public static Activity CompleteCreate = MessageFactory.Text("Your request has been registered! You will be contacted directly by anyone who responds to your request");
             public static Activity CompleteUpdate = MessageFactory.Text("Thank you for the update!");
             public static Activity CompleteDelete = MessageFactory.Text("Thank you for the update! I have removed this request from my records.");
 
@@ -196,6 +201,13 @@ namespace Shared
             public static Activity GetQuantity(string resource)
             {
                 return MessageFactory.Text($"What quantity of {resource} do you need? {EnterNumber}");
+            }
+
+            public static Activity CompleteCreate(User user)
+            {
+                var text = "Your request has been registered! You will be contacted directly by anyone who responds to your request.";
+                text += $" {Preferences.GetReminderFrequency(user)}";
+                return MessageFactory.Text(text);
             }
         }
 

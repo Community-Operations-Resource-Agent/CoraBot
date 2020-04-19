@@ -34,6 +34,11 @@ namespace Shared.ApiInterface
         Task<User> GetUser(string phoneNumber);
 
         /// <summary>
+        /// Gets all users.
+        /// </summary>
+        Task<List<User>> GetUsers();
+
+        /// <summary>
         /// Gets all user within a distance from coordinates.
         /// </summary>
         Task<List<User>> GetUsersWithinDistance(Point coordinates, double distanceMeters);

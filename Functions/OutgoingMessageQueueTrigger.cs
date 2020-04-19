@@ -37,10 +37,9 @@ namespace Functions
 
         public static async Task DoWork(IConfiguration configuration, OutgoingMessageQueueData queueData, ILogger log = null)
         {
-            //var api = new CosmosInterface(configuration);
-
             if (string.IsNullOrEmpty(queueData.PhoneNumber) ||
-                string.IsNullOrEmpty(queueData.Message))
+                string.IsNullOrEmpty(queueData.Message) ||
+                !PhoneNumber.IsValid(queueData.PhoneNumber))
             {
                 return;
             }
