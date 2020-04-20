@@ -6,6 +6,7 @@ namespace Shared.Models
     public class User : Model
     {
         public bool IsConsentGiven { get; set; }
+
         public string PhoneNumber { get; set; }
 
         public string Location { get; set; }

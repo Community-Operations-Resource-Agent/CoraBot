@@ -14,6 +14,11 @@ namespace Shared.ApiInterface
         Task Init();
 
         /// <summary>
+        /// Removes all data from the data store. Make sure you REALLY want to do this!
+        /// </summary>
+        Task Destroy();
+
+        /// <summary>
         /// Creates a new record.
         /// </summary>
         Task<string> Create<T>(T model) where T : Model;

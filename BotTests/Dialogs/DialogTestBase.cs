@@ -7,10 +7,12 @@ using Bot.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
+using Shared.Models;
 using Shared.Prompts;
 using Shared.Translation;
 using Xunit;
@@ -55,9 +57,12 @@ namespace BotTests.Dialogs
             await this.api.Init();
         }
 
-        public Task DisposeAsync() => Task.CompletedTask;
+        public async Task DisposeAsync()
+        {
+            await this.api.Destroy();
+        }
 
-        protected TestFlow CreateTestFlow(string dialogName, string channelOverride = null)
+        protected TestFlow CreateTestFlow(string dialogName, bool userConsentGiven = true)
         {
             return new TestFlow(this.adapter, async (turnContext, cancellationToken) =>
             {
@@ -95,6 +100,9 @@ namespace BotTests.Dialogs
                         // Clear the user context when a new conversation begins.
                         await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
 
+                        // Tests must init the user once there is a turn context.
+                        await InitUser(userConsentGiven);
+
                         // Difference for tests here is beginning the given dialog instead of master so that individual dialog flows can be tested.
                         await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
                     }
@@ -111,6 +119,13 @@ namespace BotTests.Dialogs
                 Assert.NotNull(received);
                 Assert.StartsWith(expected.Text, received.Text);
             };
+        }
+
+        async Task InitUser(bool userConsentGiven)
+        {
+            var user = await this.api.GetUser(this.turnContext);
+            user.IsConsentGiven = userConsentGiven;
+            await this.api.Update(user);
         }
     }
 }

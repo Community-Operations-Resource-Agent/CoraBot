@@ -32,7 +32,6 @@ namespace Shared.ApiInterface
         /// </summary>
         public async Task Init()
         {
-            // Make sure the database and all collections exist.
             var databaseResponse = await this.client.CreateDatabaseIfNotExistsAsync(this.config.CosmosDatabase());
             var database = databaseResponse.Database;
 
@@ -41,6 +40,15 @@ namespace Shared.ApiInterface
             await database.CreateContainerIfNotExistsAsync(this.config.CosmosNeedsContainer(), "/Category");
             await database.CreateContainerIfNotExistsAsync(this.config.CosmosResourcesContainer(), "/Category");
             await database.CreateContainerIfNotExistsAsync(this.config.CosmosFeedbackContainer(), "/id");
+        }
+
+        /// <summary>
+        /// Removes all data from the data store. Make sure you REALLY want to do this!
+        /// </summary>
+        public async Task Destroy()
+        {
+            var database = this.client.GetDatabase(this.config.CosmosDatabase());
+            await database.DeleteAsync();
         }
 
         /// <summary>
