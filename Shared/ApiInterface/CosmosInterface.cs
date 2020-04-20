@@ -1,12 +1,11 @@
-﻿using Microsoft.Azure.Documents.Client;
-using Microsoft.Azure.Documents.Spatial;
+﻿using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
+using Microsoft.Azure.Cosmos.Spatial;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.Extensions.Configuration;
 using Shared.Models;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,67 +17,81 @@ namespace Shared.ApiInterface
     public class CosmosInterface : IApiInterface
     {
         private IConfiguration config;
-        private DocumentClient client;
+        private CosmosClient client;
+        private Database database;
 
         public CosmosInterface(IConfiguration config)
         {
             this.config = config;
-            this.client = new DocumentClient(new Uri(config.CosmosEndpoint()), config.CosmosKey());
-            this.client.OpenAsync();
+            this.client = new CosmosClient(config.CosmosEndpoint(), config.CosmosKey());
+            this.database = this.client.GetDatabase(this.config.CosmosDatabase());
+        }
+
+        /// <summary>
+        /// Does any initialization required for the data store.
+        /// </summary>
+        public async Task Init()
+        {
+            // Make sure the database and all collections exist.
+            var databaseResponse = await this.client.CreateDatabaseIfNotExistsAsync(this.config.CosmosDatabase());
+            var database = databaseResponse.Database;
+
+            await database.CreateContainerIfNotExistsAsync(this.config.CosmosConversationsContainer(), "/id");
+            await database.CreateContainerIfNotExistsAsync(this.config.CosmosUsersContainer(), "/PhoneNumber");
+            await database.CreateContainerIfNotExistsAsync(this.config.CosmosNeedsContainer(), "/Category");
+            await database.CreateContainerIfNotExistsAsync(this.config.CosmosResourcesContainer(), "/Category");
+            await database.CreateContainerIfNotExistsAsync(this.config.CosmosFeedbackContainer(), "/id");
         }
 
         /// <summary>
         /// Creates a new record.
         /// </summary>
-        public async Task<string> Create(Model model)
+        public async Task<string> Create<T>(T model) where T : Model
         {
-            var collection = GetCollection(model);
-            if (string.IsNullOrEmpty(collection))
+            var container = GetContainer(model);
+            if (container == null)
             {
                 return string.Empty;
             }
 
-            var collectionUri = UriFactory.CreateDocumentCollectionUri(this.config.CosmosDatabase(), collection);
-            await client.CreateDocumentAsync(collectionUri, model);
-            return model.Id;
+            var response = await container.CreateItemAsync(model, new PartitionKey(GetPartitionKey(model)));
+            return response.Resource.Id;
         }
 
         /// <summary>
         /// Deletes a record.
         /// </summary>
-        public async Task<bool> Delete(Model model)
+        public async Task<bool> Delete<T>(T model) where T : Model
         {
-            var collection = GetCollection(model);
-            if (string.IsNullOrEmpty(collection))
+            var container = GetContainer(model);
+            if (container == null)
             {
                 return false;
             }
 
-            var documentUri = UriFactory.CreateDocumentUri(this.config.CosmosDatabase(), collection, model.Id);
-            await client.DeleteDocumentAsync(documentUri);
+            await container.DeleteItemAsync<Model>(model.Id, new PartitionKey(GetPartitionKey(model)));
             return true;
         }
 
         /// <summary>
         /// Saves changes to a record.
         /// </summary>
-        public async Task<bool> Update(Model model)
+        public async Task<bool> Update<T>(T model) where T : Model
         {
-            var collection = GetCollection(model);
-            if (string.IsNullOrEmpty(collection))
+            var container = GetContainer(model);
+            if (container == null)
             {
                 return false;
             }
 
-            var documentUri = UriFactory.CreateDocumentUri(this.config.CosmosDatabase(), collection, model.Id);
-            await client.ReplaceDocumentAsync(documentUri, model);
+            await container.ReplaceItemAsync(model, model.Id, new PartitionKey(GetPartitionKey(model)));
             return true;
         }
 
         /// <summary>
         /// Gets a user from a turn context.
         /// </summary>
-        public async Task<User> GetUser(ITurnContext turnContext)
+        public async Task<Models.User> GetUser(ITurnContext turnContext)
         {
             var userToken = Helpers.GetUserToken(turnContext);
 
@@ -90,151 +103,204 @@ namespace Shared.ApiInterface
                 {
                     return await GetUser(userToken);
                 }
-                default: Debug.Fail("Missing channel type"); break;
+                default: return null;
             }
-
-            return null;
         }
 
         /// <summary>
         /// Gets a user from a phone number.
         /// </summary>
-        public Task<User> GetUser(string phoneNumber)
+        public async Task<Models.User> GetUser(string phoneNumber)
         {
-            var user = this.client.CreateDocumentQuery<User>(
-                UriFactory.CreateDocumentCollectionUri(
-                    this.config.CosmosDatabase(),
-                    this.config.CosmosUsersCollection()))
-                .Where(u => u.PhoneNumber == phoneNumber)
-                .AsEnumerable()
-                .FirstOrDefault();
+            var container = this.database.GetContainer(this.config.CosmosUsersContainer());
+            if (container == null)
+            {
+                return null;
+            }
 
-            return Task.FromResult(user);
+            var queryIterator = container.GetItemLinqQueryable<Models.User>()
+                .Where(u => u.PhoneNumber == phoneNumber)
+                .ToFeedIterator();
+
+            var response = await queryIterator.ReadNextAsync();
+            return response.Resource.FirstOrDefault();
         }
 
         /// <summary>
         /// Gets all users.
         /// </summary>
-        public Task<List<User>> GetUsers()
+        public async Task<List<Models.User>> GetUsers()
         {
-            var result = this.client.CreateDocumentQuery<User>(
-                UriFactory.CreateDocumentCollectionUri(
-                    this.config.CosmosDatabase(),
-                    this.config.CosmosUsersCollection()),
-                GetPartitionedFeedOptions())
-                .ToList();
+            var container = this.database.GetContainer(this.config.CosmosUsersContainer());
+            if (container == null)
+            {
+                return null;
+            }
 
-            return Task.FromResult(result);
+            var queryIterator = container.GetItemLinqQueryable<Models.User>()
+                .ToFeedIterator();
+
+            var result = new List<Models.User>();
+
+            while (queryIterator.HasMoreResults)
+            {
+                var response = await queryIterator.ReadNextAsync();
+                result.AddRange(response.Resource);
+            }
+
+            return result;
         }
 
         /// <summary>
         /// Gets all user within a distance from coordinates.
         /// </summary>
-        public Task<List<User>> GetUsersWithinDistance(Point coordinates, double distanceMeters)
+        public async Task<List<Models.User>> GetUsersWithinDistance(Point coordinates, double distanceMeters)
         {
-            var result = this.client.CreateDocumentQuery<User>(
-                UriFactory.CreateDocumentCollectionUri(
-                    this.config.CosmosDatabase(),
-                    this.config.CosmosUsersCollection()),
-                GetPartitionedFeedOptions())
-                .Where(u => u.LocationCoordinates.Distance(coordinates) <= distanceMeters)
-                .ToList();
+            var container = this.database.GetContainer(this.config.CosmosUsersContainer());
+            if (container == null)
+            {
+                return null;
+            }
 
-            return Task.FromResult(result);
+            var queryIterator = container.GetItemLinqQueryable<Models.User>()
+                .Where(u => u.LocationCoordinates.Distance(coordinates) <= distanceMeters)
+                .ToFeedIterator();
+
+            var result = new List<Models.User>();
+
+            while (queryIterator.HasMoreResults)
+            {
+                var response = await queryIterator.ReadNextAsync();
+                result.AddRange(response.Resource);
+            }
+
+            return result;
         }
 
         /// <summary>
         /// Gets all user within a distance from coordinates that also match the provided phone numbers.
         /// </summary>
-        public Task<List<User>> GetUsersWithinDistance(Point coordinates, double distanceMeters, List<string> phoneNumbers)
+        public async Task<List<Models.User>> GetUsersWithinDistance(Point coordinates, double distanceMeters, List<string> phoneNumbers)
         {
-            var result = this.client.CreateDocumentQuery<User>(
-                UriFactory.CreateDocumentCollectionUri(
-                    this.config.CosmosDatabase(),
-                    this.config.CosmosUsersCollection()),
-                GetPartitionedFeedOptions())
-                .Where(u => phoneNumbers.Contains(u.PhoneNumber) && u.LocationCoordinates.Distance(coordinates) <= distanceMeters)
-                .ToList();
+            var container = this.database.GetContainer(this.config.CosmosUsersContainer());
+            if (container == null)
+            {
+                return null;
+            }
 
-            return Task.FromResult(result);
+            var queryIterator = container.GetItemLinqQueryable<Models.User>()
+                .Where(u => u.LocationCoordinates.Distance(coordinates) <= distanceMeters && phoneNumbers.Contains(u.PhoneNumber))
+                .ToFeedIterator();
+
+            var result = new List<Models.User>();
+
+            while (queryIterator.HasMoreResults)
+            {
+                var response = await queryIterator.ReadNextAsync();
+                result.AddRange(response.Resource);
+            }
+
+            return result;
         }
 
         /// <summary>
         /// Gets a resource for a user.
         /// </summary>
-        public Task<Resource> GetResourceForUser(User user, string category, string resource)
+        public async Task<Resource> GetResourceForUser(Models.User user, string category, string resource)
         {
-            var result = this.client.CreateDocumentQuery<Resource>(
-                UriFactory.CreateDocumentCollectionUri(
-                    this.config.CosmosDatabase(),
-                    this.config.CosmosResourcesCollection()),
-                GetPartitionedFeedOptions())
-                .Where(r => r.CreatedById == user.Id && r.Category == category && r.Name == resource)
-                .AsEnumerable()
-                .FirstOrDefault();
+            var container = this.database.GetContainer(this.config.CosmosResourcesContainer());
+            if (container == null)
+            {
+                return null;
+            }
 
-            return Task.FromResult(result);
+            var queryIterator = container.GetItemLinqQueryable<Resource>()
+                .Where(r => r.CreatedById == user.Id && r.Category == category && r.Name == resource)
+                .ToFeedIterator();
+
+            var response = await queryIterator.ReadNextAsync();
+            return response.Resource.FirstOrDefault();
         }
 
         /// <summary>
         /// Gets a need for a user.
         /// </summary>
-        public Task<Need> GetNeedForUser(User user, string category, string resource)
+        public async Task<Need> GetNeedForUser(Models.User user, string category, string resource)
         {
-            var result = this.client.CreateDocumentQuery<Need>(
-                UriFactory.CreateDocumentCollectionUri(
-                    this.config.CosmosDatabase(),
-                    this.config.CosmosNeedsCollection()),
-                GetPartitionedFeedOptions())
-                .Where(n => n.CreatedById == user.Id && n.Category == category && n.Name == resource)
-                .AsEnumerable()
-                .FirstOrDefault();
+            var container = this.database.GetContainer(this.config.CosmosNeedsContainer());
+            if (container == null)
+            {
+                return null;
+            }
 
-            return Task.FromResult(result);
+            var queryIterator = container.GetItemLinqQueryable<Need>()
+                .Where(n => n.CreatedById == user.Id && n.Category == category && n.Name == resource)
+                .ToFeedIterator();
+
+            var response = await queryIterator.ReadNextAsync();
+            return response.Resource.FirstOrDefault();
         }
 
         /// <summary>
         /// Gets a need from an ID.
         /// </summary>
-        public Task<Need> GetNeedById(string id)
+        public async Task<Need> GetNeedById(string id)
         {
-            var result = this.client.CreateDocumentQuery<Need>(
-                UriFactory.CreateDocumentCollectionUri(
-                    this.config.CosmosDatabase(),
-                    this.config.CosmosNeedsCollection()),
-                GetPartitionedFeedOptions())
-                .Where(n => n.Id == id)
-                .AsEnumerable()
-                .FirstOrDefault();
+            var container = this.database.GetContainer(this.config.CosmosNeedsContainer());
+            if (container == null)
+            {
+                return null;
+            }
 
-            return Task.FromResult(result);
+            var queryIterator = container.GetItemLinqQueryable<Need>()
+                .Where(n => n.Id == id)
+                .ToFeedIterator();
+
+            var response = await queryIterator.ReadNextAsync();
+            return response.Resource.FirstOrDefault();
         }
 
-        private string GetCollection(Model model)
+        private Container GetContainer(Model model)
         {
-            if (model is User)
+            if (model is Models.User)
             {
-                return this.config.CosmosUsersCollection();
+                return this.database.GetContainer(this.config.CosmosUsersContainer());
             }
             else if (model is Resource)
             {
-                return this.config.CosmosResourcesCollection();
+                return this.database.GetContainer(this.config.CosmosResourcesContainer());
             }
             else if (model is Need)
             {
-                return this.config.CosmosNeedsCollection();
+                return this.database.GetContainer(this.config.CosmosNeedsContainer());
             }
             else if (model is Feedback)
             {
-                return this.config.CosmosFeedbackCollection();
+                return this.database.GetContainer(this.config.CosmosFeedbackContainer());
             }
-            else
-            {
-                Debug.Assert(false, "Add the new type");
-                return string.Empty;
-            }
+
+            return null;
         }
 
+        private string GetPartitionKey(Model model)
+        {
+            if (model is Models.User)
+            {
+                return ((Models.User)model).PhoneNumber;
+            }
+            else if (model is Resource)
+            {
+                return ((Resource)model).Category;
+            }
+            else if (model is Need)
+            {
+                return ((Need)model).Category;
+            }
+
+            return model.Id;
+        }
+
+        /*
         private FeedOptions GetPartitionedFeedOptions()
         {
             // From https://docs.microsoft.com/en-us/azure/cosmos-db/performance-tips
@@ -252,5 +318,6 @@ namespace Shared.ApiInterface
                 MaxItemCount = -1,
             };
         }
+        */
     }
 }

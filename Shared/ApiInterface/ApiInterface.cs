@@ -1,4 +1,4 @@
-﻿using Microsoft.Azure.Documents.Spatial;
+﻿using Microsoft.Azure.Cosmos.Spatial;
 using Microsoft.Bot.Builder;
 using Shared.Models;
 using System.Collections.Generic;
@@ -9,19 +9,24 @@ namespace Shared.ApiInterface
     public interface IApiInterface
     {
         /// <summary>
+        /// Does any initialization required for the data store.
+        /// </summary>
+        Task Init();
+
+        /// <summary>
         /// Creates a new record.
         /// </summary>
-        Task<string> Create(Model model);
+        Task<string> Create<T>(T model) where T : Model;
 
         /// <summary>
         /// Deletes a record.
         /// </summary>
-        Task<bool> Delete(Model model);
+        Task<bool> Delete<T>(T model) where T : Model;
 
         /// <summary>
         /// Saves changes to a record.
         /// </summary>
-        Task<bool> Update(Model model);
+        Task<bool> Update<T>(T model) where T : Model;
 
         /// <summary>
         /// Gets a user from a turn context.

@@ -105,7 +105,7 @@ namespace Shared
 
             private const string GetCurrentTimeExample = "You can say things like \"8:30 am\" or \"12:15 pm\"";
             private const string GetUpdateTimeExample = "You can say things like \"8 am\" or \"12 pm\"";
-            private const string GetUpdateDaysExample = "You can say things like \"M,W,F\", \"weekdays\", \"weekends\", or \"everyday\"";
+            private const string GetUpdateDaysExample = "You can say things like \"M,W,F\", \"Sa,Su\", \"weekdays\", \"weekends\", or \"everyday\"";
 
             private const string PreferenceUpdated = "Your contact preference has been updated";
 

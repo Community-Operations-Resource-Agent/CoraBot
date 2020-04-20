@@ -43,27 +43,27 @@ namespace Shared
         /// <summary>
         /// The name of the setting that contains the CosmosDB conversations collection.
         /// </summary>
-        private const string CosmosConversationsCollectionSettingName = "CosmosDb:Conversations:Collection";
+        private const string CosmosConversationsContainerSettingName = "CosmosDb:Conversations:Collection";
 
         /// <summary>
         /// The name of the setting that contains the CosmosDB users collection.
         /// </summary>
-        private const string CosmosUsersCollectionSettingName = "CosmosDb:Users:Collection";
+        private const string CosmosUsersContainerSettingName = "CosmosDb:Users:Collection";
 
         /// <summary>
         /// The name of the setting that contains the CosmosDB resources collection.
         /// </summary>
-        private const string CosmosResourcesCollectionSettingName = "CosmosDb:Resources:Collection";
+        private const string CosmosResourcesContainerSettingName = "CosmosDb:Resources:Collection";
 
         /// <summary>
         /// The name of the setting that contains the CosmosDB needs collection.
         /// </summary>
-        private const string CosmosNeedsCollectionSettingName = "CosmosDb:Needs:Collection";
+        private const string CosmosNeedsContainerSettingName = "CosmosDb:Needs:Collection";
 
         /// <summary>
         /// The name of the setting that contains the CosmosDB feedback collection.
         /// </summary>
-        private const string CosmosFeedbackCollectionSettingName = "CosmosDb:Feedback:Collection";
+        private const string CosmosFeedbackContainerSettingName = "CosmosDb:Feedback:Collection";
 
         /// <summary>
         /// The name of the setting that contains the ApplicationInsights config.
@@ -155,29 +155,29 @@ namespace Shared
             return configuration.GetValue<string>(CosmosDatabaseSettingName);
         }
 
-        public static string CosmosConversationsCollection(this IConfiguration configuration)
+        public static string CosmosConversationsContainer(this IConfiguration configuration)
         {
-            return configuration.GetValue<string>(CosmosConversationsCollectionSettingName);
+            return configuration.GetValue<string>(CosmosConversationsContainerSettingName);
         }
 
-        public static string CosmosUsersCollection(this IConfiguration configuration)
+        public static string CosmosUsersContainer(this IConfiguration configuration)
         {
-            return configuration.GetValue<string>(CosmosUsersCollectionSettingName);
+            return configuration.GetValue<string>(CosmosUsersContainerSettingName);
         }
 
-        public static string CosmosResourcesCollection(this IConfiguration configuration)
+        public static string CosmosResourcesContainer(this IConfiguration configuration)
         {
-            return configuration.GetValue<string>(CosmosResourcesCollectionSettingName);
+            return configuration.GetValue<string>(CosmosResourcesContainerSettingName);
         }
 
-        public static string CosmosNeedsCollection(this IConfiguration configuration)
+        public static string CosmosNeedsContainer(this IConfiguration configuration)
         {
-            return configuration.GetValue<string>(CosmosNeedsCollectionSettingName);
+            return configuration.GetValue<string>(CosmosNeedsContainerSettingName);
         }
 
-        public static string CosmosFeedbackCollection(this IConfiguration configuration)
+        public static string CosmosFeedbackContainer(this IConfiguration configuration)
         {
-            return configuration.GetValue<string>(CosmosFeedbackCollectionSettingName);
+            return configuration.GetValue<string>(CosmosFeedbackContainerSettingName);
         }
 
         public static string LuisAppId(this IConfiguration configuration)

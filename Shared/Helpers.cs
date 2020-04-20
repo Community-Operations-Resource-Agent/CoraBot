@@ -32,7 +32,7 @@ namespace Shared
                 case Channels.Emulator:
                 case Channels.Webchat: return turnContext.Activity.From.Id;
                 case Channels.Sms: return PhoneNumber.Standardize(turnContext.Activity.From.Id);
-                default: Debug.Fail("Missing channel type"); return string.Empty;
+                default: return string.Empty;
             }
         }
 

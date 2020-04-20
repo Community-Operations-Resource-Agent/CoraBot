@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Bot.Connector.Authentication;
-using Shared.ApiInterface;
-using Shared;
-using System.Diagnostics;
 using Bot.State;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Shared.Translation;
 using Bot.Middleware;
+using Shared;
+using Shared.ApiInterface;
+using Shared.Translation;
+using System.Diagnostics;
 
 namespace Bot
 {

@@ -1,5 +1,5 @@
 ﻿using Bot.State;
-using Microsoft.Azure.Documents.Spatial;
+using Microsoft.Azure.Cosmos.Spatial;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
