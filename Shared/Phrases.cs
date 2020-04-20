@@ -12,7 +12,7 @@ namespace Shared
     {
         public const string ProjectName = "CORA";
         public const string ProjectWebsite = "Bing.com/CORA";
-        public static List<string> ValidChannels = new List<string>() { Channels.Emulator, Channels.Sms, Channels.Webchat };
+        public static List<string> ValidChannels = new List<string>() { Channels.Emulator, Channels.Sms };
 
         public static string EnterNumber = "(enter a number)";
         public static string None = "None of these";

@@ -94,17 +94,7 @@ namespace Shared.ApiInterface
         public async Task<Models.User> GetUser(ITurnContext turnContext)
         {
             var userToken = Helpers.GetUserToken(turnContext);
-
-            switch (turnContext.Activity.ChannelId)
-            {
-                case Channels.Emulator:
-                case Channels.Webchat:
-                case Channels.Sms:
-                {
-                    return await GetUser(userToken);
-                }
-                default: return null;
-            }
+            return await GetUser(userToken);
         }
 
         /// <summary>
