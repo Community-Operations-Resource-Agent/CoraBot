@@ -1,13 +1,18 @@
 ﻿using System.Threading.Tasks;
 using Bot.Dialogs;
+using BotTests.Setup;
 using Microsoft.Bot.Schema;
 using Shared;
 using Xunit;
 
 namespace BotTests.Dialogs
 {
+    [Collection(TestCollectionName)]
     public class MasterDialogTests : DialogTestBase
     {
+        public MasterDialogTests(TestFixture fixture) : base(fixture)
+        { }
+
         [Fact]
         public async Task NewUser()
         {

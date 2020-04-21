@@ -4,62 +4,50 @@ using System.Threading.Tasks;
 using Bot.Dialogs;
 using Bot.Middleware;
 using Bot.State;
+using BotTests.Setup;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
-using Shared.Models;
 using Shared.Prompts;
-using Shared.Translation;
 using Xunit;
 
 namespace BotTests.Dialogs
 {
-    public abstract class DialogTestBase : IAsyncLifetime
+    public abstract class DialogTestBase
     {
+        protected const string TestCollectionName = "TestCollection";
+
         protected readonly StateAccessors state;
         protected readonly DialogSet dialogs;
-        protected readonly IApiInterface api;
         protected readonly TestAdapter adapter;
-        private readonly IConfiguration configuration;
+
+        protected readonly TestFixture fixture;
 
         protected ITurnContext turnContext;
         protected CancellationToken cancellationToken;
 
-        protected DialogTestBase()
+        protected IConfiguration Configuration { get { return fixture?.Configuration; } }
+        protected IApiInterface Api { get { return fixture?.Api; } }
+
+        protected DialogTestBase(TestFixture fixture)
         {
-            this.configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.Test.json", optional: false, reloadOnChange: true)
-                .Build();
+            this.fixture = fixture;
 
             this.state = StateAccessors.Create();
             this.dialogs = new DialogSet(state.DialogContextAccessor);
-            this.api = new CosmosInterface(configuration);
-
-            var translator = new Translator(this.configuration);
 
             this.adapter = new TestAdapter()
-                .Use(new TestChannelMiddleware(this.configuration))
+                .Use(new TestChannelMiddleware(fixture.Configuration))
                 .Use(new AutoSaveStateMiddleware(state.ConversationState))
                 .Use(new TrimIncomingMessageMiddleware())
-                .Use(new CreateUserMiddleware(this.api))
-                .Use(new TranslationMiddleware(this.api, this.state, translator));
+                .Use(new CreateUserMiddleware(fixture.Api))
+                .Use(new TranslationMiddleware(fixture.Api, this.state, fixture.Translator));
 
-            Prompt.Register(this.dialogs, this.configuration, this.api);
-        }
-
-        public async Task InitializeAsync()
-        {
-            await this.api.Init();
-        }
-
-        public async Task DisposeAsync()
-        {
-            await this.api.Destroy();
+            Prompt.Register(this.dialogs, fixture.Configuration, fixture.Api);
         }
 
         protected TestFlow CreateTestFlow(string dialogName, bool userConsentGiven = true)
@@ -82,7 +70,7 @@ namespace BotTests.Dialogs
                     }
 
                     // Create the master dialog.
-                    var masterDialog = new MasterDialog(this.state, this.dialogs, this.api, this.configuration);
+                    var masterDialog = new MasterDialog(this.state, this.dialogs, this.Api, this.Configuration);
 
                     // If the user sends the update keyword, clear the dialog stack and start a new update.
                     if (string.Equals(turnContext.Activity.Text, Phrases.Keywords.Update, StringComparison.OrdinalIgnoreCase))
@@ -123,9 +111,9 @@ namespace BotTests.Dialogs
 
         async Task InitUser(bool userConsentGiven)
         {
-            var user = await this.api.GetUser(this.turnContext);
+            var user = await this.Api.GetUser(this.turnContext);
             user.IsConsentGiven = userConsentGiven;
-            await this.api.Update(user);
+            await this.Api.Update(user);
         }
     }
 }

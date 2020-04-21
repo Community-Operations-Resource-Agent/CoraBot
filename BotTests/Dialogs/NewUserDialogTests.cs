@@ -1,13 +1,18 @@
 ﻿using System.Threading.Tasks;
 using Bot.Dialogs;
+using BotTests.Setup;
 using Microsoft.Bot.Schema;
 using Shared;
 using Xunit;
 
 namespace BotTests.Dialogs
 {
+    [Collection(TestCollectionName)]
     public class NewUserDialogTests : DialogTestBase
     {
+        public NewUserDialogTests(TestFixture fixture) : base(fixture)
+        { }
+
         [Fact]
         public async Task ConsentNotGiven()
         {
@@ -16,7 +21,7 @@ namespace BotTests.Dialogs
                 .Test("2", Phrases.Greeting.NoConsent)
                 .StartTestAsync();
 
-            var user = await this.api.GetUser(this.turnContext);
+            var user = await this.Api.GetUser(this.turnContext);
             Assert.Null(user);
         }
 
@@ -29,7 +34,7 @@ namespace BotTests.Dialogs
                 .AssertReply(Phrases.Preferences.GetLocation)
                 .StartTestAsync();
 
-            var user = await this.api.GetUser(this.turnContext);
+            var user = await this.Api.GetUser(this.turnContext);
             Assert.NotNull(user);
         }
     }
