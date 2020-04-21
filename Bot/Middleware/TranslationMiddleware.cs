@@ -98,6 +98,12 @@ namespace Bot.Middleware
 
             var user = await api.GetUser(turnContext);
 
+            // User can be null if they do not consent and their record is deleted.
+            if (user == null)
+            {
+                return;
+            }
+
             // Translate messages sent to the user to the user's language.
             if (user.Language != Translator.DefaultLanguage)
             {

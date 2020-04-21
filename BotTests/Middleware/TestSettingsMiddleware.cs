@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 
 namespace Bot.Middleware
 {
-    public class TestChannelMiddleware : IMiddleware
+    public class TestSettingsMiddleware : IMiddleware
     {
-        private IConfiguration configuration;
+        const string DefaultFromId = "user1";
 
-        public TestChannelMiddleware(IConfiguration configuration)
+        IConfiguration configuration;
+
+        public TestSettingsMiddleware(IConfiguration configuration)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
@@ -23,6 +25,13 @@ namespace Bot.Middleware
             if (!string.IsNullOrEmpty(channelId))
             {
                 turnContext.Activity.ChannelId = channelId;
+            }
+
+            // The default ID causes collisions when multiple tests run at once.
+            // Need something unique for each test that runs.
+            if (turnContext.Activity.From.Id == DefaultFromId)
+            {
+                turnContext.Activity.From.Id = Guid.NewGuid().ToString();
             }
 
             // Invoke the next middleware.

@@ -41,7 +41,7 @@ namespace BotTests.Dialogs
             this.dialogs = new DialogSet(state.DialogContextAccessor);
 
             this.adapter = new TestAdapter()
-                .Use(new TestChannelMiddleware(fixture.Configuration))
+                .Use(new TestSettingsMiddleware(fixture.Configuration))
                 .Use(new AutoSaveStateMiddleware(state.ConversationState))
                 .Use(new TrimIncomingMessageMiddleware())
                 .Use(new CreateUserMiddleware(fixture.Api))
