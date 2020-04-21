@@ -28,5 +28,15 @@ namespace BotTests.Dialogs
                 .Test("test", StartsWith(Phrases.Options.GetOptions))
                 .StartTestAsync();
         }
+
+        [Fact]
+        public async Task UpdateKeyword()
+        {
+            await CreateTestFlow(MasterDialog.Name)
+                .Test("test", StartsWith(Phrases.Options.GetOptions))
+                .Test("2", StartsWith(Phrases.Options.Extended.GetOptions))
+                .Test(Phrases.Keywords.Update, StartsWith(Phrases.Options.GetOptions))
+                .StartTestAsync();
+        }
     }
 }
