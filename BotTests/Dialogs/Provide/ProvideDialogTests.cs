@@ -171,5 +171,191 @@ namespace BotTests.Dialogs.Provide
             Assert.Equal(TestHelpers.DefaultQuantity, existingResource.Quantity);
             Assert.Equal(TestHelpers.DefaultIsUnopened, existingResource.IsUnopened);
         }
+
+        [Fact]
+        public async Task NoMatchDistance()
+        {
+            var schema = Helpers.GetSchema();
+            var category = schema.Categories.First();
+            var resource = category.Resources.First();
+
+            var org = schema.VerifiedOrganizations.First();
+
+            var orgUser = new User
+            {
+                PhoneNumber = org.PhoneNumbers.First(),
+                LocationCoordinates = TestHelpers.LocationCoordinatesNewYork
+            };
+            await this.Api.Create(orgUser);
+
+            var orgNeed = new Need
+            {
+                CreatedById = orgUser.Id,
+                Category = category.Name,
+                Name = resource.Name,
+                Quantity = TestHelpers.DefaultQuantity,
+                UnopenedOnly = TestHelpers.DefaultIsUnopened,
+                Instructions = TestHelpers.DefaultInstructions
+            };
+            await this.Api.Create(orgNeed);
+
+            await CreateTestFlow(ProvideDialog.Name)
+                .Send("test")
+                .StartTestAsync();
+
+            var user = await this.Api.GetUser(this.turnContext);
+            user.LocationCoordinates = TestHelpers.LocationCoordinatesSeattle;
+            await this.Api.Update(user);
+
+            await CreateTestFlow(ProvideDialog.Name)
+                .AssertReply(StartsWith(Phrases.Provide.GetResource(category.Name)))
+                .Test(resource.Name, StartsWith(Phrases.Provide.GetQuantity(resource.Name)))
+                .Test(TestHelpers.DefaultQuantity.ToString(), StartsWith(Phrases.Provide.GetIsUnopened))
+                .Test(TestHelpers.DefaultIsUnopened.ToString(), Phrases.Provide.CompleteCreate(user))
+                .AssertReply(StartsWith(Phrases.Provide.Another))
+                .StartTestAsync();
+        }
+
+        /*
+        [Fact]
+        public async Task NoMatchCategory()
+        {
+            // Needs multiple categories
+            // Need to use schema that isn't in the project so
+            // that it can be configured differently for tests.
+        }
+        */
+
+        [Fact]
+        public async Task NoMatchResource()
+        {
+            var schema = Helpers.GetSchema();
+            var category = schema.Categories.First();
+            var resource = category.Resources.First();
+
+            var org = schema.VerifiedOrganizations.First();
+
+            var orgUser = new User
+            {
+                PhoneNumber = org.PhoneNumbers.First(),
+                LocationCoordinates = TestHelpers.LocationCoordinatesSeattle
+            };
+            await this.Api.Create(orgUser);
+
+            var orgNeed = new Need
+            {
+                CreatedById = orgUser.Id,
+                Category = category.Name,
+                Name = category.Resources.Last().Name,
+                Quantity = TestHelpers.DefaultQuantity,
+                UnopenedOnly = TestHelpers.DefaultIsUnopened,
+                Instructions = TestHelpers.DefaultInstructions
+            };
+            await this.Api.Create(orgNeed);
+
+            await CreateTestFlow(ProvideDialog.Name)
+                .Send("test")
+                .StartTestAsync();
+
+            var user = await this.Api.GetUser(this.turnContext);
+            user.LocationCoordinates = TestHelpers.LocationCoordinatesSeattle;
+            await this.Api.Update(user);
+
+            await CreateTestFlow(ProvideDialog.Name)
+                .AssertReply(StartsWith(Phrases.Provide.GetResource(category.Name)))
+                .Test(resource.Name, StartsWith(Phrases.Provide.GetQuantity(resource.Name)))
+                .Test(TestHelpers.DefaultQuantity.ToString(), StartsWith(Phrases.Provide.GetIsUnopened))
+                .Test(TestHelpers.DefaultIsUnopened.ToString(), Phrases.Provide.CompleteCreate(user))
+                .AssertReply(StartsWith(Phrases.Provide.Another))
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task NoMatchOpened()
+        {
+            var schema = Helpers.GetSchema();
+            var category = schema.Categories.First();
+            var resource = category.Resources.First();
+
+            var org = schema.VerifiedOrganizations.First();
+
+            var orgUser = new User
+            {
+                PhoneNumber = org.PhoneNumbers.First(),
+                LocationCoordinates = TestHelpers.LocationCoordinatesSeattle
+            };
+            await this.Api.Create(orgUser);
+
+            var orgNeed = new Need
+            {
+                CreatedById = orgUser.Id,
+                Category = category.Name,
+                Name = category.Resources.Last().Name,
+                Quantity = TestHelpers.DefaultQuantity,
+                UnopenedOnly = TestHelpers.DefaultIsUnopened,
+                Instructions = TestHelpers.DefaultInstructions
+            };
+            await this.Api.Create(orgNeed);
+
+            await CreateTestFlow(ProvideDialog.Name)
+                .Send("test")
+                .StartTestAsync();
+
+            var user = await this.Api.GetUser(this.turnContext);
+            user.LocationCoordinates = TestHelpers.LocationCoordinatesSeattle;
+            await this.Api.Update(user);
+
+            await CreateTestFlow(ProvideDialog.Name)
+                .AssertReply(StartsWith(Phrases.Provide.GetResource(category.Name)))
+                .Test(resource.Name, StartsWith(Phrases.Provide.GetQuantity(resource.Name)))
+                .Test(TestHelpers.DefaultQuantity.ToString(), StartsWith(Phrases.Provide.GetIsUnopened))
+                .Test("false", Phrases.Provide.CompleteCreate(user))
+                .AssertReply(StartsWith(Phrases.Provide.Another))
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task MatchOpened()
+        {
+            var schema = Helpers.GetSchema();
+            var category = schema.Categories.First();
+            var resource = category.Resources.First();
+
+            var org = schema.VerifiedOrganizations.First();
+
+            var orgUser = new User
+            {
+                PhoneNumber = org.PhoneNumbers.First(),
+                LocationCoordinates = TestHelpers.LocationCoordinatesSeattle
+            };
+            await this.Api.Create(orgUser);
+
+            var orgNeed = new Need
+            {
+                CreatedById = orgUser.Id,
+                Category = category.Name,
+                Name = resource.Name,
+                Quantity = TestHelpers.DefaultQuantity,
+                UnopenedOnly = false,
+                Instructions = TestHelpers.DefaultInstructions
+            };
+            await this.Api.Create(orgNeed);
+
+            await CreateTestFlow(ProvideDialog.Name)
+                .Send("test")
+                .StartTestAsync();
+
+            var user = await this.Api.GetUser(this.turnContext);
+            user.LocationCoordinates = TestHelpers.LocationCoordinatesSeattle;
+            await this.Api.Update(user);
+
+            await CreateTestFlow(ProvideDialog.Name)
+                .AssertReply(StartsWith(Phrases.Provide.GetResource(category.Name)))
+                .Test(resource.Name, StartsWith(Phrases.Provide.GetQuantity(resource.Name)))
+                .Test(TestHelpers.DefaultQuantity.ToString(), StartsWith(Phrases.Provide.GetIsUnopened))
+                .Test("false", Phrases.Provide.CompleteCreate(user))
+                .AssertReply(Phrases.Match.GetMessage(org.Name, orgNeed.Name, orgNeed.Quantity, orgNeed.Instructions))
+                .StartTestAsync();
+        }
     }
 }

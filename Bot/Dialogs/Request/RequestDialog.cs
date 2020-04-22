@@ -23,10 +23,10 @@ namespace Bot.Dialogs.Request
 
         Translator translator;
 
-        public RequestDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, Translator translator)
+        public RequestDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
             : base(state, dialogs, api, configuration)
         {
-            this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
+            this.translator = new Translator(configuration);
         }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
