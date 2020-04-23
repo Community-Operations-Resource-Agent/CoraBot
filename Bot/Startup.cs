@@ -81,15 +81,10 @@ namespace Bot
                 // This should be the first middleware called in order to catch state changes by any other middleware or the bot.
                 options.Middleware.Add(new AutoSaveStateMiddleware(state.ConversationState));
 
+                options.Middleware.Add(new InitApiMiddleware(api));
                 options.Middleware.Add(new TypingMiddleware());
-
-                // Trim the incoming message.
                 options.Middleware.Add(new TrimIncomingMessageMiddleware());
-
-                // Make sure the user object is available.
                 options.Middleware.Add(new CreateUserMiddleware(api));
-
-                // Translate the messages if necessary.
                 options.Middleware.Add(new TranslationMiddleware(api, state, translator));
             });
         }

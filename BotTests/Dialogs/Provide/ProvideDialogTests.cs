@@ -357,5 +357,71 @@ namespace BotTests.Dialogs.Provide
                 .AssertReply(Phrases.Match.GetMessage(org.Name, orgNeed.Name, orgNeed.Quantity, orgNeed.Instructions))
                 .StartTestAsync();
         }
+
+        [Fact]
+        public async Task MultipleMatches()
+        {
+            var schema = Helpers.GetSchema();
+            var category = schema.Categories.First();
+            var resource = category.Resources.First();
+
+            var org1 = schema.VerifiedOrganizations.First();
+            var org2 = schema.VerifiedOrganizations.Last();
+
+            var orgUser1 = new User
+            {
+                PhoneNumber = org1.PhoneNumbers.First(),
+                LocationCoordinates = TestHelpers.LocationCoordinatesSeattle
+            };
+            await this.Api.Create(orgUser1);
+
+            var orgUser2 = new User
+            {
+                PhoneNumber = org2.PhoneNumbers.First(),
+                LocationCoordinates = TestHelpers.LocationCoordinatesSeattle
+            };
+            await this.Api.Create(orgUser2);
+
+            var orgNeed1 = new Need
+            {
+                CreatedById = orgUser1.Id,
+                Category = category.Name,
+                Name = resource.Name,
+                Quantity = TestHelpers.DefaultQuantity,
+                UnopenedOnly = TestHelpers.DefaultIsUnopened,
+                Instructions = TestHelpers.DefaultInstructions
+            };
+            await this.Api.Create(orgNeed1);
+
+            var orgNeed2 = new Need
+            {
+                CreatedById = orgUser2.Id,
+                Category = category.Name,
+                Name = resource.Name,
+                Quantity = TestHelpers.DefaultQuantity,
+                UnopenedOnly = TestHelpers.DefaultIsUnopened,
+                Instructions = TestHelpers.DefaultInstructions
+            };
+            await this.Api.Create(orgNeed2);
+
+            await CreateTestFlow(ProvideDialog.Name)
+                .Send("test")
+                .StartTestAsync();
+
+            var user = await this.Api.GetUser(this.turnContext);
+            user.LocationCoordinates = TestHelpers.LocationCoordinatesSeattle;
+            await this.Api.Update(user);
+
+            await CreateTestFlow(ProvideDialog.Name)
+                .AssertReply(StartsWith(Phrases.Provide.GetResource(category.Name)))
+                .Test(resource.Name, StartsWith(Phrases.Provide.GetQuantity(resource.Name)))
+                .Test(TestHelpers.DefaultQuantity.ToString(), StartsWith(Phrases.Provide.GetIsUnopened))
+                .Test(TestHelpers.DefaultIsUnopened.ToString(), Phrases.Provide.CompleteCreate(user))
+                .AssertReply(Phrases.Match.GetMessage(org1.Name, orgNeed1.Name, orgNeed1.Quantity, orgNeed1.Instructions))
+                .AssertReply(StartsWith(Phrases.Match.Another(1)))
+                .Test("true", Phrases.Match.GetMessage(org2.Name, orgNeed2.Name, orgNeed2.Quantity, orgNeed2.Instructions))
+                .AssertReply(StartsWith(Phrases.Provide.Another))
+                .StartTestAsync();
+        }
     }
 }
