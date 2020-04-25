@@ -1,4 +1,5 @@
-![Deploy Bot to Azure Function App](https://github.com/Community-Operations-Resource-Agent/CoraBot/workflows/Deploy%20Bot%20to%20Azure%20Function%20App/badge.svg?branch=master)
+![Build CoraBot](https://github.com/Community-Operations-Resource-Agent/CoraBot/workflows/Build%20CoraBot/badge.svg?branch=master) ![Deploy Bot to Azure Function App](https://github.com/Community-Operations-Resource-Agent/CoraBot/workflows/Deploy%20Bot%20to%20Azure%20Function%20App/badge.svg?branch=master)
+
 # About CoraBot
 Welcome to the open source implementation of the Resource Connector for Nonprofits - a bot-based Azure Function that handles incoming & outgoing messages.  The bot currently leverages SMS (via Twilio) for connecting people.  This is currently an ACTIVE and OPEN SOURCE project.
 
