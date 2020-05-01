@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using BotAgentRemi.State;
 using BotAgentRemi.Dialogs.NewUser;
+using Shared;
 
 namespace BotAgentRemi.Dialogs
 {
@@ -30,6 +31,13 @@ namespace BotAgentRemi.Dialogs
                     {
                         // Clear the user context when a new converation begins.
                         await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
+
+
+                        // TODO
+                        await Messages.SendAsync("I'm not yet up and running. Coming soon!", turnContext, cancellationToken);
+                        return await dialogContext.EndDialogAsync(null, cancellationToken);
+
+
 
                         var user = await api.GetUser(dialogContext.Context);
                         if (!user.IsConsentGiven)
