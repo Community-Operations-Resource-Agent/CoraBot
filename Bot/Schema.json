@@ -23,7 +23,7 @@
     {
       "Name": "Medical Supplies",
       "Resources": [
-        { "Name": "N-95 Masks" },
+        { "Name": "Masks" },
         { "Name": "Face Shields" },
         { "Name": "Eye Protection" },
         { "Name": "Respiration Tubes" },
