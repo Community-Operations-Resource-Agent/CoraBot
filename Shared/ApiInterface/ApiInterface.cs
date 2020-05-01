@@ -49,28 +49,18 @@ namespace Shared.ApiInterface
         Task<List<User>> GetUsers();
 
         /// <summary>
-        /// Gets all user within a distance from coordinates.
+        /// Gets all users within a distance from coordinates.
         /// </summary>
         Task<List<User>> GetUsersWithinDistance(Point coordinates, double distanceMeters);
 
         /// <summary>
-        /// Gets all user within a distance from coordinates that also match the provided phone numbers.
+        /// Gets all missions for a user.
         /// </summary>
-        Task<List<User>> GetUsersWithinDistance(Point coordinates, double distanceMeters, List<string> phoneNumbers);
+        Task<List<Mission>> GetMissionsForUser(User user, bool createdByUser, bool isAssigned);
 
         /// <summary>
-        /// Gets a resource for a user.
+        /// Gets a mission from an ID.
         /// </summary>
-        Task<Resource> GetResourceForUser(User user, string category, string resource);
-
-        /// <summary>
-        /// Gets a need for a user.
-        /// </summary>
-        Task<Need> GetNeedForUser(User user, string category, string resource);
-
-        /// <summary>
-        /// Gets a need from an ID.
-        /// </summary>
-        Task<Need> GetNeedById(string id);
+        Task<Mission> GetMissionById(string id);
     }
 }

@@ -1,4 +1,4 @@
-﻿using BotAgentRemi.State;
+﻿using Greyshirt.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
@@ -9,7 +9,7 @@ using Shared.Prompts;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BotAgentRemi.Dialogs
+namespace Greyshirt.Dialogs
 {
     public class FeedbackDialog : DialogBase
     {

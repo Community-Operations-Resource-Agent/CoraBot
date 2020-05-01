@@ -5,13 +5,15 @@ using Microsoft.Extensions.Configuration;
 using Shared.ApiInterface;
 using System.Threading;
 using System.Threading.Tasks;
+using Shared;
 using Shared.Prompts;
 using System;
 using System.Collections.Generic;
-using BotAgentRemi.State;
-using BotAgentRemi.Dialogs.NewUser;
+using Greyshirt.Dialogs.NewMission;
+using Greyshirt.Dialogs.NewUser;
+using Greyshirt.State;
 
-namespace BotAgentRemi.Dialogs
+namespace Greyshirt.Dialogs
 {
     public class MasterDialog : DialogBase
     {
@@ -67,10 +69,17 @@ namespace BotAgentRemi.Dialogs
                         {
                             var result = choice.Value;
 
-                            if (string.Equals(result, "TODO", StringComparison.OrdinalIgnoreCase))
+                            if (string.Equals(result, Phrases.Options.NewMission, StringComparison.OrdinalIgnoreCase))
                             {
-                                // TODO
-                                //return await BeginDialogAsync(dialogContext, NewMissionDialog.Name, null, cancellationToken);
+                                return await BeginDialogAsync(dialogContext, NewMissionDialog.Name, null, cancellationToken);
+                            }
+                            else if (string.Equals(result, Phrases.Options.MoreOptions, StringComparison.OrdinalIgnoreCase))
+                            {
+                                return await BeginDialogAsync(dialogContext, OptionsExtendedDialog.Name, null, cancellationToken);
+                            }
+                            else if (string.Equals(result, Phrases.Options.WhatIsMission, StringComparison.OrdinalIgnoreCase))
+                            {
+                                await Messages.SendAsync(Phrases.Options.MissionExplaination, turnContext, cancellationToken);
                             }
                         }
 

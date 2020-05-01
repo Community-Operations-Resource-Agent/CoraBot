@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using BotAgentRemi.Dialogs;
-using BotAgentRemi.State;
+using Greyshirt.Dialogs;
+using Greyshirt.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -11,7 +11,7 @@ using Shared;
 using Shared.ApiInterface;
 using Shared.Prompts;
 
-namespace BotAgentRemi
+namespace Greyshirt
 {
     public class TheBot : IBot
     {

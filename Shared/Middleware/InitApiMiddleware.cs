@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.Bot.Builder;
+using Shared.ApiInterface;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
-using Shared.ApiInterface;
 
-namespace BotAgentRemi.Middleware
+namespace Shared.Middleware
 {
     public class InitApiMiddleware : IMiddleware
     {

@@ -5,8 +5,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Shared.Models;
 using System;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -33,59 +31,6 @@ namespace Shared
                 case Channels.Sms: return PhoneNumber.Standardize(turnContext.Activity.From.Id);
                 default: return string.Empty;
             }
-        }
-
-        /// <summary>
-        /// Validates the schema. Returns the error if any.
-        /// </summary>
-        public static string ValidateSchema()
-        {
-            try
-            {
-                GetSchema();
-                return string.Empty;
-            }
-            catch (Exception e)
-            {
-                return e.Message;
-            }
-        }
-
-        /// <summary>
-        /// Retrieves the schema.
-        /// </summary>
-        public static SchemaResponse GetSchema()
-        {
-            // TODO: Get from Azure
-            using (StreamReader reader = new StreamReader("Schema.json"))
-            {
-                string json = reader.ReadToEnd();
-                var schema = JsonConvert.DeserializeObject<SchemaResponse>(json);
-
-                // Standardize all phone numbers.
-                foreach (var org in schema.VerifiedOrganizations)
-                {
-                    for (int numberIndex = 0; numberIndex < org.PhoneNumbers.Count; ++numberIndex)
-                    {
-                        org.PhoneNumbers[numberIndex] = PhoneNumber.Standardize(org.PhoneNumbers[numberIndex]);
-                    }
-                }
-
-                return schema;
-            }
-        }
-
-        /// <summary>
-        /// Checks if a resource matches a need
-        /// </summary>
-        public static bool DoesResourceMatchNeed(Need need, Resource resource)
-        {
-            if (need == null || resource == null)
-            {
-                return false;
-            }
-
-            return !need.UnopenedOnly || resource.IsUnopened;
         }
 
         /// <summary>

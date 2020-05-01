@@ -1,5 +1,5 @@
-﻿using BotAgentRemi.Dialogs.Preferences;
-using BotAgentRemi.State;
+﻿using Greyshirt.Dialogs.Preferences;
+using Greyshirt.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BotAgentRemi.Dialogs
+namespace Greyshirt.Dialogs
 {
     public class OptionsExtendedDialog : DialogBase
     {

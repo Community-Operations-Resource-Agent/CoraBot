@@ -56,9 +56,9 @@ namespace Shared
         private const string CosmosResourcesContainerSettingName = "CosmosDb:Resources:Collection";
 
         /// <summary>
-        /// The name of the setting that contains the CosmosDB needs collection.
+        /// The name of the setting that contains the CosmosDB missions collection.
         /// </summary>
-        private const string CosmosNeedsContainerSettingName = "CosmosDb:Needs:Collection";
+        private const string CosmosMissionsContainerSettingName = "CosmosDb:Missions:Collection";
 
         /// <summary>
         /// The name of the setting that contains the CosmosDB feedback collection.
@@ -170,9 +170,9 @@ namespace Shared
             return configuration.GetValue<string>(CosmosResourcesContainerSettingName);
         }
 
-        public static string CosmosNeedsContainer(this IConfiguration configuration)
+        public static string CosmosMissionsContainer(this IConfiguration configuration)
         {
-            return configuration.GetValue<string>(CosmosNeedsContainerSettingName);
+            return configuration.GetValue<string>(CosmosMissionsContainerSettingName);
         }
 
         public static string CosmosFeedbackContainer(this IConfiguration configuration)

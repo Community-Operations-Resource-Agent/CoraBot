@@ -1,15 +1,18 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using BotAgentRemi.Dialogs.Preferences;
-using BotAgentRemi.State;
+﻿using Greyshirt.Dialogs.Preferences;
+using Greyshirt.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
 using Shared.Prompts;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace BotAgentRemi.Dialogs
+namespace Greyshirt.Dialogs.NewUser
 {
     public class NewUserDialog : DialogBase
     {
@@ -27,34 +30,45 @@ namespace BotAgentRemi.Dialogs
                     async (dialogContext, cancellationToken) =>
                     {
                         // Welcome and ask for consent.
+                        var choices = new List<Choice>();
+                        Phrases.NewUser.ConsentOptions.ForEach(s => choices.Add(new Choice { Value = s }));
+
                         return await dialogContext.PromptAsync(
-                            Prompt.ConfirmPrompt,
-                            new PromptOptions { Prompt = Phrases.Greeting.WelcomeNew },
+                            Prompt.ChoicePrompt,
+                            new PromptOptions()
+                            {
+                                Prompt = Phrases.Greeting.WelcomeNew,
+                                Choices = choices
+                            },
                             cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
+                        var result = (dialogContext.Result as FoundChoice).Value;
                         var user = await api.GetUser(dialogContext.Context);
 
-                        if (!(bool)dialogContext.Result)
+                        if (string.Equals(result, Phrases.NewUser.ConsentNo, StringComparison.OrdinalIgnoreCase))
                         {
                             // Did not consent. Delete their user record.
                             await this.api.Delete(user);
 
-                            await Messages.SendAsync(Phrases.Greeting.NoConsent, dialogContext.Context, cancellationToken);
+                            await Messages.SendAsync(Phrases.NewUser.NoConsent, dialogContext.Context, cancellationToken);
                             return await dialogContext.EndDialogAsync(false, cancellationToken);
                         }
-                        else
-                        {
-                            user.IsConsentGiven = true;
-                            await this.api.Update(user);
-                        }
 
-                        await Messages.SendAsync(Phrases.Greeting.Consent, dialogContext.Context, cancellationToken);
+                        user.IsConsentGiven = true;
+                        await this.api.Update(user);
+
+                        await Messages.SendAsync(Phrases.NewUser.Consent, dialogContext.Context, cancellationToken);
+                        return await BeginDialogAsync(dialogContext, GreyshirtRegisterDialog.Name, null, cancellationToken);
+                    },
+                    async (dialogContext, cancellationToken) =>
+                    {
                         return await BeginDialogAsync(dialogContext, LocationDialog.Name, null, cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
+                        await Messages.SendAsync(Phrases.NewUser.RegistrationComplete, turnContext, cancellationToken);
                         return await dialogContext.EndDialogAsync(true, cancellationToken);
                     },
                 });

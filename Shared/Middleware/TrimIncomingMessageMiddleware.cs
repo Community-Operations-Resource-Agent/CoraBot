@@ -1,9 +1,9 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
+﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace BotAgentRemi.Middleware
+namespace Shared.Middleware
 {
     public class TrimIncomingMessageMiddleware : IMiddleware
     {

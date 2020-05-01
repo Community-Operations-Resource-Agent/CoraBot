@@ -1,4 +1,4 @@
-﻿using BotAgentRemi.State;
+﻿using Greyshirt.State;
 using Microsoft.Azure.Cosmos.Spatial;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
@@ -9,7 +9,7 @@ using Shared.Prompts;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BotAgentRemi.Dialogs.Preferences
+namespace Greyshirt.Dialogs.Preferences
 {
     public class LocationDialog : DialogBase
     {
