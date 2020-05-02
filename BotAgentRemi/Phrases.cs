@@ -1,44 +1,38 @@
 ﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
-using Shared.Models;
 using System.Collections.Generic;
 
 namespace BotAgentRemi
 {
     public static class Phrases
     {
-        public static class NewUser
-        {
-            public static Activity Consent = MessageFactory.Text($"Roger that, just a few questions and then we can get you" +
-                $" started with a mission! Rest assured, I'll never share your info with anyone without your permission.");
-            public static Activity NoConsent = MessageFactory.Text("Over and out! You can message me any time in the future if you change your mind.");
-
-            public static string ConsentYes = $"Chat with {Shared.Phrases.ProjectName}";
-            public static string ConsentNo = $"Cancel";
-            public static List<string> ConsentOptions = new List<string> { ConsentYes, ConsentNo };
-
-            public static Activity RegistrationComplete = MessageFactory.Text("That's all the information I need - you're now ready to take on a mission!");
-        }
-
         public static class Options
         {
-            public static string NewMission = "I need a mission";
-            public static string WhatIsMission = "What's a mission?";
+            public static string Need = "I have a need";
+            public static string HowDoesItWork = "How does this work?";
             public static string MoreOptions = "More options";
 
-            public static List<string> List = new List<string> { NewMission, WhatIsMission, MoreOptions };
+            public static List<string> List = new List<string> { Need, HowDoesItWork, MoreOptions };
 
-            public static Activity GetOptions = MessageFactory.Text($"Let me know what you'd like to do. {Shared.Phrases.EnterNumber}");
-
-            public static Activity MissionExplaination = MessageFactory.Text($"Missions are super quick (under an hour), high-impact" +
-                $" helpouts. They are opportunities for Greyshirts like you to support people in your community with urgent needs.");
+            public static Activity GetOptions = MessageFactory.Text($"How can I help? {Shared.Phrases.EnterNumber}");
+            public static Activity HowItWorks = MessageFactory.Text($"Once I know what you need, I'll find someone in your community who's ready to help." +
+                $" Team Rubicon runs background checks on each of our Greyshirt volunteers. One and all, they're trusted in their communites and passionate about service.");
         }
 
-        public static class Feedback
+        public static class Need
         {
-            public static Activity GetFeedback = MessageFactory.Text($"What would you like to let the {Shared.Phrases.ProjectName} team know?");
-            public static Activity Thanks = MessageFactory.Text("Thank you for the feedback!");
+            public static Activity GetPrivacyConsent = MessageFactory.Text($"To help with your need," +
+                $" I'll need to share you phone number with my manager at Team Rubicon and the Greyshirt matched to you." +
+                $" Don't worry, I'll never share your number with anyone else, and it won't be used for marketing. Your privacy is my priority." +
+                $" Is that okay? {Shared.Phrases.EnterNumber}");
+
+            public static Activity NoConsent = MessageFactory.Text("No problem, you can always let me know if you change your mind.");
+
+            public static Activity GetNeed = MessageFactory.Text($"Please send me a description of what you need." +
+                $" I'll use this description to connect you with one of our Greyshirt volunteers in your community.");
+
+            public static Activity Complete = MessageFactory.Text($"Great, that's all I need to know! Once I match you to one of our" +
+                $" trusted Greyshirts in your community, they will contact you for any additional details so that they can give you a hand.");
         }
     }
 }

@@ -26,12 +26,26 @@ namespace Shared
             public static string Reset = "Reset";
         }
 
+        public static class NewUser
+        {
+            public static Activity Consent = MessageFactory.Text($"Roger that, just a few questions and then we can get you" +
+                $" started! Rest assured, I'll never share your info with anyone without your permission.");
+            public static Activity NoConsent = MessageFactory.Text("You can message me any time in the future if you change your mind. Over and out!");
+
+            public static string ConsentYes = $"Chat with {ProjectName}";
+            public static string ConsentNo = $"Cancel";
+            public static List<string> ConsentOptions = new List<string> { ConsentYes, ConsentNo };
+        }
+
         public static class Greeting
         {
             public static Activity Welcome = MessageFactory.Text("Welcome back!");
             public static Activity WelcomeNew = MessageFactory.Text($"Welcome, {ProjectName} here!" +
                 $" I'm a bot for Team Rubicon, helping people across the United States get the food and resources they need." +
-                $" Message and data rates apply. Would you like to continue? {Shared.Phrases.EnterNumber}");
+                $" Message and data rates apply. Would you like to continue? {EnterNumber}");
+
+            public static Activity AnythingElse = MessageFactory.Text($"Is there anything else I can help with today? {Shared.Phrases.EnterNumber}");
+            public static Activity Goodbye = MessageFactory.Text($"Over and out!");
 
             public static Activity InvalidChannel(ITurnContext turnContext)
             {
@@ -42,12 +56,12 @@ namespace Shared
         public static class OptionsExtended
         {
             public static string UpdateLocation = "Update your location";
-            public static string Enable = $"Enable {Shared.Phrases.ProjectName} to contact you";
-            public static string Disable = $"Stop {Shared.Phrases.ProjectName} from contacting you";
+            public static string Enable = $"Enable {ProjectName} to contact you";
+            public static string Disable = $"Stop {ProjectName} from contacting you";
             public static string Feedback = "Provide feedback";
             public static string GoBack = "Go back to the main menu";
 
-            public static Activity GetOptions = MessageFactory.Text($"Let me know what you'd like to do. {Shared.Phrases.EnterNumber}");
+            public static Activity GetOptions = MessageFactory.Text($"Let me know what you'd like to do. {EnterNumber}");
 
             public static List<string> GetOptionsList(User user)
             {
@@ -75,6 +89,12 @@ namespace Shared
             {
                 return MessageFactory.Text($"{PreferenceUpdated}!");
             }
+        }
+
+        public static class Feedback
+        {
+            public static Activity GetFeedback = MessageFactory.Text($"What would you like to let the {ProjectName} team know?");
+            public static Activity Thanks = MessageFactory.Text("Thank you for the feedback!");
         }
     }
 }

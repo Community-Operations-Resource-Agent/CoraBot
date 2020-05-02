@@ -87,7 +87,20 @@ namespace Greyshirt.Dialogs
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        return await dialogContext.ReplaceDialogAsync(MasterDialog.Name, null, cancellationToken);
+                        return await dialogContext.PromptAsync(
+                            Prompt.ConfirmPrompt,
+                            new PromptOptions { Prompt = Shared.Phrases.Greeting.AnythingElse },
+                            cancellationToken);
+                    },
+                    async (dialogContext, cancellationToken) =>
+                    {
+                        if ((bool)dialogContext.Result)
+                        {
+                            return await dialogContext.ReplaceDialogAsync(MasterDialog.Name, null, cancellationToken);
+                        }
+
+                        await Messages.SendAsync(Shared.Phrases.Greeting.Goodbye, turnContext, cancellationToken);
+                        return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });
             });

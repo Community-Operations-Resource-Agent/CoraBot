@@ -150,7 +150,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets all users within a distance from coordinates.
         /// </summary>
-        public async Task<List<Models.User>> GetUsersWithinDistance(Point coordinates, double distanceMeters)
+        public async Task<List<Models.User>> GetUsersWithinDistance(Point coordinates, double distanceMeters, bool greyshirts)
         {
             var container = this.database.GetContainer(this.config.CosmosUsersContainer());
             if (container == null)
@@ -158,10 +158,15 @@ namespace Shared.ApiInterface
                 return null;
             }
 
-            var queryIterator = container.GetItemLinqQueryable<Models.User>()
-                .Where(u => u.LocationCoordinates.Distance(coordinates) <= distanceMeters)
-                .ToFeedIterator();
+            var query = container.GetItemLinqQueryable<Models.User>()
+                .Where(u => u.LocationCoordinates.Distance(coordinates) <= distanceMeters);
 
+            if (greyshirts)
+            {
+                query = query.Where(u => u.GreyshirtNumber != 0);
+            }
+
+            var queryIterator = query.ToFeedIterator();
             var result = new List<Models.User>();
 
             while (queryIterator.HasMoreResults)
@@ -191,8 +196,8 @@ namespace Shared.ApiInterface
                 orderedQueryable.Where(m => m.AssignedToId == user.Id);
 
             queryable = isAssigned ?
-                queryable.Where(m => m.AssignedToId != string.Empty) :
-                queryable.Where(m => m.AssignedToId == string.Empty);
+                queryable.Where(m => !m.AssignedToId.IsNull()) :
+                queryable.Where(m => m.AssignedToId.IsNull());
 
             var feedIterator = queryable.ToFeedIterator();
 

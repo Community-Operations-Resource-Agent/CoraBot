@@ -29,7 +29,7 @@ namespace Greyshirt.Dialogs
                         // Prompt for feedback.
                         return await dialogContext.PromptAsync(
                             Prompt.TextPrompt,
-                            new PromptOptions { Prompt = Phrases.Feedback.GetFeedback },
+                            new PromptOptions { Prompt = Shared.Phrases.Feedback.GetFeedback },
                             cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
@@ -41,7 +41,7 @@ namespace Greyshirt.Dialogs
                         feedback.Text = (string)dialogContext.Result;
                         await this.api.Create(feedback);
 
-                        await Messages.SendAsync(Phrases.Feedback.Thanks, dialogContext.Context, cancellationToken);
+                        await Messages.SendAsync(Shared.Phrases.Feedback.Thanks, dialogContext.Context, cancellationToken);
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });

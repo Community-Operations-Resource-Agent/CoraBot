@@ -51,7 +51,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets all users within a distance from coordinates.
         /// </summary>
-        Task<List<User>> GetUsersWithinDistance(Point coordinates, double distanceMeters);
+        Task<List<User>> GetUsersWithinDistance(Point coordinates, double distanceMeters, bool greyshirts = false);
 
         /// <summary>
         /// Gets all missions for a user.

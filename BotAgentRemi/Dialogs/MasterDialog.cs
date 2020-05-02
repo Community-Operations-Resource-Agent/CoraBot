@@ -9,6 +9,7 @@ using Shared.Prompts;
 using System;
 using System.Collections.Generic;
 using BotAgentRemi.State;
+using BotAgentRemi.Dialogs.Need;
 using BotAgentRemi.Dialogs.NewUser;
 using Shared;
 
@@ -33,10 +34,11 @@ namespace BotAgentRemi.Dialogs
                         await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
 
 
+                        /*
                         // TODO
                         await Messages.SendAsync("I'm not yet up and running. Coming soon!", turnContext, cancellationToken);
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
-
+                        */
 
 
                         var user = await api.GetUser(dialogContext.Context);
@@ -75,10 +77,17 @@ namespace BotAgentRemi.Dialogs
                         {
                             var result = choice.Value;
 
-                            if (string.Equals(result, "TODO", StringComparison.OrdinalIgnoreCase))
+                            if (string.Equals(result, Phrases.Options.Need, StringComparison.OrdinalIgnoreCase))
                             {
-                                // TODO
-                                //return await BeginDialogAsync(dialogContext, NewMissionDialog.Name, null, cancellationToken);
+                                return await BeginDialogAsync(dialogContext, NeedDialog.Name, null, cancellationToken);
+                            }
+                            else if (string.Equals(result, Phrases.Options.MoreOptions, StringComparison.OrdinalIgnoreCase))
+                            {
+                                return await BeginDialogAsync(dialogContext, OptionsExtendedDialog.Name, null, cancellationToken);
+                            }
+                            else if (string.Equals(result, Phrases.Options.HowDoesItWork, StringComparison.OrdinalIgnoreCase))
+                            {
+                                await Messages.SendAsync(Phrases.Options.HowItWorks, turnContext, cancellationToken);
                             }
                         }
 
@@ -86,7 +95,20 @@ namespace BotAgentRemi.Dialogs
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        return await dialogContext.ReplaceDialogAsync(MasterDialog.Name, null, cancellationToken);
+                        return await dialogContext.PromptAsync(
+                            Prompt.ConfirmPrompt,
+                            new PromptOptions { Prompt = Shared.Phrases.Greeting.AnythingElse },
+                            cancellationToken);
+                    },
+                    async (dialogContext, cancellationToken) =>
+                    {
+                        if ((bool)dialogContext.Result)
+                        {
+                            return await dialogContext.ReplaceDialogAsync(MasterDialog.Name, null, cancellationToken);
+                        }
+
+                        await Messages.SendAsync(Shared.Phrases.Greeting.Goodbye, turnContext, cancellationToken);
+                        return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });
             });

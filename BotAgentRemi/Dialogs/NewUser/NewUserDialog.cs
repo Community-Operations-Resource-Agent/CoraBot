@@ -31,7 +31,7 @@ namespace BotAgentRemi.Dialogs.NewUser
                     {
                         // Welcome and ask for consent.
                         var choices = new List<Choice>();
-                        Phrases.NewUser.ConsentOptions.ForEach(s => choices.Add(new Choice { Value = s }));
+                        Shared.Phrases.NewUser.ConsentOptions.ForEach(s => choices.Add(new Choice { Value = s }));
 
                         return await dialogContext.PromptAsync(
                             Prompt.ChoicePrompt,
@@ -47,23 +47,23 @@ namespace BotAgentRemi.Dialogs.NewUser
                         var result = (dialogContext.Result as FoundChoice).Value;
                         var user = await api.GetUser(dialogContext.Context);
 
-                        if (string.Equals(result, Phrases.NewUser.ConsentNo, StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(result, Shared.Phrases.NewUser.ConsentNo, StringComparison.OrdinalIgnoreCase))
                         {
                             // Did not consent. Delete their user record.
                             await this.api.Delete(user);
 
-                            await Messages.SendAsync(Phrases.NewUser.NoConsent, dialogContext.Context, cancellationToken);
+                            await Messages.SendAsync(Shared.Phrases.NewUser.NoConsent, dialogContext.Context, cancellationToken);
                             return await dialogContext.EndDialogAsync(false, cancellationToken);
                         }
 
                         user.IsConsentGiven = true;
                         await this.api.Update(user);
 
+                        await Messages.SendAsync(Shared.Phrases.NewUser.Consent, dialogContext.Context, cancellationToken);
                         return await BeginDialogAsync(dialogContext, LocationDialog.Name, null, cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        await Messages.SendAsync(Phrases.NewUser.RegistrationComplete, turnContext, cancellationToken);
                         return await dialogContext.EndDialogAsync(true, cancellationToken);
                     },
                 });
