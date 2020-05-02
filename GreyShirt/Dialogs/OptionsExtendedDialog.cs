@@ -33,13 +33,13 @@ namespace Greyshirt.Dialogs
 
                         // Prompt for an option.
                         var choices = new List<Choice>();
-                        Phrases.Options.Extended.GetOptionsList(user).ForEach(s => choices.Add(new Choice { Value = s }));
+                        Shared.Phrases.OptionsExtended.GetOptionsList(user).ForEach(s => choices.Add(new Choice { Value = s }));
 
                         return await dialogContext.PromptAsync(
                             Prompt.ChoicePrompt,
                             new PromptOptions()
                             {
-                                Prompt = Phrases.Options.Extended.GetOptions,
+                                Prompt = Shared.Phrases.OptionsExtended.GetOptions,
                                 Choices = choices
                             },
                             cancellationToken);
@@ -48,15 +48,15 @@ namespace Greyshirt.Dialogs
                     {
                         var result = ((FoundChoice)dialogContext.Result).Value;
 
-                        if (string.Equals(result, Phrases.Options.Extended.UpdateLocation, StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(result, Shared.Phrases.OptionsExtended.UpdateLocation, StringComparison.OrdinalIgnoreCase))
                         {
                             return await BeginDialogAsync(dialogContext, LocationDialog.Name, null, cancellationToken);
                         }
-                        else if (string.Equals(result, Phrases.Options.Extended.Enable, StringComparison.OrdinalIgnoreCase) ||
-                            string.Equals(result, Phrases.Options.Extended.Disable, StringComparison.OrdinalIgnoreCase))
+                        else if (string.Equals(result, Shared.Phrases.OptionsExtended.Enable, StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(result, Shared.Phrases.OptionsExtended.Disable, StringComparison.OrdinalIgnoreCase))
                         {
                             // Enable/disable contact.
-                            var enable = string.Equals(result, Phrases.Options.Extended.Enable, StringComparison.OrdinalIgnoreCase);
+                            var enable = string.Equals(result, Shared.Phrases.OptionsExtended.Enable, StringComparison.OrdinalIgnoreCase);
 
                             var user = await this.api.GetUser(dialogContext.Context);
                             if (user.ContactEnabled != enable)
@@ -67,7 +67,7 @@ namespace Greyshirt.Dialogs
 
                             await Messages.SendAsync(Shared.Phrases.Preferences.ContactEnabledUpdated(user.ContactEnabled), dialogContext.Context, cancellationToken);
                         }
-                        else if (string.Equals(result, Phrases.Options.Extended.Feedback, StringComparison.OrdinalIgnoreCase))
+                        else if (string.Equals(result, Shared.Phrases.OptionsExtended.Feedback, StringComparison.OrdinalIgnoreCase))
                         {
                             return await BeginDialogAsync(dialogContext, FeedbackDialog.Name, null, cancellationToken);
                         }

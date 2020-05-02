@@ -37,7 +37,7 @@ namespace BotAgentRemi.Dialogs.NewUser
                             Prompt.ChoicePrompt,
                             new PromptOptions()
                             {
-                                Prompt = Phrases.Greeting.WelcomeNew,
+                                Prompt = Shared.Phrases.Greeting.WelcomeNew,
                                 Choices = choices
                             },
                             cancellationToken);

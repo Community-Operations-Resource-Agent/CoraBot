@@ -41,9 +41,9 @@ namespace Greyshirt
                 DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 // Make sure this channel is supported.
-                if (!Phrases.ValidChannels.Contains(turnContext.Activity.ChannelId))
+                if (!Shared.Phrases.ValidChannels.Contains(turnContext.Activity.ChannelId))
                 {
-                    await Messages.SendAsync(Phrases.Greeting.InvalidChannel(turnContext), turnContext, cancellationToken);
+                    await Messages.SendAsync(Shared.Phrases.Greeting.InvalidChannel(turnContext), turnContext, cancellationToken);
                     return;
                 }
 
