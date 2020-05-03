@@ -5,7 +5,6 @@ using Shared;
 using Shared.ApiInterface;
 using Shared.Models;
 using Shared.Storage;
-using Shared.Translation;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -39,10 +38,6 @@ namespace ServiceProviderTriggers
         public static async Task DoWork(IConfiguration configuration, ILogger log = null)
         {
             //var api = new CosmosInterface(configuration);
-            //var translator = new Translator(configuration);
-
-            //// The reminder message is static, so cache any translations to limit API calls.
-            //var translationCache = new Dictionary<string, string>();
 
             //// Get the current day.
             //var day = DayFlagsHelpers.CurrentDay();
@@ -74,23 +69,6 @@ namespace ServiceProviderTriggers
             //    }
 
             //    var message = Phrases.Greeting.RemindToUpdate;
-
-            //    // Check if the user's language is already cached.
-            //    if (translationCache.TryGetValue(user.Language, out var translation))
-            //    {
-            //        message = translation;
-            //    }
-            //    else
-            //    {
-            //        // Translate the message if necessary.
-            //        if (translator.IsConfigured && user.Language != Translator.DefaultLanguage)
-            //        {
-            //            message = await translator.TranslateAsync(message, user.Language);
-            //        }
-
-            //        // Cache the message
-            //        translationCache.Add(user.Language, message);
-            //    }
 
             //    var data = new OutgoingMessageQueueData
             //    {
