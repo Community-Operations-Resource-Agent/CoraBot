@@ -28,7 +28,12 @@ namespace Shared.Models
         public string countrySubdivision { get; set; }
         public string Country { get; set; }
 
-        public override string ToString()
+        public string ToCityStateString()
+        {
+            return $"{this.Municipality}, {this.countrySubdivision}";
+        }
+
+        public string ToCountryString()
         {
             return $"{this.Municipality}, {this.CountrySecondarySubdivision}, {this.countrySubdivision}, {this.Country}";
         }
