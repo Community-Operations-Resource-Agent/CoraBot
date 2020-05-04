@@ -52,7 +52,7 @@ namespace BotAgentRemi.Dialogs.Need
                         var mission = new Mission
                         {
                             CreatedById = user.Id,
-                            Instructions = (string)dialogContext.Result
+                            Description = (string)dialogContext.Result
                         };
 
                         await this.api.Create(mission);

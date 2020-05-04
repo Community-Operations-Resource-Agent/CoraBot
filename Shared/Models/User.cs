@@ -8,7 +8,7 @@ namespace Shared.Models
 
         public string PhoneNumber { get; set; }
 
-        public int GreyshirtNumber { get; set; }
+        public bool IsGreyshirt { get; set; }
 
         public string Location { get; set; }
 

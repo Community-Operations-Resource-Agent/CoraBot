@@ -34,10 +34,10 @@ namespace Greyshirt.Dialogs
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        var user = await this.api.GetUser(dialogContext.Context);
+                        var greyshirt = await this.api.GetGreyshirt(dialogContext.Context);
 
                         var feedback = new Feedback();
-                        feedback.CreatedById = user.Id;
+                        feedback.CreatedById = greyshirt.Id;
                         feedback.Text = (string)dialogContext.Result;
                         await this.api.Create(feedback);
 

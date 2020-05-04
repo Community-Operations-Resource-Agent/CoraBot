@@ -104,6 +104,15 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
+        /// Gets a Greyshirt from a turn context.
+        /// </summary>
+        public async Task<Greyshirt> GetGreyshirt(ITurnContext turnContext)
+        {
+            var userToken = Helpers.GetUserToken(turnContext);
+            return await GetGreyshirt(userToken);
+        }
+
+        /// <summary>
         /// Gets a user from a phone number.
         /// </summary>
         public async Task<Models.User> GetUser(string phoneNumber)
@@ -114,18 +123,20 @@ namespace Shared.ApiInterface
                 return null;
             }
 
-            var queryIterator = container.GetItemLinqQueryable<Models.User>()
-                .Where(u => u.PhoneNumber == phoneNumber)
-                .ToFeedIterator();
+            var query = container.GetItemLinqQueryable<Models.User>()
+                .Where(u => u.PhoneNumber == phoneNumber);
+
+            var queryIterator = query.ToFeedIterator();
+            var result = new List<Models.User>();
 
             var response = await queryIterator.ReadNextAsync();
             return response.Resource.FirstOrDefault();
         }
 
         /// <summary>
-        /// Gets all users.
+        /// Gets a Greyshirt from a phone number.
         /// </summary>
-        public async Task<List<Models.User>> GetUsers()
+        public async Task<Greyshirt> GetGreyshirt(string phoneNumber)
         {
             var container = this.database.GetContainer(this.config.CosmosUsersContainer());
             if (container == null)
@@ -133,9 +144,31 @@ namespace Shared.ApiInterface
                 return null;
             }
 
-            var queryIterator = container.GetItemLinqQueryable<Models.User>()
-                .ToFeedIterator();
+            var query = container.GetItemLinqQueryable<Greyshirt>()
+                .Where(u => u.IsGreyshirt && u.PhoneNumber == phoneNumber);
 
+            var queryIterator = query.ToFeedIterator();
+            var result = new List<Greyshirt>();
+
+            var response = await queryIterator.ReadNextAsync();
+            return response.Resource.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Gets all users within a distance from coordinates.
+        /// </summary>
+        public async Task<List<Models.User>> GetUsersWithinDistance(Point coordinates, double distanceMeters)
+        {
+            var container = this.database.GetContainer(this.config.CosmosUsersContainer());
+            if (container == null)
+            {
+                return null;
+            }
+
+            var query = container.GetItemLinqQueryable<Models.User>()
+                .Where(u => u.LocationCoordinates.Distance(coordinates) <= distanceMeters);
+
+            var queryIterator = query.ToFeedIterator();
             var result = new List<Models.User>();
 
             while (queryIterator.HasMoreResults)
@@ -148,9 +181,9 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets all users within a distance from coordinates.
+        /// Gets all Greyshirts within a distance from coordinates.
         /// </summary>
-        public async Task<List<Models.User>> GetUsersWithinDistance(Point coordinates, double distanceMeters, bool greyshirts)
+        public async Task<List<Greyshirt>> GetGreyshirtsWithinDistance(Point coordinates, double distanceMeters)
         {
             var container = this.database.GetContainer(this.config.CosmosUsersContainer());
             if (container == null)
@@ -158,16 +191,11 @@ namespace Shared.ApiInterface
                 return null;
             }
 
-            var query = container.GetItemLinqQueryable<Models.User>()
-                .Where(u => u.LocationCoordinates.Distance(coordinates) <= distanceMeters);
-
-            if (greyshirts)
-            {
-                query = query.Where(u => u.GreyshirtNumber != 0);
-            }
+            var query = container.GetItemLinqQueryable<Greyshirt>()
+                .Where(u => u.IsGreyshirt && u.LocationCoordinates.Distance(coordinates) <= distanceMeters);
 
             var queryIterator = query.ToFeedIterator();
-            var result = new List<Models.User>();
+            var result = new List<Greyshirt>();
 
             while (queryIterator.HasMoreResults)
             {

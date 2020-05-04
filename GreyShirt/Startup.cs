@@ -84,7 +84,7 @@ namespace Greyshirt
                 options.Middleware.Add(new InitApiMiddleware(api));
                 options.Middleware.Add(new TypingMiddleware());
                 options.Middleware.Add(new TrimIncomingMessageMiddleware());
-                options.Middleware.Add(new CreateUserMiddleware(api));
+                options.Middleware.Add(new CreateGreyshirtMiddleware(api));
             });
         }
 

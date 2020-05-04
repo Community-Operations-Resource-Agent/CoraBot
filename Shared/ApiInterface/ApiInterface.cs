@@ -39,19 +39,29 @@ namespace Shared.ApiInterface
         Task<User> GetUser(ITurnContext turnContext);
 
         /// <summary>
+        /// Gets a Greyshirt from a turn context.
+        /// </summary>
+        Task<Greyshirt> GetGreyshirt(ITurnContext turnContext);
+
+        /// <summary>
         /// Gets a user from a phone number.
         /// </summary>
         Task<User> GetUser(string phoneNumber);
 
         /// <summary>
-        /// Gets all users.
+        /// Gets a Greyshirt from a phone number.
         /// </summary>
-        Task<List<User>> GetUsers();
+        Task<Greyshirt> GetGreyshirt(string phoneNumber);
 
         /// <summary>
         /// Gets all users within a distance from coordinates.
         /// </summary>
-        Task<List<User>> GetUsersWithinDistance(Point coordinates, double distanceMeters, bool greyshirts = false);
+        Task<List<User>> GetUsersWithinDistance(Point coordinates, double distanceMeters);
+
+        /// <summary>
+        /// Gets all Greyshirts within a distance from coordinates.
+        /// </summary>
+        Task<List<Greyshirt>> GetGreyshirtsWithinDistance(Point coordinates, double distanceMeters);
 
         /// <summary>
         /// Gets all missions for a user.

@@ -29,11 +29,11 @@ namespace Greyshirt.Dialogs
                 {
                     async (dialogContext, cancellationToken) =>
                     {
-                        var user = await api.GetUser(dialogContext.Context);
+                        var greyshirt = await api.GetGreyshirt(dialogContext.Context);
 
                         // Prompt for an option.
                         var choices = new List<Choice>();
-                        Shared.Phrases.OptionsExtended.GetOptionsList(user).ForEach(s => choices.Add(new Choice { Value = s }));
+                        Shared.Phrases.OptionsExtended.GetOptionsList(greyshirt).ForEach(s => choices.Add(new Choice { Value = s }));
 
                         return await dialogContext.PromptAsync(
                             Prompt.ChoicePrompt,
@@ -58,14 +58,14 @@ namespace Greyshirt.Dialogs
                             // Enable/disable contact.
                             var enable = string.Equals(result, Shared.Phrases.OptionsExtended.Enable, StringComparison.OrdinalIgnoreCase);
 
-                            var user = await this.api.GetUser(dialogContext.Context);
-                            if (user.ContactEnabled != enable)
+                            var greyshirt = await this.api.GetGreyshirt(dialogContext.Context);
+                            if (greyshirt.ContactEnabled != enable)
                             {
-                                user.ContactEnabled = enable;
-                                await this.api.Update(user);
+                                greyshirt.ContactEnabled = enable;
+                                await this.api.Update(greyshirt);
                             }
 
-                            await Messages.SendAsync(Shared.Phrases.Preferences.ContactEnabledUpdated(user.ContactEnabled), dialogContext.Context, cancellationToken);
+                            await Messages.SendAsync(Shared.Phrases.Preferences.ContactEnabledUpdated(greyshirt.ContactEnabled), dialogContext.Context, cancellationToken);
                         }
                         else if (string.Equals(result, Shared.Phrases.OptionsExtended.Feedback, StringComparison.OrdinalIgnoreCase))
                         {

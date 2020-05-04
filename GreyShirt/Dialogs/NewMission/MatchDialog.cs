@@ -46,7 +46,7 @@ namespace Greyshirt.Dialogs.NewMission
                             Prompt.ChoicePrompt,
                             new PromptOptions()
                             {
-                                Prompt = Phrases.Match.OfferMission(mission.Instructions, needUser.Location),
+                                Prompt = Phrases.Match.OfferMission(mission.Description, needUser.Location),
                                 Choices = choices
                             },
                             cancellationToken);
@@ -59,10 +59,11 @@ namespace Greyshirt.Dialogs.NewMission
                         userContext.Matches.RemoveAt(0);
 
                         var result = (dialogContext.Result as FoundChoice).Value;
-                        var user = await api.GetUser(dialogContext.Context);
 
                         if (string.Equals(result, Phrases.Match.AcceptMission, StringComparison.OrdinalIgnoreCase))
                         {
+                            // TODO: Assign to them.
+
                             await Messages.SendAsync(Phrases.Match.Accepted(match.PhoneNumber), turnContext, cancellationToken);
                         }
 

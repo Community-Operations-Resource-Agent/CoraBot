@@ -42,10 +42,10 @@ namespace Greyshirt.Dialogs.Preferences
                         var locationString = (string)dialogContext.Result;
                         var location = await Helpers.StringToLocation(configuration, locationString);
 
-                        var user = await this.api.GetUser(dialogContext.Context);
-                        user.Location = location.Address.ToCityStateString();
-                        user.LocationCoordinates = new Point(location.Position.Lon, location.Position.Lat);
-                        await this.api.Update(user);
+                        var greyshirt = await this.api.GetGreyshirt(dialogContext.Context);
+                        greyshirt.Location = location.Address.ToCityStateString();
+                        greyshirt.LocationCoordinates = new Point(location.Position.Lon, location.Position.Lat);
+                        await this.api.Update(greyshirt);
 
                         // Check if the location is correct.
                         return await dialogContext.PromptAsync(

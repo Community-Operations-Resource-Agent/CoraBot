@@ -24,14 +24,14 @@ namespace Greyshirt.Dialogs.NewMission
                 {
                     async (dialogContext, cancellationToken) =>
                     {
-                        var user = await this.api.GetUser(dialogContext.Context);
+                        var greyshirt = await this.api.GetGreyshirt(dialogContext.Context);
                         var userContext = await this.state.GetUserContext(turnContext, cancellationToken);
 
                         // TODO: this could be configurable.
                         double requestMeters = Units.Miles.ToMeters(50);
 
                         // Get all users within distance.
-                        var usersWithinDistance = await this.api.GetUsersWithinDistance(user.LocationCoordinates, requestMeters);
+                        var usersWithinDistance = await this.api.GetUsersWithinDistance(greyshirt.LocationCoordinates, requestMeters);
                         if (usersWithinDistance.Count > 0)
                         {
                             // Get any missions 

@@ -54,9 +54,9 @@ namespace Greyshirt.Dialogs.NewUser
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        var user = await this.api.GetUser(turnContext);
-                        user.GreyshirtNumber = (int)dialogContext.Result;
-                        await this.api.Update(user);
+                        var greyshirt = await this.api.GetGreyshirt(turnContext);
+                        greyshirt.GreyshirtNumber = (int)dialogContext.Result;
+                        await this.api.Update(greyshirt);
 
                         await Messages.SendAsync(Phrases.Register.GetNumberConfirm, turnContext, cancellationToken);
                         return await dialogContext.EndDialogAsync(true, cancellationToken);
