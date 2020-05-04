@@ -57,6 +57,7 @@ namespace BotAgentRemi.Dialogs.Need
 
                         await this.api.Create(mission);
 
+                        /*
                         // TODO: this could be configurable.
                         double requestMeters = Units.Miles.ToMeters(50);
 
@@ -80,6 +81,7 @@ namespace BotAgentRemi.Dialogs.Need
                                 await queueHelper.Enqueue(data);
                             }
                         }
+                        */
 
                         await Messages.SendAsync(Phrases.Need.Complete, turnContext, cancellationToken);
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
