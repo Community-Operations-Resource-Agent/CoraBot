@@ -26,6 +26,11 @@ namespace Shared
         private const string AzureWebJobsStorageSettingName = "AzureWebJobsStorage";
 
         /// <summary>
+        /// The name of the app setting for the Greyshirt azure storage connection string.
+        /// </summary>
+        private const string GreyshirtAzureWebJobsStorageSettingName = "GreyshirtAzureWebJobsStorage";
+
+        /// <summary>
         /// The name of the setting that contains the CosmosDB endpoint.
         /// </summary>
         private const string CosmosEndpointSettingName = "CosmosDb:Endpoint";
@@ -133,6 +138,11 @@ namespace Shared
         public static string AzureWebJobsStorage(this IConfiguration configuration)
         {
             return configuration.GetValue<string>(AzureWebJobsStorageSettingName);
+        }
+
+        public static string GreyshirtAzureWebJobsStorage(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(GreyshirtAzureWebJobsStorageSettingName);
         }
 
         public static string CosmosEndpoint(this IConfiguration configuration)
