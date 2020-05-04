@@ -57,16 +57,15 @@ namespace BotAgentRemi.Dialogs.Need
 
                         await this.api.Create(mission);
 
-                        /*
                         // TODO: this could be configurable.
                         double requestMeters = Units.Miles.ToMeters(50);
 
                         // Get all greyshirts within the distance from the user.
-                        var greyshirtsWithinDistance = await this.api.GetUsersWithinDistance(user.LocationCoordinates, requestMeters, greyshirts: true);
+                        var greyshirtsWithinDistance = await this.api.GetGreyshirtsWithinDistance(user.LocationCoordinates, requestMeters);
                         if (greyshirtsWithinDistance.Count > 0)
                         {
                             var queueHelper = new OutgoingMessageQueueHelpers(this.configuration.AzureWebJobsStorage());
-                            var message = Greyshirt.Phrases.Need.Message(user.Location, mission.Instructions);
+                            var message = Greyshirt.Phrases.Need.Message(user.Location, mission.Description);
 
                             // Get any matching resources for the users.
                             foreach (var greyshirt in greyshirtsWithinDistance)
@@ -80,7 +79,6 @@ namespace BotAgentRemi.Dialogs.Need
                                 await queueHelper.Enqueue(data);
                             }
                         }
-                        */
 
                         await Messages.SendAsync(Phrases.Need.Complete, turnContext, cancellationToken);
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
