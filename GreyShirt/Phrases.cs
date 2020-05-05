@@ -72,7 +72,7 @@ namespace Greyshirt
 
         public static class Need
         {
-            public static string Message(string instructions, string location)
+            public static string Message(string location, string instructions)
             {
                 return $"Hey there Greyshirt, a new mission has been received in {location} - \"{instructions}\"." +
                     $" If you would like to accept this mission, reply \"ok\" and then select \"{Options.NewMission}\".";
