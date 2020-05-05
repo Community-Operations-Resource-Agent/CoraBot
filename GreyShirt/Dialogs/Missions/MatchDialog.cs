@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Greyshirt.Dialogs.NewMission
+namespace Greyshirt.Dialogs.Missions
 {
     public class MatchDialog : DialogBase
     {
@@ -36,7 +36,7 @@ namespace Greyshirt.Dialogs.NewMission
                         }
 
                         var nextMatch = userContext.Matches.First();
-                        var needUser = await this.api.GetUser(nextMatch.PhoneNumber);
+                        var needUser = await this.api.GetUserFromPhoneNumber(nextMatch.PhoneNumber);
                         var mission = await this.api.GetMissionById(nextMatch.MissionId);
 
                         var choices = new List<Choice>();
@@ -63,7 +63,6 @@ namespace Greyshirt.Dialogs.NewMission
                         if (string.Equals(result, Phrases.Match.AcceptMission, StringComparison.OrdinalIgnoreCase))
                         {
                             // TODO: Assign to them.
-
                             await Messages.SendAsync(Phrases.Match.Accepted(match.PhoneNumber), turnContext, cancellationToken);
                         }
 

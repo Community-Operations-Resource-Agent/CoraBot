@@ -50,8 +50,8 @@ namespace Greyshirt
                 // Create the master dialog.
                 var masterDialog = new MasterDialog(this.state, this.dialogs, this.api, this.configuration);
 
-                // If the user sends the update keyword, clear the dialog stack and start a new session.
-                if (string.Equals(turnContext.Activity.Text, Shared.Phrases.Keywords.Reset, StringComparison.OrdinalIgnoreCase))
+                // If the user sends the keyword, clear the dialog stack and start a new session.
+                if (Phrases.Keywords.IsKeyword(turnContext.Activity.Text))
                 {
                     await dialogContext.CancelAllDialogsAsync(cancellationToken);
                 }

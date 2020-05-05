@@ -8,5 +8,10 @@
         {
             this.IsGreyshirt = true;
         }
+
+        public bool IsRegistered()
+        {
+            return this.GreyshirtNumber != 0;
+        }
     }
 }

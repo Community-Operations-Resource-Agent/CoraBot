@@ -22,7 +22,7 @@ namespace Shared.Middleware
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Create the user if they haven't been seen yet.
-            var greyshirt = await api.GetGreyshirt(turnContext);
+            var greyshirt = await api.GetGreyshirtFromContext(turnContext);
             if (greyshirt == null)
             {
                 greyshirt = new Greyshirt();

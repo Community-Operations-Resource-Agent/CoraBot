@@ -34,7 +34,7 @@ namespace BotAgentRemi.Dialogs
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        var user = await this.api.GetUser(dialogContext.Context);
+                        var user = await this.api.GetUserFromContext(dialogContext.Context);
 
                         var feedback = new Feedback();
                         feedback.CreatedById = user.Id;

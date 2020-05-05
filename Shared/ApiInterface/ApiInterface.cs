@@ -36,22 +36,32 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets a user from a turn context.
         /// </summary>
-        Task<User> GetUser(ITurnContext turnContext);
+        Task<User> GetUserFromContext(ITurnContext turnContext);
 
         /// <summary>
         /// Gets a Greyshirt from a turn context.
         /// </summary>
-        Task<Greyshirt> GetGreyshirt(ITurnContext turnContext);
+        Task<Greyshirt> GetGreyshirtFromContext(ITurnContext turnContext);
 
         /// <summary>
         /// Gets a user from a phone number.
         /// </summary>
-        Task<User> GetUser(string phoneNumber);
+        Task<User> GetUserFromPhoneNumber(string phoneNumber);
 
         /// <summary>
         /// Gets a Greyshirt from a phone number.
         /// </summary>
-        Task<Greyshirt> GetGreyshirt(string phoneNumber);
+        Task<Greyshirt> GetGreyshirtFromPhoneNumber(string phoneNumber);
+
+        /// <summary>
+        /// Gets a user from an ID.
+        /// </summary>
+        Task<User> GetUserFromId(string id);
+
+        /// <summary>
+        /// Gets a Greyshirt from an ID.
+        /// </summary>
+        Task<Greyshirt> GetGreyshirtFromId(string id);
 
         /// <summary>
         /// Gets all users within a distance from coordinates.
@@ -72,5 +82,10 @@ namespace Shared.ApiInterface
         /// Gets a mission from an ID.
         /// </summary>
         Task<Mission> GetMissionById(string id);
+
+        /// <summary>
+        /// Gets a mission from a short ID.
+        /// </summary>
+        Task<Mission> GetMissionByShortId(string id);
     }
 }

@@ -42,7 +42,7 @@ namespace Greyshirt.Dialogs.Preferences
                         var locationString = (string)dialogContext.Result;
                         var location = await Helpers.StringToLocation(configuration, locationString);
 
-                        var greyshirt = await this.api.GetGreyshirt(dialogContext.Context);
+                        var greyshirt = await this.api.GetGreyshirtFromContext(dialogContext.Context);
                         greyshirt.Location = location.Address.ToCityStateString();
                         greyshirt.LocationCoordinates = new Point(location.Position.Lon, location.Position.Lat);
                         await this.api.Update(greyshirt);

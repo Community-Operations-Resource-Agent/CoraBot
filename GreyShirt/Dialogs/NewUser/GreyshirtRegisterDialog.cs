@@ -54,7 +54,7 @@ namespace Greyshirt.Dialogs.NewUser
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        var greyshirt = await this.api.GetGreyshirt(turnContext);
+                        var greyshirt = await this.api.GetGreyshirtFromContext(turnContext);
                         greyshirt.GreyshirtNumber = (int)dialogContext.Result;
                         await this.api.Update(greyshirt);
 

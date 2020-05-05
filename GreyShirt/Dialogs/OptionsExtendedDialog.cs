@@ -29,7 +29,7 @@ namespace Greyshirt.Dialogs
                 {
                     async (dialogContext, cancellationToken) =>
                     {
-                        var greyshirt = await api.GetGreyshirt(dialogContext.Context);
+                        var greyshirt = await api.GetGreyshirtFromContext(dialogContext.Context);
 
                         // Prompt for an option.
                         var choices = new List<Choice>();
@@ -58,7 +58,7 @@ namespace Greyshirt.Dialogs
                             // Enable/disable contact.
                             var enable = string.Equals(result, Shared.Phrases.OptionsExtended.Enable, StringComparison.OrdinalIgnoreCase);
 
-                            var greyshirt = await this.api.GetGreyshirt(dialogContext.Context);
+                            var greyshirt = await this.api.GetGreyshirtFromContext(dialogContext.Context);
                             if (greyshirt.ContactEnabled != enable)
                             {
                                 greyshirt.ContactEnabled = enable;

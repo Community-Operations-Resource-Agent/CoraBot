@@ -29,7 +29,7 @@ namespace BotAgentRemi.Dialogs
                 {
                     async (dialogContext, cancellationToken) =>
                     {
-                        var user = await api.GetUser(dialogContext.Context);
+                        var user = await api.GetUserFromContext(dialogContext.Context);
 
                         // Prompt for an option.
                         var choices = new List<Choice>();
@@ -58,7 +58,7 @@ namespace BotAgentRemi.Dialogs
                             // Enable/disable contact.
                             var enable = string.Equals(result, Shared.Phrases.OptionsExtended.Enable, StringComparison.OrdinalIgnoreCase);
 
-                            var user = await this.api.GetUser(dialogContext.Context);
+                            var user = await this.api.GetUserFromContext(dialogContext.Context);
                             if (user.ContactEnabled != enable)
                             {
                                 user.ContactEnabled = enable;

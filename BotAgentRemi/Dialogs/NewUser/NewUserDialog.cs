@@ -45,7 +45,7 @@ namespace BotAgentRemi.Dialogs.NewUser
                     async (dialogContext, cancellationToken) =>
                     {
                         var result = (dialogContext.Result as FoundChoice).Value;
-                        var user = await api.GetUser(dialogContext.Context);
+                        var user = await api.GetUserFromContext(dialogContext.Context);
 
                         if (string.Equals(result, Shared.Phrases.NewUser.ConsentNo, StringComparison.OrdinalIgnoreCase))
                         {

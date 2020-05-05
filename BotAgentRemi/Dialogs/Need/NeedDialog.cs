@@ -47,7 +47,7 @@ namespace BotAgentRemi.Dialogs.Need
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        var user = await this.api.GetUser(dialogContext.Context);
+                        var user = await this.api.GetUserFromContext(dialogContext.Context);
 
                         var mission = new Mission
                         {
@@ -66,7 +66,7 @@ namespace BotAgentRemi.Dialogs.Need
                         {
                             // Use the outgoing queue for the Greyshirt bot.
                             var queueHelper = new OutgoingMessageQueueHelpers(this.configuration.GreyshirtAzureWebJobsStorage());
-                            var message = Greyshirt.Phrases.Need.Message(user.Location, mission.Description);
+                            var message = Greyshirt.Phrases.Need.Notification(user.Location, mission);
 
                             // Get any matching resources for the users.
                             foreach (var greyshirt in greyshirtsWithinDistance)

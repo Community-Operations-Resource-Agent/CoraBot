@@ -7,7 +7,7 @@ using Shared.ApiInterface;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Greyshirt.Dialogs.NewMission
+namespace Greyshirt.Dialogs.Missions
 {
     public class NewMissionDialog : DialogBase
     {
@@ -24,7 +24,7 @@ namespace Greyshirt.Dialogs.NewMission
                 {
                     async (dialogContext, cancellationToken) =>
                     {
-                        var greyshirt = await this.api.GetGreyshirt(dialogContext.Context);
+                        var greyshirt = await this.api.GetGreyshirtFromContext(dialogContext.Context);
                         var userContext = await this.state.GetUserContext(turnContext, cancellationToken);
 
                         // TODO: this could be configurable.

@@ -34,7 +34,7 @@ namespace Greyshirt.Dialogs
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        var greyshirt = await this.api.GetGreyshirt(dialogContext.Context);
+                        var greyshirt = await this.api.GetGreyshirtFromContext(dialogContext.Context);
 
                         var feedback = new Feedback();
                         feedback.CreatedById = greyshirt.Id;

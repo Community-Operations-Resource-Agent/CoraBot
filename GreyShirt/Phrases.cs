@@ -1,11 +1,24 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
+using Shared.Models;
+using System;
 using System.Collections.Generic;
 
 namespace Greyshirt
 {
     public static class Phrases
     {
+        public static class Keywords
+        {
+            public static string Accept = "Accept";
+
+            public static bool IsKeyword(string text)
+            {
+                return string.Equals(text, Shared.Phrases.Keywords.Reset, StringComparison.OrdinalIgnoreCase) ||
+                    text.StartsWith(Accept, StringComparison.InvariantCultureIgnoreCase);
+            }
+        }
+
         public static class NewUser
         {
             public static Activity RegistrationComplete = MessageFactory.Text("That's all the information I need - you're now ready to take on a mission!");
@@ -72,10 +85,17 @@ namespace Greyshirt
 
         public static class Need
         {
-            public static string Message(string location, string instructions)
+            public static Activity InvalidFormat = MessageFactory.Text("Sorry, I wasn't able to understand that format." +
+                $" Please try sending it again as \"{Keywords.Accept} XXXXX\"");
+            public static Activity InvalidId = MessageFactory.Text("Sorry, I wasn't able to find that ID." +
+                $" Please try sending it again as \"{Keywords.Accept} XXXXX\"");
+            public static Activity AlreadyAssigned = MessageFactory.Text("Sorry, it looks like this mission was already accepted" +
+                " by another Greyshirt. I will continue to let you know if any new missions pop up near you!");
+
+            public static string Notification(string location, Mission mission)
             {
-                return $"Hey there Greyshirt, a new mission has been received in {location} - \"{instructions}\"." +
-                    $" If you would like to accept this mission, reply \"ok\" and then select \"{Options.NewMission}\".";
+                return $"Hey there Greyshirt, a new mission has been received in {location} - \"{mission.Description}\"." +
+                    $" If you would like to take on this mission, reply \"{Keywords.Accept} {mission.ShortId}\".";
             }
         }
     }

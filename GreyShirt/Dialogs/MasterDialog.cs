@@ -6,10 +6,6 @@ using Shared.ApiInterface;
 using System.Threading;
 using System.Threading.Tasks;
 using Shared;
-using Shared.Prompts;
-using System;
-using System.Collections.Generic;
-using Greyshirt.Dialogs.NewMission;
 using Greyshirt.Dialogs.NewUser;
 using Greyshirt.State;
 
@@ -33,13 +29,38 @@ namespace Greyshirt.Dialogs
                         // Clear the user context when a new converation begins.
                         await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
 
-                        var greyshirt = await api.GetGreyshirt(dialogContext.Context);
+                        // Handle any keywords.
+                        if (Phrases.Keywords.IsKeyword(dialogContext.Context.Activity.Text))
+                        {
+                            var greyshirt = await api.GetGreyshirtFromContext(dialogContext.Context);
+                            if (greyshirt.IsConsentGiven && greyshirt.IsRegistered())
+                            {
+                                return await BeginDialogAsync(dialogContext, KeywordDialog.Name, null, cancellationToken);
+                            }
+                        }
+
+                        return await dialogContext.NextAsync(null, cancellationToken);
+                    },
+                    async (dialogContext, cancellationToken) =>
+                    {
+                        // The keyword flow can result in ending the conversation.
+                        if (dialogContext.Result is bool continueConversation && !continueConversation)
+                        {
+                            await Messages.SendAsync(Shared.Phrases.Greeting.Goodbye, turnContext, cancellationToken);
+                            return await dialogContext.EndDialogAsync(null, cancellationToken);
+                        }
+
+                        return await dialogContext.NextAsync(null, cancellationToken);
+                    },
+                    async (dialogContext, cancellationToken) =>
+                    {
+                        // Register the user if they are new.
+                        var greyshirt = await api.GetGreyshirtFromContext(dialogContext.Context);
                         if (!greyshirt.IsConsentGiven)
                         {
                             return await BeginDialogAsync(dialogContext, NewUserDialog.Name, null, cancellationToken);
                         }
 
-                        // Skip this step.
                         return await dialogContext.NextAsync(null, cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
@@ -47,58 +68,15 @@ namespace Greyshirt.Dialogs
                         // The new user flow can result in no consent. If so, end the conversation.
                         if (dialogContext.Result is bool didConsent && !didConsent)
                         {
+                            await Messages.SendAsync(Shared.Phrases.NewUser.NoConsent, dialogContext.Context, cancellationToken);
                             return await dialogContext.EndDialogAsync(null, cancellationToken);
                         }
 
-                        // Prompt for an option.
-                        var choices = new List<Choice>();
-                        Phrases.Options.List.ForEach(s => choices.Add(new Choice { Value = s }));
-
-                        return await dialogContext.PromptAsync(
-                            Prompt.ChoicePrompt,
-                            new PromptOptions()
-                            {
-                                Prompt = Phrases.Options.GetOptions,
-                                Choices = choices
-                            },
-                            cancellationToken);
+                        // Start the main menu flow.
+                        return await BeginDialogAsync(dialogContext, MenuDialog.Name, null, cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        if (dialogContext.Result is FoundChoice choice)
-                        {
-                            var result = choice.Value;
-
-                            if (string.Equals(result, Phrases.Options.NewMission, StringComparison.OrdinalIgnoreCase))
-                            {
-                                return await BeginDialogAsync(dialogContext, NewMissionDialog.Name, null, cancellationToken);
-                            }
-                            else if (string.Equals(result, Phrases.Options.MoreOptions, StringComparison.OrdinalIgnoreCase))
-                            {
-                                return await BeginDialogAsync(dialogContext, OptionsExtendedDialog.Name, null, cancellationToken);
-                            }
-                            else if (string.Equals(result, Phrases.Options.WhatIsMission, StringComparison.OrdinalIgnoreCase))
-                            {
-                                await Messages.SendAsync(Phrases.Options.MissionExplaination, turnContext, cancellationToken);
-                            }
-                        }
-
-                        return await dialogContext.NextAsync(null, cancellationToken);
-                    },
-                    async (dialogContext, cancellationToken) =>
-                    {
-                        return await dialogContext.PromptAsync(
-                            Prompt.ConfirmPrompt,
-                            new PromptOptions { Prompt = Shared.Phrases.Greeting.AnythingElse },
-                            cancellationToken);
-                    },
-                    async (dialogContext, cancellationToken) =>
-                    {
-                        if ((bool)dialogContext.Result)
-                        {
-                            return await dialogContext.ReplaceDialogAsync(MasterDialog.Name, null, cancellationToken);
-                        }
-
                         await Messages.SendAsync(Shared.Phrases.Greeting.Goodbye, turnContext, cancellationToken);
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }

@@ -97,25 +97,25 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets a user from a turn context.
         /// </summary>
-        public async Task<Models.User> GetUser(ITurnContext turnContext)
+        public async Task<Models.User> GetUserFromContext(ITurnContext turnContext)
         {
             var userToken = Helpers.GetUserToken(turnContext);
-            return await GetUser(userToken);
+            return await GetUserFromPhoneNumber(userToken);
         }
 
         /// <summary>
         /// Gets a Greyshirt from a turn context.
         /// </summary>
-        public async Task<Greyshirt> GetGreyshirt(ITurnContext turnContext)
+        public async Task<Greyshirt> GetGreyshirtFromContext(ITurnContext turnContext)
         {
             var userToken = Helpers.GetUserToken(turnContext);
-            return await GetGreyshirt(userToken);
+            return await GetGreyshirtFromPhoneNumber(userToken);
         }
 
         /// <summary>
         /// Gets a user from a phone number.
         /// </summary>
-        public async Task<Models.User> GetUser(string phoneNumber)
+        public async Task<Models.User> GetUserFromPhoneNumber(string phoneNumber)
         {
             var container = this.database.GetContainer(this.config.CosmosUsersContainer());
             if (container == null)
@@ -136,7 +136,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets a Greyshirt from a phone number.
         /// </summary>
-        public async Task<Greyshirt> GetGreyshirt(string phoneNumber)
+        public async Task<Greyshirt> GetGreyshirtFromPhoneNumber(string phoneNumber)
         {
             var container = this.database.GetContainer(this.config.CosmosUsersContainer());
             if (container == null)
@@ -146,6 +146,48 @@ namespace Shared.ApiInterface
 
             var query = container.GetItemLinqQueryable<Greyshirt>()
                 .Where(u => u.IsGreyshirt && u.PhoneNumber == phoneNumber);
+
+            var queryIterator = query.ToFeedIterator();
+            var result = new List<Greyshirt>();
+
+            var response = await queryIterator.ReadNextAsync();
+            return response.Resource.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Gets a user from an ID.
+        /// </summary>
+        public async Task<Models.User> GetUserFromId(string id)
+        {
+            var container = this.database.GetContainer(this.config.CosmosUsersContainer());
+            if (container == null)
+            {
+                return null;
+            }
+
+            var query = container.GetItemLinqQueryable<Models.User>()
+                .Where(u => u.Id == id);
+
+            var queryIterator = query.ToFeedIterator();
+            var result = new List<Models.User>();
+
+            var response = await queryIterator.ReadNextAsync();
+            return response.Resource.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Gets a Greyshirt from an ID.
+        /// </summary>
+        public async Task<Greyshirt> GetGreyshirtFromId(string id)
+        {
+            var container = this.database.GetContainer(this.config.CosmosUsersContainer());
+            if (container == null)
+            {
+                return null;
+            }
+
+            var query = container.GetItemLinqQueryable<Greyshirt>()
+                .Where(u => u.IsGreyshirt && u.Id == id);
 
             var queryIterator = query.ToFeedIterator();
             var result = new List<Greyshirt>();
@@ -252,7 +294,26 @@ namespace Shared.ApiInterface
             }
 
             var queryIterator = container.GetItemLinqQueryable<Mission>()
-                .Where(n => n.Id == id)
+                .Where(m => m.Id == id)
+                .ToFeedIterator();
+
+            var response = await queryIterator.ReadNextAsync();
+            return response.Resource.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Gets a mission from a short ID.
+        /// </summary>
+        public async Task<Mission> GetMissionByShortId(string id)
+        {
+            var container = this.database.GetContainer(this.config.CosmosMissionsContainer());
+            if (container == null)
+            {
+                return null;
+            }
+
+            var queryIterator = container.GetItemLinqQueryable<Mission>()
+                .Where(m => m.ShortId == id)
                 .ToFeedIterator();
 
             var response = await queryIterator.ReadNextAsync();

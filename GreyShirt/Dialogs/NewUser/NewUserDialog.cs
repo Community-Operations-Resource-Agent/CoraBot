@@ -45,14 +45,13 @@ namespace Greyshirt.Dialogs.NewUser
                     async (dialogContext, cancellationToken) =>
                     {
                         var result = (dialogContext.Result as FoundChoice).Value;
-                        var greyshirt = await api.GetGreyshirt(dialogContext.Context);
+                        var greyshirt = await api.GetGreyshirtFromContext(dialogContext.Context);
 
                         if (string.Equals(result, Shared.Phrases.NewUser.ConsentNo, StringComparison.OrdinalIgnoreCase))
                         {
                             // Did not consent. Delete their user record.
                             await this.api.Delete(greyshirt);
 
-                            await Messages.SendAsync(Shared.Phrases.NewUser.NoConsent, dialogContext.Context, cancellationToken);
                             return await dialogContext.EndDialogAsync(false, cancellationToken);
                         }
 
