@@ -41,7 +41,7 @@ namespace Shared
         {
             public static Activity Welcome = MessageFactory.Text("Welcome back!");
             public static Activity WelcomeNew = MessageFactory.Text($"Welcome, {ProjectName} here!" +
-                $" I'm a bot for Team Rubicon, helping people across the United States get the food and resources they need." +
+                $" I'm an agent for Team Rubicon, helping people across the United States get the food and resources they need." +
                 $" Message and data rates apply. Would you like to continue? {EnterNumber}");
 
             public static Activity AnythingElse = MessageFactory.Text($"Is there anything else I can help with today? {Shared.Phrases.EnterNumber}");
