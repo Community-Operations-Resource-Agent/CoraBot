@@ -59,7 +59,7 @@ namespace Shared
             public static string Enable = $"Enable {ProjectName} to contact you";
             public static string Disable = $"Stop {ProjectName} from contacting you";
             public static string Feedback = "Provide feedback";
-            public static string GoBack = "Go back to the main menu";
+            public static string GoBack = "Non of these";
 
             public static Activity GetOptions = MessageFactory.Text($"Let me know what you'd like to do. {EnterNumber}");
 
