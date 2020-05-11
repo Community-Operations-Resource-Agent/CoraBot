@@ -2,6 +2,7 @@
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Shared.Models;
+using Shared.Translation;
 using System.Collections.Generic;
 
 namespace Shared
@@ -56,18 +57,26 @@ namespace Shared
         public static class OptionsExtended
         {
             public static string UpdateLocation = "Update your location";
+            public static string UpdateLanguage = "Change your language";
             public static string Enable = $"Enable {ProjectName} to contact you";
             public static string Disable = $"Stop {ProjectName} from contacting you";
             public static string Feedback = "Provide feedback";
-            public static string GoBack = "Non of these";
+            public static string GoBack = "None of these";
 
             public static Activity GetOptions = MessageFactory.Text($"Let me know what you'd like to do. {EnterNumber}");
 
-            public static List<string> GetOptionsList(User user)
+            public static List<string> GetOptionsList(User user, Translator translator)
             {
                 var list = new List<string> { UpdateLocation };
+
+                if (translator.IsConfigured)
+                {
+                    list.Add(UpdateLanguage);
+                }
+
+                list.Add(Feedback);
                 list.Add(user.ContactEnabled ? Disable : Enable);
-                list.AddRange(new string[] { Feedback, GoBack });
+                list.Add(GoBack);
                 return list;
             }
         }
@@ -79,6 +88,9 @@ namespace Shared
             public static Activity GetLocation = MessageFactory.Text("Where are you located? (enter City, State)");
             public static Activity GetLocationRetry = MessageFactory.Text($"Oops, I couldn't find that location. Please try again...");
             public static Activity LocationUpdated = MessageFactory.Text("Your location has been updated!");
+
+            public static Activity GetLanguage = MessageFactory.Text($"Say \"hello\" in the language you prefer and I will switch to that language for you");
+            public static Activity LanguageUpdated = MessageFactory.Text($"Your language has been updated!");
 
             public static Activity GetLocationConfirm(string location)
             {

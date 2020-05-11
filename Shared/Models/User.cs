@@ -10,6 +10,8 @@ namespace Shared.Models
 
         public bool IsGreyshirt { get; set; }
 
+        public string Language { get; set; }
+
         public string Location { get; set; }
 
         public Point LocationCoordinates { get; set; }

@@ -7,6 +7,8 @@ using Shared.ApiInterface;
 using Shared.Models;
 using Shared.Prompts;
 using Shared.Storage;
+using Shared.Translation;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,8 +18,13 @@ namespace BotAgentRemi.Dialogs.Need
     {
         public static string Name = typeof(NeedDialog).FullName;
 
+        Translator translator;
+
         public NeedDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+            : base(state, dialogs, api, configuration)
+        {
+            this.translator = new Translator(configuration);
+        }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
         {
@@ -57,6 +64,9 @@ namespace BotAgentRemi.Dialogs.Need
 
                         await this.api.Create(mission);
 
+                        // Cache any translations to limit API calls.
+                        var translationCache = new Dictionary<string, string>();
+
                         // TODO: this could be configurable.
                         double requestMeters = Units.Miles.ToMeters(50);
 
@@ -71,6 +81,25 @@ namespace BotAgentRemi.Dialogs.Need
                             // Get any matching resources for the users.
                             foreach (var greyshirt in greyshirtsWithinDistance)
                             {
+                                string translatedMessage = message;
+
+                                // Check if the user's language is already cached.
+                                if (translationCache.TryGetValue(user.Language, out var translation))
+                                {
+                                    translatedMessage = translation;
+                                }
+                                else
+                                {
+                                    // Translate the message if necessary.
+                                    if (translator.IsConfigured && user.Language != Translator.DefaultLanguage)
+                                    {
+                                        translatedMessage = await translator.TranslateAsync(message, user.Language);
+                                    }
+
+                                    // Cache the message.
+                                    translationCache.Add(user.Language, translatedMessage);
+                                }
+
                                 var data = new OutgoingMessageQueueData
                                 {
                                     PhoneNumber = greyshirt.PhoneNumber,

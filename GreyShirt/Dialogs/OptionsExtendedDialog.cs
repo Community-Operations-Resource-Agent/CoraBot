@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
 using Shared.Prompts;
+using Shared.Translation;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -18,8 +19,13 @@ namespace Greyshirt.Dialogs
     {
         public static string Name = typeof(OptionsExtendedDialog).FullName;
 
+        Translator translator;
+
         public OptionsExtendedDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+            : base(state, dialogs, api, configuration)
+        {
+            this.translator = new Translator(configuration);
+        }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
         {
@@ -33,7 +39,7 @@ namespace Greyshirt.Dialogs
 
                         // Prompt for an option.
                         var choices = new List<Choice>();
-                        Shared.Phrases.OptionsExtended.GetOptionsList(greyshirt).ForEach(s => choices.Add(new Choice { Value = s }));
+                        Shared.Phrases.OptionsExtended.GetOptionsList(greyshirt, translator).ForEach(s => choices.Add(new Choice { Value = s }));
 
                         return await dialogContext.PromptAsync(
                             Prompt.ChoicePrompt,
@@ -51,6 +57,10 @@ namespace Greyshirt.Dialogs
                         if (string.Equals(result, Shared.Phrases.OptionsExtended.UpdateLocation, StringComparison.OrdinalIgnoreCase))
                         {
                             return await BeginDialogAsync(dialogContext, LocationDialog.Name, null, cancellationToken);
+                        }
+                        else if (string.Equals(result, Shared.Phrases.OptionsExtended.UpdateLanguage, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return await BeginDialogAsync(dialogContext, LanguageDialog.Name, null, cancellationToken);
                         }
                         else if (string.Equals(result, Shared.Phrases.OptionsExtended.Enable, StringComparison.OrdinalIgnoreCase) ||
                             string.Equals(result, Shared.Phrases.OptionsExtended.Disable, StringComparison.OrdinalIgnoreCase))

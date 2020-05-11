@@ -85,6 +85,7 @@ namespace Greyshirt
                 options.Middleware.Add(new TypingMiddleware());
                 options.Middleware.Add(new TrimIncomingMessageMiddleware());
                 options.Middleware.Add(new CreateGreyshirtMiddleware(api));
+                options.Middleware.Add(new TranslationMiddleware(api, translator));
             });
         }
 
