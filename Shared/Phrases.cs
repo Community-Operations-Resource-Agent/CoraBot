@@ -25,6 +25,9 @@ namespace Shared
         public static class Keywords
         {
             public static string Reset = "Reset";
+            public static string Nuke = "Nuke";
+
+            public static List<string> List = new List<string> { Reset, Nuke };
         }
 
         public static class NewUser

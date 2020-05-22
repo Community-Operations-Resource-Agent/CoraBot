@@ -51,8 +51,14 @@ namespace Greyshirt
                 var masterDialog = new MasterDialog(this.state, this.dialogs, this.api, this.configuration);
 
                 // If the user sends the keyword, clear the dialog stack and start a new session.
-                if (Phrases.Keywords.IsKeyword(turnContext.Activity.Text))
+                if (string.Equals(turnContext.Activity.Text, Shared.Phrases.Keywords.Reset, StringComparison.OrdinalIgnoreCase))
                 {
+                    await dialogContext.CancelAllDialogsAsync(cancellationToken);
+                }
+                else if (string.Equals(turnContext.Activity.Text, Shared.Phrases.Keywords.Nuke, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Remove the user and all their data. Should only be used for testing.
+                    await this.api.ResetUser(turnContext);
                     await dialogContext.CancelAllDialogsAsync(cancellationToken);
                 }
 

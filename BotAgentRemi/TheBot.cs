@@ -55,6 +55,12 @@ namespace BotAgentRemi
                 {
                     await dialogContext.CancelAllDialogsAsync(cancellationToken);
                 }
+                else if (string.Equals(turnContext.Activity.Text, Shared.Phrases.Keywords.Nuke, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Remove the user and all their data. Should only be used for testing.
+                    await this.api.ResetUser(turnContext);
+                    await dialogContext.CancelAllDialogsAsync(cancellationToken);
+                }
 
                 // Attempt to continue any existing conversation.
                 DialogTurnResult result = await masterDialog.ContinueDialogAsync(dialogContext, cancellationToken);

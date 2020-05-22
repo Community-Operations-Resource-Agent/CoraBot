@@ -74,9 +74,14 @@ namespace Shared.ApiInterface
         Task<List<Greyshirt>> GetGreyshirtsWithinDistance(Point coordinates, double distanceMeters);
 
         /// <summary>
-        /// Gets all missions for a user.
+        /// Gets all missions created by a user.
         /// </summary>
-        Task<List<Mission>> GetMissionsForUser(User user, bool createdByUser, bool isAssigned);
+        Task<List<Mission>> GetMissionsCreatedByUser(User user, bool isAssigned);
+
+        /// <summary>
+        /// Gets all missions assigned to a user.
+        /// </summary>
+        Task<List<Mission>> GetMissionsAssignedToUser(User user);
 
         /// <summary>
         /// Gets a mission from an ID.
@@ -87,5 +92,10 @@ namespace Shared.ApiInterface
         /// Gets a mission from a short ID.
         /// </summary>
         Task<Mission> GetMissionByShortId(string id);
+
+        /// <summary>
+        /// Test only!
+        /// </summary>
+        Task ResetUser(ITurnContext turnContext);
     }
 }

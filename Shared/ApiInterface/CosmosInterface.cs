@@ -123,10 +123,10 @@ namespace Shared.ApiInterface
                 return null;
             }
 
-            var query = container.GetItemLinqQueryable<Models.User>()
-                .Where(u => u.PhoneNumber == phoneNumber);
+            var queryIterator = container.GetItemLinqQueryable<Models.User>()
+                .Where(u => u.PhoneNumber == phoneNumber)
+                .ToFeedIterator();
 
-            var queryIterator = query.ToFeedIterator();
             var result = new List<Models.User>();
 
             var response = await queryIterator.ReadNextAsync();
@@ -144,10 +144,10 @@ namespace Shared.ApiInterface
                 return null;
             }
 
-            var query = container.GetItemLinqQueryable<Greyshirt>()
-                .Where(u => u.IsGreyshirt && u.PhoneNumber == phoneNumber);
+            var queryIterator = container.GetItemLinqQueryable<Greyshirt>()
+                .Where(u => u.IsGreyshirt && u.PhoneNumber == phoneNumber)
+                .ToFeedIterator();
 
-            var queryIterator = query.ToFeedIterator();
             var result = new List<Greyshirt>();
 
             var response = await queryIterator.ReadNextAsync();
@@ -165,10 +165,10 @@ namespace Shared.ApiInterface
                 return null;
             }
 
-            var query = container.GetItemLinqQueryable<Models.User>()
-                .Where(u => u.Id == id);
+            var queryIterator = container.GetItemLinqQueryable<Models.User>()
+                .Where(u => u.Id == id)
+                .ToFeedIterator();
 
-            var queryIterator = query.ToFeedIterator();
             var result = new List<Models.User>();
 
             var response = await queryIterator.ReadNextAsync();
@@ -186,10 +186,10 @@ namespace Shared.ApiInterface
                 return null;
             }
 
-            var query = container.GetItemLinqQueryable<Greyshirt>()
-                .Where(u => u.IsGreyshirt && u.Id == id);
+            var queryIterator = container.GetItemLinqQueryable<Greyshirt>()
+                .Where(u => u.IsGreyshirt && u.Id == id)
+                .ToFeedIterator();
 
-            var queryIterator = query.ToFeedIterator();
             var result = new List<Greyshirt>();
 
             var response = await queryIterator.ReadNextAsync();
@@ -207,10 +207,10 @@ namespace Shared.ApiInterface
                 return null;
             }
 
-            var query = container.GetItemLinqQueryable<Models.User>()
-                .Where(u => u.LocationCoordinates.Distance(coordinates) <= distanceMeters);
+            var queryIterator = container.GetItemLinqQueryable<Models.User>()
+                .Where(u => u.LocationCoordinates.Distance(coordinates) <= distanceMeters)
+                .ToFeedIterator();
 
-            var queryIterator = query.ToFeedIterator();
             var result = new List<Models.User>();
 
             while (queryIterator.HasMoreResults)
@@ -233,10 +233,10 @@ namespace Shared.ApiInterface
                 return null;
             }
 
-            var query = container.GetItemLinqQueryable<Greyshirt>()
-                .Where(u => u.IsGreyshirt && u.LocationCoordinates.Distance(coordinates) <= distanceMeters);
+            var queryIterator = container.GetItemLinqQueryable<Greyshirt>()
+                .Where(u => u.IsGreyshirt && u.LocationCoordinates.Distance(coordinates) <= distanceMeters)
+                .ToFeedIterator();
 
-            var queryIterator = query.ToFeedIterator();
             var result = new List<Greyshirt>();
 
             while (queryIterator.HasMoreResults)
@@ -249,9 +249,9 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets all missions for a user.
+        /// Gets all missions created by a user.
         /// </summary>
-        public async Task<List<Mission>> GetMissionsForUser(Models.User user, bool createdByUser, bool isAssigned)
+        public async Task<List<Mission>> GetMissionsCreatedByUser(Models.User user, bool isAssigned)
         {
             var container = this.database.GetContainer(this.config.CosmosMissionsContainer());
             if (container == null)
@@ -259,23 +259,45 @@ namespace Shared.ApiInterface
                 return null;
             }
 
-            var orderedQueryable = container.GetItemLinqQueryable<Mission>();
+            var query = container.GetItemLinqQueryable<Mission>()
+                .Where(m => m.CreatedById == user.Id);
 
-            var queryable = createdByUser ?
-                orderedQueryable.Where(m => m.CreatedById == user.Id) :
-                orderedQueryable.Where(m => m.AssignedToId == user.Id);
+            query = isAssigned ?
+                query.Where(m => !m.AssignedToId.IsNull()) :
+                query.Where(m => m.AssignedToId.IsNull());
 
-            queryable = isAssigned ?
-                queryable.Where(m => !m.AssignedToId.IsNull()) :
-                queryable.Where(m => m.AssignedToId.IsNull());
+            var queryIterator = query.ToFeedIterator();
+            var result = new List<Mission>();
 
-            var feedIterator = queryable.ToFeedIterator();
+            while (queryIterator.HasMoreResults)
+            {
+                var response = await queryIterator.ReadNextAsync();
+                result.AddRange(response.Resource);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets all missions assigned to a user.
+        /// </summary>
+        public async Task<List<Mission>> GetMissionsAssignedToUser(Shared.Models.User user)
+        {
+            var container = this.database.GetContainer(this.config.CosmosMissionsContainer());
+            if (container == null)
+            {
+                return null;
+            }
+
+            var queryiterator = container.GetItemLinqQueryable<Mission>()
+                .Where(m => m.AssignedToId == user.Id)
+                .ToFeedIterator();
 
             var result = new List<Mission>();
 
-            while (feedIterator.HasMoreResults)
+            while (queryiterator.HasMoreResults)
             {
-                var response = await feedIterator.ReadNextAsync();
+                var response = await queryiterator.ReadNextAsync();
                 result.AddRange(response.Resource);
             }
 
@@ -318,6 +340,30 @@ namespace Shared.ApiInterface
 
             var response = await queryIterator.ReadNextAsync();
             return response.Resource.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Test only!
+        /// </summary>
+        public async Task ResetUser(ITurnContext turnContext)
+        {
+            var user = await GetUserFromContext(turnContext);
+
+            var missions = await GetMissionsCreatedByUser(user, isAssigned: true);
+            missions.ForEach(async m => await Delete(m));
+
+            missions = await GetMissionsCreatedByUser(user, isAssigned: false);
+            missions.ForEach(async m => await Delete(m));
+
+            missions = await GetMissionsAssignedToUser(user);
+            missions.ForEach(async m =>
+            {
+                m.AssignedToId = null;
+                await Update(m);
+            });
+
+            user.IsConsentGiven = false;
+            await Update(user);
         }
 
         private Container GetContainer(Model model)

@@ -3,6 +3,7 @@ using Microsoft.Bot.Schema;
 using Shared.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Greyshirt
 {
@@ -14,8 +15,8 @@ namespace Greyshirt
 
             public static bool IsKeyword(string text)
             {
-                return string.Equals(text, Shared.Phrases.Keywords.Reset, StringComparison.OrdinalIgnoreCase) ||
-                    text.StartsWith(Accept, StringComparison.InvariantCultureIgnoreCase);
+                return text.StartsWith(Accept, StringComparison.InvariantCultureIgnoreCase) ||
+                    Shared.Phrases.Keywords.List.Any(k => string.Equals(text, k, StringComparison.OrdinalIgnoreCase));
             }
         }
 

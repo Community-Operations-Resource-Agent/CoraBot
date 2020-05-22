@@ -30,6 +30,11 @@ namespace Greyshirt.Dialogs
                         {
                             return await BeginDialogAsync(dialogContext, AcceptMissionDialog.Name, null, cancellationToken);
                         }
+                        else if (dialogContext.Context.Activity.Text.StartsWith(Shared.Phrases.Keywords.Reset, StringComparison.InvariantCultureIgnoreCase) ||
+                                 dialogContext.Context.Activity.Text.StartsWith(Shared.Phrases.Keywords.Nuke, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            return await dialogContext.EndDialogAsync(true, cancellationToken);
+                        }
 
                         return await dialogContext.NextAsync(null, cancellationToken);
                     },

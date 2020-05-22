@@ -37,7 +37,7 @@ namespace Greyshirt.Dialogs.Missions
                             // Get any missions 
                             foreach (var userWithinDistance in usersWithinDistance)
                             {
-                                var missions = await this.api.GetMissionsForUser(userWithinDistance, createdByUser: true, isAssigned: false);
+                                var missions = await this.api.GetMissionsCreatedByUser(userWithinDistance, isAssigned: false);
 
                                 foreach (var mission in missions)
                                 {
