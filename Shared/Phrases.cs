@@ -109,7 +109,7 @@ namespace Shared
 
             private const string PreferenceUpdated = "Your contact preference has been updated";
 
-            public static Activity GetLocation = MessageFactory.Text("Where are you located? (enter City, State/Province, Country)");
+            public static Activity GetLocation = MessageFactory.Text("Where are you located? (enter Zipcode, Country)");
             public static Activity GetLocationRetry = MessageFactory.Text($"Oops, I couldn't find that location. Please try again...");
             public static Activity LocationUpdated = MessageFactory.Text("Your location has been updated!");
 
