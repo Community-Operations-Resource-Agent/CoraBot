@@ -1,0 +1,36 @@
+{
+  // The phone numbers for these organizations have
+  // the ability to send requests for resources.
+  "VerifiedOrganizations": [
+    {
+      "Name": "Swedish Hospital",
+      "PhoneNumbers": [ "1-760-500-4495" ]
+    },
+    {
+      "Name": "Evergreen Hospital",
+      "PhoneNumbers": [ "1-777-777-7777" ]
+    },
+    {
+      "Name": "BC House",
+      "PhoneNumbers": [ "1-850-240-3960" ]
+    }
+  ],
+
+  // These are the supplies that will be available
+  // for users to register and for the verified
+  // organizations to request.
+  "Categories": [
+    {
+      "Name": "Medical Supplies",
+      "Resources": [
+        { "Name": "Masks" },
+        { "Name": "Face Shields" },
+        { "Name": "Eye Protection" },
+        { "Name": "Respiration Tubes" },
+        { "Name": "Ventilators" },
+        { "Name": "Gloves" },
+        { "Name": "Hand Sanitizer" }
+      ]
+    }
+  ]
+}

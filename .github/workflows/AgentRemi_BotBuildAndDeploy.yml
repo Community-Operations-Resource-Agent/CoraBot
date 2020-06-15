@@ -1,0 +1,67 @@
+name: Deploy Team Rubicon bots
+
+on:
+  push:
+    branches: [ demos/AgentRemi ]
+
+env:
+  AZURE_FUNCTIONAPP_NAME: AgentRemiBot  # set this to your application's name
+  AZURE_PACKAGE_PATH: '.'    # set this to the path to your web app project, defaults to the repository root
+  DOTNET_VERSION: '3.1.201'              # set this to the dotnet version to use
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@master
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: 'Build Functions Project Using DOTNET BUILD'
+      shell: pwsh
+      run: |
+        pushd './${{ env.AZURE_PACKAGE_PATH }}'
+        dotnet build --configuration Release --output ./output/Functions ./Functions
+        popd
+
+    - name: 'Build Greyshirt Bot Project Using DOTNET BUILD'
+      shell: pwsh
+      run: |
+        pushd './${{ env.AZURE_PACKAGE_PATH }}'
+        dotnet build --configuration Release --output ./output/Greyshirt ./GreyShirt
+        dotnet publish --configuration Release --output ./output/Greyshirt ./GreyShirt
+        popd
+
+    - name: 'Build AgentRemi Bot Project Using DOTNET BUILD'
+      shell: pwsh
+      run: |
+        pushd './${{ env.AZURE_PACKAGE_PATH }}'
+        dotnet build --configuration Release --output ./output/BotAgentRemi ./BotAgentRemi
+        dotnet publish --configuration Release --output ./output/BotAgentRemi ./BotAgentRemi
+        popd
+
+    - name: 'Publish Azure Function using Azure Functions Action'
+      uses: Azure/functions-action@v1
+      id: fa
+      with:
+        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+        package: '${{ env.AZURE_PACKAGE_PATH }}/output/Functions'
+        publish-profile: ${{ secrets.TEAMRUBICON_FUNCTIONAPP_PUBLISH_PROFILE }}
+
+    - name: 'Run Azure webapp deploy for Greyshirt Bot'
+      uses: azure/webapps-deploy@v2
+      with: 
+        app-name: greyshirtbot-8c1f   
+        publish-profile: ${{ secrets.GREYSHIRTBOT_APP_PUBLISH_PROFILE  }}
+        package: '${{ env.AZURE_PACKAGE_PATH }}/output/Greyshirt'
+
+    - name: 'Run Azure webapp deploy for AgentRemi Bot'
+      uses: azure/webapps-deploy@v2
+      with: 
+        app-name: agentremibot-8f8c
+        publish-profile: ${{ secrets.AGENTREMIBOT_APP_PUBLISH_PROFILE  }}
+        package: '${{ env.AZURE_PACKAGE_PATH }}/output/BotAgentRemi'

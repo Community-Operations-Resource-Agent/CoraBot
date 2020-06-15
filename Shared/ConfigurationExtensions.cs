@@ -26,6 +26,11 @@ namespace Shared
         private const string AzureWebJobsStorageSettingName = "AzureWebJobsStorage";
 
         /// <summary>
+        /// The name of the app setting for the Greyshirt azure storage connection string.
+        /// </summary>
+        private const string GreyshirtAzureWebJobsStorageSettingName = "GreyshirtAzureWebJobsStorage";
+
+        /// <summary>
         /// The name of the setting that contains the CosmosDB endpoint.
         /// </summary>
         private const string CosmosEndpointSettingName = "CosmosDb:Endpoint";
@@ -51,14 +56,9 @@ namespace Shared
         private const string CosmosUsersContainerSettingName = "CosmosDb:Users:Collection";
 
         /// <summary>
-        /// The name of the setting that contains the CosmosDB resources collection.
+        /// The name of the setting that contains the CosmosDB missions collection.
         /// </summary>
-        private const string CosmosResourcesContainerSettingName = "CosmosDb:Resources:Collection";
-
-        /// <summary>
-        /// The name of the setting that contains the CosmosDB needs collection.
-        /// </summary>
-        private const string CosmosNeedsContainerSettingName = "CosmosDb:Needs:Collection";
+        private const string CosmosMissionsContainerSettingName = "CosmosDb:Missions:Collection";
 
         /// <summary>
         /// The name of the setting that contains the CosmosDB feedback collection.
@@ -140,6 +140,11 @@ namespace Shared
             return configuration.GetValue<string>(AzureWebJobsStorageSettingName);
         }
 
+        public static string GreyshirtAzureWebJobsStorage(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(GreyshirtAzureWebJobsStorageSettingName);
+        }
+
         public static string CosmosEndpoint(this IConfiguration configuration)
         {
             return configuration.GetValue<string>(CosmosEndpointSettingName);
@@ -165,14 +170,9 @@ namespace Shared
             return configuration.GetValue<string>(CosmosUsersContainerSettingName);
         }
 
-        public static string CosmosResourcesContainer(this IConfiguration configuration)
+        public static string CosmosMissionsContainer(this IConfiguration configuration)
         {
-            return configuration.GetValue<string>(CosmosResourcesContainerSettingName);
-        }
-
-        public static string CosmosNeedsContainer(this IConfiguration configuration)
-        {
-            return configuration.GetValue<string>(CosmosNeedsContainerSettingName);
+            return configuration.GetValue<string>(CosmosMissionsContainerSettingName);
         }
 
         public static string CosmosFeedbackContainer(this IConfiguration configuration)

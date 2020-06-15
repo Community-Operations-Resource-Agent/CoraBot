@@ -36,41 +36,66 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets a user from a turn context.
         /// </summary>
-        Task<User> GetUser(ITurnContext turnContext);
+        Task<User> GetUserFromContext(ITurnContext turnContext);
+
+        /// <summary>
+        /// Gets a Greyshirt from a turn context.
+        /// </summary>
+        Task<Greyshirt> GetGreyshirtFromContext(ITurnContext turnContext);
 
         /// <summary>
         /// Gets a user from a phone number.
         /// </summary>
-        Task<User> GetUser(string phoneNumber);
+        Task<User> GetUserFromPhoneNumber(string phoneNumber);
 
         /// <summary>
-        /// Gets all users.
+        /// Gets a Greyshirt from a phone number.
         /// </summary>
-        Task<List<User>> GetUsers();
+        Task<Greyshirt> GetGreyshirtFromPhoneNumber(string phoneNumber);
 
         /// <summary>
-        /// Gets all user within a distance from coordinates.
+        /// Gets a user from an ID.
+        /// </summary>
+        Task<User> GetUserFromId(string id);
+
+        /// <summary>
+        /// Gets a Greyshirt from an ID.
+        /// </summary>
+        Task<Greyshirt> GetGreyshirtFromId(string id);
+
+        /// <summary>
+        /// Gets all users within a distance from coordinates.
         /// </summary>
         Task<List<User>> GetUsersWithinDistance(Point coordinates, double distanceMeters);
 
         /// <summary>
-        /// Gets all user within a distance from coordinates that also match the provided phone numbers.
+        /// Gets all Greyshirts within a distance from coordinates.
         /// </summary>
-        Task<List<User>> GetUsersWithinDistance(Point coordinates, double distanceMeters, List<string> phoneNumbers);
+        Task<List<Greyshirt>> GetGreyshirtsWithinDistance(Point coordinates, double distanceMeters);
 
         /// <summary>
-        /// Gets a resource for a user.
+        /// Gets all missions created by a user.
         /// </summary>
-        Task<Resource> GetResourceForUser(User user, string category, string resource);
+        Task<List<Mission>> GetMissionsCreatedByUser(User user, bool isAssigned);
 
         /// <summary>
-        /// Gets a need for a user.
+        /// Gets all missions assigned to a user.
         /// </summary>
-        Task<Need> GetNeedForUser(User user, string category, string resource);
+        Task<List<Mission>> GetMissionsAssignedToUser(User user);
 
         /// <summary>
-        /// Gets a need from an ID.
+        /// Gets a mission from an ID.
         /// </summary>
-        Task<Need> GetNeedById(string id);
+        Task<Mission> GetMissionById(string id);
+
+        /// <summary>
+        /// Gets a mission from a short ID.
+        /// </summary>
+        Task<Mission> GetMissionByShortId(string id);
+
+        /// <summary>
+        /// Test only!
+        /// </summary>
+        Task ResetUser(ITurnContext turnContext);
     }
 }
