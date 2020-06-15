@@ -1,16 +1,19 @@
-﻿using BotAgentRemi.State;
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
+using BotAgentRemi.State;
+
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
+
 using Shared;
 using Shared.ApiInterface;
 using Shared.Models;
 using Shared.Prompts;
 using Shared.Storage;
 using Shared.Translation;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace BotAgentRemi.Dialogs.Need
 {
@@ -34,19 +37,6 @@ namespace BotAgentRemi.Dialogs.Need
                 {
                     async (dialogContext, cancellationToken) =>
                     {
-                        return await dialogContext.PromptAsync(
-                            Prompt.ConfirmPrompt,
-                            new PromptOptions { Prompt = Phrases.Need.GetPrivacyConsent },
-                            cancellationToken);
-                    },
-                    async (dialogContext, cancellationToken) =>
-                    {
-                        if (!(bool)dialogContext.Result)
-                        {
-                            await Messages.SendAsync(Phrases.Need.NoConsent, turnContext, cancellationToken);
-                            return await dialogContext.EndDialogAsync(null, cancellationToken);
-                        }
-
                         return await dialogContext.PromptAsync(
                             Prompt.TextPrompt,
                             new PromptOptions { Prompt = Phrases.Need.GetNeed },

@@ -1,9 +1,11 @@
-﻿using Microsoft.Bot.Builder;
+﻿using System.Collections.Generic;
+
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
+
 using Shared.Models;
 using Shared.Translation;
-using System.Collections.Generic;
 
 namespace Shared
 {
@@ -72,7 +74,7 @@ namespace Shared
             {
                 var list = new List<string> { UpdateLocation };
 
-                if (translator.IsConfigured)
+                if(translator.IsConfigured)
                 {
                     list.Add(UpdateLanguage);
                 }
