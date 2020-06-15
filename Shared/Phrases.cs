@@ -10,7 +10,7 @@ namespace Shared
     public static class Phrases
     {
         public const string ProjectName = "CORA";
-        public const string ProjectWebsite = "Bing.com/CORA";
+        public const string ProjectWebsite = "https://corabot.org";
         public static List<string> ValidChannels = new List<string>() { Channels.Emulator, Channels.Sms };
 
         public static string EnterNumber = "(enter a number)";
