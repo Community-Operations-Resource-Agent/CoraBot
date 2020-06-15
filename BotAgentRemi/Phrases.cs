@@ -1,6 +1,7 @@
-﻿using Microsoft.Bot.Builder;
+﻿using System.Collections.Generic;
+
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
-using System.Collections.Generic;
 
 namespace BotAgentRemi
 {
@@ -22,7 +23,7 @@ namespace BotAgentRemi
         public static class Need
         {
             public static Activity GetPrivacyConsent = MessageFactory.Text($"To help with your need," +
-                $" I'll need to share you phone number with my manager at Team Rubicon and the Greyshirt matched to you." +
+                $" I'll need to share your phone number with my manager at Team Rubicon and the Greyshirt matched to you." +
                 $" Don't worry, I'll never share your number with anyone else, and it won't be used for marketing. Your privacy is my priority." +
                 $" Is that okay? {Shared.Phrases.EnterNumber}");
 
