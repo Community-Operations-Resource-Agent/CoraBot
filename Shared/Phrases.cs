@@ -11,7 +11,7 @@ namespace Shared
     {
         public const string ProjectName = "CORA";
         public const string ProjectWebsite = "https://corabot.org";
-        public static List<string> ValidChannels = new List<string>() { Channels.Emulator, Channels.Sms };
+        public static List<string> ValidChannels = new List<string>() { Channels.Emulator, Channels.Sms, Channels.Directline };
 
         public static string EnterNumber = "(enter a number)";
         public static string None = "None of these";
@@ -41,7 +41,7 @@ namespace Shared
 
             public static Activity InvalidChannel(ITurnContext turnContext)
             {
-                return MessageFactory.Text($"Channel \"{turnContext.Activity.ChannelId}\" is not yet supported");
+                return MessageFactory.Text($"Channel \"{turnContext.Activity.ChannelId}\" is not yet supported. Please update channel handling in the bot");
             }
 
             public static Activity InvalidSchema(string error)

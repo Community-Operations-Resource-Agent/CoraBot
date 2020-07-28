@@ -31,6 +31,7 @@ namespace Shared
             {
                 case Channels.Emulator: return turnContext.Activity.From.Id;
                 case Channels.Sms: return PhoneNumber.Standardize(turnContext.Activity.From.Id);
+                case Channels.Directline: return turnContext.Activity.From.Id;
                 default: return string.Empty;
             }
         }
