@@ -9,8 +9,8 @@ namespace Shared
 {
     public static class Phrases
     {
-        public const string ProjectName = "Agent Remi";
-        public const string ProjectWebsite = "TeamRubiconUSA.org/AgentRemi";
+        public const string ProjectName = "Remy";
+        public const string ProjectWebsite = "TeamRubiconUSA.org/Remy";
         public static List<string> ValidChannels = new List<string>() { Channels.Emulator, Channels.Sms };
 
         public static string EnterNumber = "(enter a number)";

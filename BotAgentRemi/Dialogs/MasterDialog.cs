@@ -60,6 +60,7 @@ namespace BotAgentRemi.Dialogs
                         }
 
                         // Prompt for an option.
+                        // TODO: Get from LG
                         var choices = new List<Choice>();
                         Phrases.Options.List.ForEach(s => choices.Add(new Choice { Value = s }));
 
@@ -67,7 +68,7 @@ namespace BotAgentRemi.Dialogs
                             Prompt.ChoicePrompt,
                             new PromptOptions()
                             {
-                                Prompt = Phrases.Options.GetOptions,
+                                Prompt = ActivityFactory.FromObject(this.lgGenerator.Generate("GetOptions", null, turnContext.Activity.Locale)),
                                 Choices = choices
                             },
                             cancellationToken);
@@ -78,17 +79,21 @@ namespace BotAgentRemi.Dialogs
                         {
                             var result = choice.Value;
 
-                            if (string.Equals(result, Phrases.Options.Need, StringComparison.OrdinalIgnoreCase))
+                            if (string.Equals(result, Phrases.Options.FoodAssistance, StringComparison.OrdinalIgnoreCase))
                             {
-                                return await BeginDialogAsync(dialogContext, NeedDialog.Name, null, cancellationToken);
+                                return await BeginDialogAsync(dialogContext, FoodAssistanceDialog.Name, null, cancellationToken);
+                            }
+                            else if (string.Equals(result, Phrases.Options.FoodBank, StringComparison.OrdinalIgnoreCase))
+                            {
+                                return await BeginDialogAsync(dialogContext, FoodBankDialog.Name, null, cancellationToken);
+                            }
+                            else if (string.Equals(result, Phrases.Options.ShoppingDelivery, StringComparison.OrdinalIgnoreCase))
+                            {
+                                return await BeginDialogAsync(dialogContext, ShoppingDeliveryDialog.Name, null, cancellationToken);
                             }
                             else if (string.Equals(result, Phrases.Options.MoreOptions, StringComparison.OrdinalIgnoreCase))
                             {
                                 return await BeginDialogAsync(dialogContext, OptionsExtendedDialog.Name, null, cancellationToken);
-                            }
-                            else if (string.Equals(result, Phrases.Options.HowDoesItWork, StringComparison.OrdinalIgnoreCase))
-                            {
-                                await Messages.SendAsync(Phrases.Options.HowItWorks, turnContext, cancellationToken);
                             }
                         }
 
@@ -98,7 +103,7 @@ namespace BotAgentRemi.Dialogs
                     {
                         return await dialogContext.PromptAsync(
                             Prompt.ConfirmPrompt,
-                            new PromptOptions { Prompt = Shared.Phrases.Greeting.AnythingElse },
+                            new PromptOptions { Prompt = ActivityFactory.FromObject(this.lgGenerator.Generate("AnythingElse", null, turnContext.Activity.Locale)) },
                             cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
@@ -108,7 +113,7 @@ namespace BotAgentRemi.Dialogs
                             return await dialogContext.ReplaceDialogAsync(MasterDialog.Name, null, cancellationToken);
                         }
 
-                        await Messages.SendAsync(Shared.Phrases.Greeting.Goodbye, turnContext, cancellationToken);
+                        await turnContext.SendActivityAsync(ActivityFactory.FromObject(this.lgGenerator.Generate("Goodbye", null, turnContext.Activity.Locale)));
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });

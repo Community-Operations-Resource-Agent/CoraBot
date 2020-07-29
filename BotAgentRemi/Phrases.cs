@@ -8,11 +8,12 @@ namespace BotAgentRemi
     {
         public static class Options
         {
-            public static string Need = "I have a need";
-            public static string HowDoesItWork = "How does this work?";
+            public static string FoodBank = "Find nearest food bank";
+            public static string ShoppingDelivery = "Shopping and delivery assistance";
+            public static string FoodAssistance = "Food assistance options";
             public static string MoreOptions = "More options";
 
-            public static List<string> List = new List<string> { Need, HowDoesItWork, MoreOptions };
+            public static List<string> List = new List<string> { FoodBank, ShoppingDelivery, FoodAssistance, MoreOptions };
 
             public static Activity GetOptions = MessageFactory.Text($"How can I help? {Shared.Phrases.EnterNumber}");
             public static Activity HowItWorks = MessageFactory.Text($"Once I know what you need, I'll find someone in your community who's ready to help." +
@@ -34,5 +35,12 @@ namespace BotAgentRemi
             public static Activity Complete = MessageFactory.Text($"Great, that's all I need to know! Once I match you to one of our" +
                 $" trusted Greyshirts in your community, they will contact you for any additional details so that they can give you a hand.");
         }
+
+        public static class ShoppingDelivery
+        {
+            public static List<string> WhenOptions = new List<string> { "Urgent", "This week", "Future date" };
+            public static List<string> MethodOptions = new List<string> { "I'll order my groceries online", "I'd like a volunteer to shop and deliver for me" };
+        }
+
     }
 }

@@ -1,2 +1,90 @@
-﻿﻿# NewUserWelcomeMessage
-- Hi, I'm Remy! I'm an agent for Team Rubicon, helping people across the United States get the food and resources they need. Message and data rates apply. Would you like to continue?
+﻿﻿# WelcomeNew
+- Hi, I'm Remy! I'm an agent for Team Rubicon, helping people across the United States get the food and resources they need. Message and data rates apply. Would you like to continue? (enter a number)
+- Hello, I'm Remy! I'm an agent for Team Rubicon, helping people across the United States get the food and resources they need. Message and data rates apply. Would you like to continue? (enter a number)
+
+# ConsentYes
+- Chat with Remy
+
+# ConsentNo
+- Cancel
+
+# Welcome
+- Welcome back! Are you still located in ${userLocation}?
+
+# NoConsent
+- You can message me any time in the future if you change your mind. Goodbye!
+
+# Consent
+- Great, just a few questions and then we can get you started! Rest assured, I'll never share your info with anyone without your permission.
+
+# GetLocation
+- Where are you located? (enter City, State)
+
+# GetLocationRetry
+- Oops, I couldn't find that location. Please try again...
+
+# GetLocationConfirm
+- I matched your city to ${userLocation}. Is this correct? (enter a number)
+
+# LocationUpdated
+- Your location has been updated!
+
+# GetOptions
+- How can I help? Choose from the following or ask a question.
+
+# FoodBank
+- Find nearest food bank
+
+# ShoppingDelivery
+- Shopping and delivery assistance
+
+# FoodAssistance
+- Food assistance options
+
+# MoreOptions
+- More options
+
+# FoodBanksExample
+    - ```
+        Here are the food banks near ${userLocation}:
+        - 123 Main St. (Open 6a-9p)
+        - 456 State Rd. (Open 6a-9p)
+        - 789 Rubicon Way (Open 6a-9p)
+    ```
+
+# GetShoppingDeliveryTime
+- I'll let the team know you're in need. When do you need it by?
+
+# SmallDeliveryTime
+- Urgent
+
+# MediumDeliveryTime
+- This week
+
+# LongDeliveryTime
+- Future date
+
+# GetShoppingDeliveryMethod
+- Ok. Which one of these applies to you?
+
+# OnlineMethod
+- I'll order my groceries online
+
+# VolunteerMethod
+- I'd like a volunteer to shop and deliver for me
+
+# ShoppingDeliveryConfirmation
+- Thank you, I'll let my team know your need. Someone will contact you to arrange further details.
+
+# AnythingElse
+- Is there anything else I can help with today?
+
+# FoodAssistanceExample
+    - ```
+        Here's what I found for options near ${userLocation}:
+        - Program A
+        - Program B
+    ```
+
+# Goodbye
+- Goodbye!

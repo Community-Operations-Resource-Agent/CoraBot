@@ -31,6 +31,7 @@ namespace BotAgentRemi.Dialogs.NewUser
                     async (dialogContext, cancellationToken) =>
                     {
                         // Welcome and ask for consent.
+                        // TODO: Get from LG
                         var choices = new List<Choice>();
                         Shared.Phrases.NewUser.ConsentOptions.ForEach(s => choices.Add(new Choice { Value = s }));
 
@@ -38,7 +39,7 @@ namespace BotAgentRemi.Dialogs.NewUser
                             Prompt.ChoicePrompt,
                             new PromptOptions()
                             {
-                                Prompt = ActivityFactory.FromObject(this.lgGenerator.Generate("NewUserWelcomeMessage", null, turnContext.Activity.Locale)),
+                                Prompt = ActivityFactory.FromObject(this.lgGenerator.Generate("WelcomeNew", null, turnContext.Activity.Locale)),
                                 Choices = choices
                             },
                             cancellationToken);
@@ -53,14 +54,14 @@ namespace BotAgentRemi.Dialogs.NewUser
                             // Did not consent. Delete their user record.
                             await this.api.Delete(user);
 
-                            await Messages.SendAsync(Shared.Phrases.NewUser.NoConsent, dialogContext.Context, cancellationToken);
+                            await dialogContext.Context.SendActivityAsync(ActivityFactory.FromObject(this.lgGenerator.Generate("NoConsent", null, turnContext.Activity.Locale)));
                             return await dialogContext.EndDialogAsync(false, cancellationToken);
                         }
 
                         user.IsConsentGiven = true;
                         await this.api.Update(user);
 
-                        await Messages.SendAsync(Shared.Phrases.NewUser.Consent, dialogContext.Context, cancellationToken);
+                        await dialogContext.Context.SendActivityAsync(ActivityFactory.FromObject(this.lgGenerator.Generate("Consent", null, turnContext.Activity.Locale)));
                         return await BeginDialogAsync(dialogContext, LocationDialog.Name, null, cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
