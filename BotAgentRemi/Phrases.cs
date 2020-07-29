@@ -11,9 +11,11 @@ namespace BotAgentRemi
             public static string FoodBank = "Find nearest food bank";
             public static string ShoppingDelivery = "Shopping and delivery assistance";
             public static string FoodAssistance = "Food assistance options";
+            public static string AskAQuestion = "Ask a question";
             public static string MoreOptions = "More options";
 
-            public static List<string> List = new List<string> { FoodBank, ShoppingDelivery, FoodAssistance, MoreOptions };
+            public static List<string> List = new List<string> { FoodBank, ShoppingDelivery, FoodAssistance, AskAQuestion, MoreOptions };
+
 
             public static Activity GetOptions = MessageFactory.Text($"How can I help? {Shared.Phrases.EnterNumber}");
             public static Activity HowItWorks = MessageFactory.Text($"Once I know what you need, I'll find someone in your community who's ready to help." +

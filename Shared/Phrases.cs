@@ -57,6 +57,11 @@ namespace Shared
             }
         }
 
+        public static class QnAMaker
+        {
+            public static Activity GetQuestionFromUser = MessageFactory.Text($"Ask away!");
+        }
+
         public static class OptionsExtended
         {
             public static string UpdateLocation = "Update your location";
