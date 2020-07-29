@@ -3,6 +3,7 @@ using BotAgentRemi.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
@@ -18,8 +19,8 @@ namespace BotAgentRemi.Dialogs.NewUser
     {
         public static string Name = typeof(NewUserDialog).FullName;
 
-        public NewUserDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+        public NewUserDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, MultiLanguageLG lgGenerator)
+            : base(state, dialogs, api, configuration, lgGenerator) { }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
         {
@@ -37,7 +38,7 @@ namespace BotAgentRemi.Dialogs.NewUser
                             Prompt.ChoicePrompt,
                             new PromptOptions()
                             {
-                                Prompt = Shared.Phrases.Greeting.WelcomeNew,
+                                Prompt = ActivityFactory.FromObject(this.lgGenerator.Generate("NewUserWelcomeMessage", null, turnContext.Activity.Locale)),
                                 Choices = choices
                             },
                             cancellationToken);

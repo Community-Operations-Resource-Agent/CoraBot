@@ -1,6 +1,7 @@
 ﻿using BotAgentRemi.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
@@ -20,8 +21,8 @@ namespace BotAgentRemi.Dialogs.Need
 
         Translator translator;
 
-        public NeedDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration)
+        public NeedDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, MultiLanguageLG lgGenerator)
+            : base(state, dialogs, api, configuration, lgGenerator)
         {
             this.translator = new Translator(configuration);
         }

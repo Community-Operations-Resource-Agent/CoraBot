@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using BotAgentRemi.State;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +14,7 @@ using Shared;
 using Shared.ApiInterface;
 using Shared.Middleware;
 using Shared.Translation;
+using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace BotAgentRemi
 {
@@ -52,6 +55,12 @@ namespace BotAgentRemi
             // Add the translator.
             var translator = new Translator(this.configuration);
             services.AddSingleton(translator);
+
+            // Configure Language Generation files
+            Dictionary<string, string> lgFilesPerLocale = new Dictionary<string, string>() {
+                    {"", Path.Combine(".", "Responses", "AllResponses.lg")},
+                };
+            services.AddSingleton(new MultiLanguageLG(lgFilesPerLocale));
 
             // Configure the bot.
             services.AddBot<TheBot>(options =>

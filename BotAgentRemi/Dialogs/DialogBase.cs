@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BotAgentRemi.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Shared.ApiInterface;
 
@@ -15,13 +16,15 @@ namespace BotAgentRemi.Dialogs
         protected readonly DialogSet dialogs;
         protected readonly IApiInterface api;
         protected readonly IConfiguration configuration;
+        protected readonly MultiLanguageLG lgGenerator;
 
-        public DialogBase(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
+        public DialogBase(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, MultiLanguageLG lgGenerator)
         {
             this.state = state;
             this.dialogs = dialogs;
             this.api = api;
             this.configuration = configuration;
+            this.lgGenerator = lgGenerator;
         }
 
         public abstract Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellationToken);
@@ -77,7 +80,7 @@ namespace BotAgentRemi.Dialogs
             if (type != null && type.IsSubclassOf(typeof(DialogBase)))
             {
                 // Create an instance of the dialog and add it to the dialog set.
-                return (DialogBase)Activator.CreateInstance(type, this.state, this.dialogs, this.api, this.configuration);
+                return (DialogBase)Activator.CreateInstance(type, this.state, this.dialogs, this.api, this.configuration, this.lgGenerator);
             }
 
             return null;
