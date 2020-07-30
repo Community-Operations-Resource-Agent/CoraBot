@@ -61,6 +61,10 @@ namespace Greyshirt.Dialogs
                             {
                                 await Messages.SendAsync(Phrases.Options.MissionExplaination, turnContext, cancellationToken);
                             }
+                            else if (string.Equals(result, Phrases.Options.AskAQuestion, StringComparison.OrdinalIgnoreCase))
+                            {
+                                return await BeginDialogAsync(dialogContext, QnAMakerDialog.Name, null, cancellationToken);
+                            }
                         }
 
                         return await dialogContext.NextAsync(null, cancellationToken);
