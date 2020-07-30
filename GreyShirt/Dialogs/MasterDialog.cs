@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Shared;
 using Greyshirt.Dialogs.NewUser;
 using Greyshirt.State;
+using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Greyshirt.Dialogs
 {
@@ -15,8 +16,8 @@ namespace Greyshirt.Dialogs
     {
         public static string Name = typeof(MasterDialog).FullName;
 
-        public MasterDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+        public MasterDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, MultiLanguageLG lgGenerator)
+            : base(state, dialogs, api, configuration, lgGenerator) { }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
         {
@@ -46,7 +47,7 @@ namespace Greyshirt.Dialogs
                         // The keyword flow can result in ending the conversation.
                         if (dialogContext.Result is bool continueConversation && !continueConversation)
                         {
-                            await Messages.SendAsync(Shared.Phrases.Greeting.Goodbye, turnContext, cancellationToken);
+                            await turnContext.SendActivityAsync(ActivityFactory.FromObject(this.lgGenerator.Generate("Goodbye", null, turnContext.Activity.Locale)));
                             return await dialogContext.EndDialogAsync(null, cancellationToken);
                         }
 
@@ -56,7 +57,11 @@ namespace Greyshirt.Dialogs
                     {
                         // Register the user if they are new.
                         var greyshirt = await api.GetGreyshirtFromContext(dialogContext.Context);
-                        if (!greyshirt.IsConsentGiven)
+                        if (greyshirt == null)
+                        {
+                            greyshirt = new Shared.Models.Greyshirt();
+                        }
+                        if (!greyshirt.IsConsentGiven || !greyshirt.IsGreyshirt)
                         {
                             return await BeginDialogAsync(dialogContext, NewUserDialog.Name, null, cancellationToken);
                         }
@@ -65,10 +70,9 @@ namespace Greyshirt.Dialogs
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        // The new user flow can result in no consent. If so, end the conversation.
-                        if (dialogContext.Result is bool didConsent && !didConsent)
+                        // The new user flow can result in no consent or not registered. If so, end the conversation.
+                        if (!(bool)dialogContext.Result)
                         {
-                            await Messages.SendAsync(Shared.Phrases.NewUser.NoConsent, dialogContext.Context, cancellationToken);
                             return await dialogContext.EndDialogAsync(null, cancellationToken);
                         }
 
@@ -77,7 +81,7 @@ namespace Greyshirt.Dialogs
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        await Messages.SendAsync(Shared.Phrases.Greeting.Goodbye, turnContext, cancellationToken);
+                        await turnContext.SendActivityAsync(ActivityFactory.FromObject(this.lgGenerator.Generate("Goodbye", null, turnContext.Activity.Locale)));
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     }
                 });

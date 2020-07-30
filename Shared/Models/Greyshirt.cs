@@ -6,7 +6,7 @@
 
         public Greyshirt() : base()
         {
-            this.IsGreyshirt = true;
+            this.IsGreyshirt = false;
         }
 
         public bool IsRegistered()

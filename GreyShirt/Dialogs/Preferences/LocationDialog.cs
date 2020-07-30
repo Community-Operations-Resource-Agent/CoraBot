@@ -2,6 +2,7 @@
 using Microsoft.Azure.Cosmos.Spatial;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
@@ -15,8 +16,8 @@ namespace Greyshirt.Dialogs.Preferences
     {
         public static string Name = typeof(LocationDialog).FullName;
 
-        public LocationDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+        public LocationDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, MultiLanguageLG lgGenerator)
+            : base(state, dialogs, api, configuration, lgGenerator) { }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
         {
