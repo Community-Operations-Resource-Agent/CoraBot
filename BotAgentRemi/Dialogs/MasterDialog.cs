@@ -91,6 +91,10 @@ namespace BotAgentRemi.Dialogs
                             {
                                 return await BeginDialogAsync(dialogContext, ShoppingDeliveryDialog.Name, null, cancellationToken);
                             }
+                            else if (string.Equals(result, Phrases.Options.AskAQuestion, StringComparison.OrdinalIgnoreCase))
+                            {
+                                return await BeginDialogAsync(dialogContext, QnAMakerDialog.Name, null, cancellationToken);
+                            }
                             else if (string.Equals(result, Phrases.Options.MoreOptions, StringComparison.OrdinalIgnoreCase))
                             {
                                 return await BeginDialogAsync(dialogContext, OptionsExtendedDialog.Name, null, cancellationToken);

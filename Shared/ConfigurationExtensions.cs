@@ -101,6 +101,16 @@ namespace Shared
         private const string TranslationUrlFormatSettingName = "Translation:UrlFormat";
 
         /// <summary>
+        /// The name of the setting that contains the endpoint for the QnAMaker bot.
+        /// </summary>
+        private const string QnAMakerEndpointSettingName = "QnAMaker:Endpoint";
+
+        /// <summary>
+        /// The name of the setting that contains the endpoint key for the QnAMaker bot
+        /// </summary>
+        private const string QnAMakerEndpointKeySettingName = "QnAMaker:EndpointKey";
+
+        /// <summary>
         /// The name of the setting that contains the bot service URL.
         /// </summary>
         private const string ServiceUrlSettingName = "ServiceUrl";
@@ -213,6 +223,16 @@ namespace Shared
         public static string TranslationUrlFormat(this IConfiguration configuration)
         {
             return configuration.GetValue<string>(TranslationUrlFormatSettingName);
+        }
+
+        public static string QnAMakerEndpoint(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(QnAMakerEndpointSettingName);
+        }
+
+        public static string QnAMakerEndpointKey(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(QnAMakerEndpointKeySettingName);
         }
 
         public static string ServiceUrl(this IConfiguration configuration)
