@@ -2,6 +2,7 @@
 using Greyshirt.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Shared.ApiInterface;
 using Shared.Prompts;
@@ -15,8 +16,8 @@ namespace Greyshirt.Dialogs
     {
         public static string Name = typeof(KeywordDialog).FullName;
 
-        public KeywordDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+        public KeywordDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, MultiLanguageLG lgGenerator)
+            : base(state, dialogs, api, configuration, lgGenerator) { }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
         {

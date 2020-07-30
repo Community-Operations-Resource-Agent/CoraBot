@@ -1,0 +1,63 @@
+﻿﻿# WelcomeNew
+- Hi, I'm Remy! I'm an agent for Team Rubicon, helping people across the United States get the food and resources they need. Message and data rates apply. Would you like to continue? (enter a number)
+- Hello, I'm Remy! I'm an agent for Team Rubicon, helping people across the United States get the food and resources they need. Message and data rates apply. Would you like to continue? (enter a number)
+
+# ConsentYes
+- Chat with Remy
+
+# ConsentNo
+- Cancel
+
+# Welcome
+- Welcome back! Are you still located in ${userLocation}?
+
+# NoConsent
+- You can message me any time in the future if you change your mind. Goodbye!
+
+# Consent
+- Great, just a few questions and then we can get you started! Rest assured, I'll never share your info with anyone without your permission.
+
+# GetIsRegistered
+- Are you already registered as a Greyshirt?
+
+# HowToRegister
+- No problem. To register, go to TeamRubiconUSA.org/engage. Select Join Up and then follow the onscreen instructions.
+
+# ComeBackLater
+- To give you a Greyshirt number, we need to run a background check and confirm a few things with you. Come back and chat once that process is complete.
+
+# GetNumberExisting
+- That's what I like to hear! What is your Greyshirt number?
+
+# GetNumberConfirm
+- Great! We're almost ready to get started!
+
+# RegistrationComplete
+- That's all the information I need - you're now ready to take on a mission!
+
+# GetLocation
+- Where are you located? (enter City, State)
+
+# GetLocationRetry
+- Oops, I couldn't find that location. Please try again...
+
+# GetLocationConfirm
+- I matched your city to ${userLocation}. Is this correct? (enter a number)
+
+# LocationUpdated
+- Your location has been updated!
+
+# GetOptions
+- Let me know what you'd like to do. You can also ask me a question.
+
+# NeedMission
+- I need a mission
+
+# MoreOptions
+- More options
+
+# AnythingElse
+- Is there anything else I can help with today?
+
+# Goodbye
+- Goodbye!

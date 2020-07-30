@@ -12,6 +12,9 @@ using Shared.Translation;
 using Shared.Middleware;
 using Greyshirt.State;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.IO;
+using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Greyshirt
 {
@@ -52,6 +55,12 @@ namespace Greyshirt
             // Add the translator.
             var translator = new Translator(this.configuration);
             services.AddSingleton(translator);
+
+            // Configure Language Generation files
+            Dictionary<string, string> lgFilesPerLocale = new Dictionary<string, string>() {
+                    {"", Path.Combine(".", "Responses", "AllResponses.lg")},
+                };
+            services.AddSingleton(new MultiLanguageLG(lgFilesPerLocale));
 
             // Configure the bot.
             services.AddBot<TheBot>(options =>

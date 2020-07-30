@@ -3,6 +3,7 @@ using Greyshirt.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
@@ -18,8 +19,8 @@ namespace Greyshirt.Dialogs.NewUser
     {
         public static string Name = typeof(NewUserDialog).FullName;
 
-        public NewUserDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+        public NewUserDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, MultiLanguageLG lgGenerator)
+            : base(state, dialogs, api, configuration, lgGenerator) { }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
         {
@@ -37,7 +38,7 @@ namespace Greyshirt.Dialogs.NewUser
                             Prompt.ChoicePrompt,
                             new PromptOptions()
                             {
-                                Prompt = Shared.Phrases.Greeting.WelcomeNew,
+                                Prompt = ActivityFactory.FromObject(this.lgGenerator.Generate("WelcomeNew", null, turnContext.Activity.Locale)),
                                 Choices = choices
                             },
                             cancellationToken);
@@ -51,6 +52,8 @@ namespace Greyshirt.Dialogs.NewUser
                         {
                             // Did not consent. Delete their user record.
                             await this.api.Delete(greyshirt);
+                            
+                            await dialogContext.Context.SendActivityAsync(ActivityFactory.FromObject(this.lgGenerator.Generate("NoConsent", null, turnContext.Activity.Locale)));
 
                             return await dialogContext.EndDialogAsync(false, cancellationToken);
                         }
@@ -58,16 +61,21 @@ namespace Greyshirt.Dialogs.NewUser
                         greyshirt.IsConsentGiven = true;
                         await this.api.Update(greyshirt);
 
-                        await Messages.SendAsync(Shared.Phrases.NewUser.Consent, dialogContext.Context, cancellationToken);
+                        await dialogContext.Context.SendActivityAsync(ActivityFactory.FromObject(this.lgGenerator.Generate("Consent", null, turnContext.Activity.Locale)));
                         return await BeginDialogAsync(dialogContext, GreyshirtRegisterDialog.Name, null, cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        return await BeginDialogAsync(dialogContext, LocationDialog.Name, null, cancellationToken);
+                        if ((bool)dialogContext.Result)
+                        {
+                            // Is not registered already
+                            return await BeginDialogAsync(dialogContext, LocationDialog.Name, null, cancellationToken);
+                        }
+                        return await dialogContext.EndDialogAsync(false, cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        await Messages.SendAsync(Phrases.NewUser.RegistrationComplete, turnContext, cancellationToken);
+                        await dialogContext.Context.SendActivityAsync(ActivityFactory.FromObject(this.lgGenerator.Generate("RegistrationComplete", null, turnContext.Activity.Locale)));
                         return await dialogContext.EndDialogAsync(true, cancellationToken);
                     },
                 });

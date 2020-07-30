@@ -5,6 +5,7 @@ using Greyshirt.Dialogs;
 using Greyshirt.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Shared;
@@ -18,9 +19,10 @@ namespace Greyshirt
         private readonly StateAccessors state;
         private readonly DialogSet dialogs;
         private readonly IApiInterface api;
+        private readonly MultiLanguageLG lgGenerator;
         private readonly IConfiguration configuration;
 
-        public TheBot(IConfiguration configuration, StateAccessors state, CosmosInterface api)
+        public TheBot(IConfiguration configuration, StateAccessors state, CosmosInterface api, MultiLanguageLG lgGenerator)
         {
             this.configuration = configuration;
 
@@ -28,6 +30,8 @@ namespace Greyshirt
             this.dialogs = new DialogSet(state.DialogContextAccessor);
 
             this.api = api ?? throw new ArgumentNullException(nameof(api));
+
+            this.lgGenerator = lgGenerator ?? throw new ArgumentNullException(nameof(lgGenerator));
 
             // Register prompts.
             Prompt.Register(this.dialogs, this.configuration, this.api);
@@ -48,7 +52,7 @@ namespace Greyshirt
                 }
 
                 // Create the master dialog.
-                var masterDialog = new MasterDialog(this.state, this.dialogs, this.api, this.configuration);
+                var masterDialog = new MasterDialog(this.state, this.dialogs, this.api, this.configuration, this.lgGenerator);
 
                 // If the user sends the keyword, clear the dialog stack and start a new session.
                 if (string.Equals(turnContext.Activity.Text, Shared.Phrases.Keywords.Reset, StringComparison.OrdinalIgnoreCase))
