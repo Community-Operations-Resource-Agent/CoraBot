@@ -37,6 +37,12 @@ namespace Greyshirt.Dialogs.NewUser
                         {
                             await dialogContext.Context.SendActivityAsync(ActivityFactory.FromObject(this.lgGenerator.Generate("HowToRegister", null, turnContext.Activity.Locale)));
                             await dialogContext.Context.SendActivityAsync(ActivityFactory.FromObject(this.lgGenerator.Generate("ComeBackLater", null, turnContext.Activity.Locale)));
+
+                            // Mark them as not greyshirt
+                            var greyshirt = await api.GetGreyshirtFromContext(dialogContext.Context);
+                            greyshirt.IsGreyshirt = false;
+                            await this.api.Update(greyshirt);
+
                             return await dialogContext.EndDialogAsync(false, cancellationToken);
                         }
                         else
