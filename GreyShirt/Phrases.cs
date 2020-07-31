@@ -40,9 +40,10 @@ namespace Greyshirt
         {
             public static string NewMission = "I need a mission";
             public static string WhatIsMission = "What's a mission?";
+            public static string AskAQuestion = "Ask a question";
             public static string MoreOptions = "More options";
 
-            public static List<string> List = new List<string> { NewMission, WhatIsMission, MoreOptions };
+            public static List<string> List = new List<string> { NewMission, WhatIsMission, AskAQuestion, MoreOptions };
 
             public static Activity GetOptions = MessageFactory.Text($"Let me know what you'd like to do. {Shared.Phrases.EnterNumber}");
             public static Activity MissionExplaination = MessageFactory.Text($"Missions are super quick (under an hour), high-impact" +
