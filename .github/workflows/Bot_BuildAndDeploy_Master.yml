@@ -22,11 +22,12 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: 'Resolve Project Dependencies Using Dotnet'
+    - name: 'Resolve Project Dependencies & build Using Dotnet'
       shell: pwsh
       run: |
         pushd './Bot'
-        dotnet build --configuration Release --output ../output/bot
+        dotnet build --configuration Release
+        dotnet publish -c Release -o ../output/bot
         popd
 
       # Deploy to Azure Web apps
