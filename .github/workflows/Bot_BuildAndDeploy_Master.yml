@@ -1,0 +1,38 @@
+name: Deploy Bot to Azure Function App
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - 'Bot/**'
+env:
+  AZURE_FUNCTIONAPP_NAME: CoraBot  # set this to your application's name
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'Bot'    # set this to the path to your web app project, defaults to the repository root
+  DOTNET_VERSION: '3.1.201'              # set this to the dotnet version to use
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@master
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: 'Resolve Project Dependencies Using Dotnet'
+      shell: pwsh
+      run: |
+        pushd './Bot'
+        dotnet build --configuration Release --output ../output/bot
+        popd
+
+      # Deploy to Azure Web apps
+    - name: 'Run Azure webapp deploy action'
+      uses: azure/webapps-deploy@v2
+      with: 
+        app-name: 'cora-webappbot-dev-01'
+        package: './output/bot'
+        publish-profile: ${{ secrets.AZURE_BOTAPP_PUBLISH_PROFILE }}
