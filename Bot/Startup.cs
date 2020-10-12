@@ -99,6 +99,7 @@ namespace Bot
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
+            app.UseNamedPipes(System.Environment.GetEnvironmentVariable("APPSETTING_WEBSITE_SITE_NAME") + ".directline");
             app.UseBotFramework();
         }
     }
