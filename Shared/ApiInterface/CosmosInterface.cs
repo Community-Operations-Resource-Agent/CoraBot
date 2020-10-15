@@ -2,7 +2,6 @@
 using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Azure.Cosmos.Spatial;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Connector;
 using Microsoft.Extensions.Configuration;
 using Shared.Models;
 using System.Collections.Generic;
@@ -16,15 +15,17 @@ namespace Shared.ApiInterface
     /// </summary>
     public class CosmosInterface : IApiInterface
     {
-        private IConfiguration config;
-        private CosmosClient client;
-        private Database database;
+        private readonly IConfiguration config;
+
+        private readonly CosmosClient client;
+
+        private readonly Database database;
 
         public CosmosInterface(IConfiguration config)
         {
             this.config = config;
-            this.client = new CosmosClient(config.CosmosEndpoint(), config.CosmosKey());
-            this.database = this.client.GetDatabase(this.config.CosmosDatabase());
+            client = new CosmosClient(config.CosmosEndpoint(), config.CosmosKey());
+            database = client.GetDatabase(this.config.CosmosDatabase());
         }
 
         /// <summary>
@@ -32,14 +33,14 @@ namespace Shared.ApiInterface
         /// </summary>
         public async Task Init()
         {
-            var databaseResponse = await this.client.CreateDatabaseIfNotExistsAsync(this.config.CosmosDatabase());
+            var databaseResponse = await client.CreateDatabaseIfNotExistsAsync(config.CosmosDatabase());
             var database = databaseResponse.Database;
 
-            await database.CreateContainerIfNotExistsAsync(this.config.CosmosConversationsContainer(), "/id");
-            await database.CreateContainerIfNotExistsAsync(this.config.CosmosUsersContainer(), "/PhoneNumber");
-            await database.CreateContainerIfNotExistsAsync(this.config.CosmosNeedsContainer(), "/Category");
-            await database.CreateContainerIfNotExistsAsync(this.config.CosmosResourcesContainer(), "/Category");
-            await database.CreateContainerIfNotExistsAsync(this.config.CosmosFeedbackContainer(), "/id");
+            await database.CreateContainerIfNotExistsAsync(config.CosmosConversationsContainer(), "/id");
+            await database.CreateContainerIfNotExistsAsync(config.CosmosUsersContainer(), "/PhoneNumber");
+            await database.CreateContainerIfNotExistsAsync(config.CosmosNeedsContainer(), "/Category");
+            await database.CreateContainerIfNotExistsAsync(config.CosmosResourcesContainer(), "/Category");
+            await database.CreateContainerIfNotExistsAsync(config.CosmosFeedbackContainer(), "/id");
         }
 
         /// <summary>
@@ -47,7 +48,7 @@ namespace Shared.ApiInterface
         /// </summary>
         public async Task Destroy()
         {
-            var database = this.client.GetDatabase(this.config.CosmosDatabase());
+            var database = client.GetDatabase(config.CosmosDatabase());
             await database.DeleteAsync();
         }
 
@@ -110,7 +111,7 @@ namespace Shared.ApiInterface
         /// </summary>
         public async Task<Models.User> GetUser(string phoneNumber)
         {
-            var container = this.database.GetContainer(this.config.CosmosUsersContainer());
+            var container = database.GetContainer(config.CosmosUsersContainer());
             if (container == null)
             {
                 return null;
@@ -129,7 +130,7 @@ namespace Shared.ApiInterface
         /// </summary>
         public async Task<List<Models.User>> GetUsers()
         {
-            var container = this.database.GetContainer(this.config.CosmosUsersContainer());
+            var container = database.GetContainer(config.CosmosUsersContainer());
             if (container == null)
             {
                 return null;
@@ -154,7 +155,7 @@ namespace Shared.ApiInterface
         /// </summary>
         public async Task<List<Models.User>> GetUsersWithinDistance(Point coordinates, double distanceMeters)
         {
-            var container = this.database.GetContainer(this.config.CosmosUsersContainer());
+            var container = database.GetContainer(config.CosmosUsersContainer());
             if (container == null)
             {
                 return null;
@@ -180,7 +181,7 @@ namespace Shared.ApiInterface
         /// </summary>
         public async Task<List<Models.User>> GetUsersWithinDistance(Point coordinates, double distanceMeters, List<string> phoneNumbers)
         {
-            var container = this.database.GetContainer(this.config.CosmosUsersContainer());
+            var container = database.GetContainer(config.CosmosUsersContainer());
             if (container == null)
             {
                 return null;
@@ -206,7 +207,7 @@ namespace Shared.ApiInterface
         /// </summary>
         public async Task<Resource> GetResourceForUser(Models.User user, string category, string resource)
         {
-            var container = this.database.GetContainer(this.config.CosmosResourcesContainer());
+            var container = database.GetContainer(config.CosmosResourcesContainer());
             if (container == null)
             {
                 return null;
@@ -225,7 +226,7 @@ namespace Shared.ApiInterface
         /// </summary>
         public async Task<Need> GetNeedForUser(Models.User user, string category, string resource)
         {
-            var container = this.database.GetContainer(this.config.CosmosNeedsContainer());
+            var container = database.GetContainer(config.CosmosNeedsContainer());
             if (container == null)
             {
                 return null;
@@ -244,7 +245,7 @@ namespace Shared.ApiInterface
         /// </summary>
         public async Task<Need> GetNeedById(string id)
         {
-            var container = this.database.GetContainer(this.config.CosmosNeedsContainer());
+            var container = database.GetContainer(config.CosmosNeedsContainer());
             if (container == null)
             {
                 return null;
@@ -262,19 +263,19 @@ namespace Shared.ApiInterface
         {
             if (model is Models.User)
             {
-                return this.database.GetContainer(this.config.CosmosUsersContainer());
+                return database.GetContainer(config.CosmosUsersContainer());
             }
             else if (model is Resource)
             {
-                return this.database.GetContainer(this.config.CosmosResourcesContainer());
+                return database.GetContainer(config.CosmosResourcesContainer());
             }
             else if (model is Need)
             {
-                return this.database.GetContainer(this.config.CosmosNeedsContainer());
+                return database.GetContainer(config.CosmosNeedsContainer());
             }
             else if (model is Feedback)
             {
-                return this.database.GetContainer(this.config.CosmosFeedbackContainer());
+                return database.GetContainer(config.CosmosFeedbackContainer());
             }
 
             return null;
@@ -297,25 +298,5 @@ namespace Shared.ApiInterface
 
             return model.Id;
         }
-
-        /*
-        private FeedOptions GetPartitionedFeedOptions()
-        {
-            // From https://docs.microsoft.com/en-us/azure/cosmos-db/performance-tips
-
-            // If you don't know the number of partitions, you can set the degree of
-            // parallelism to a high number. The system will choose the minimum
-            // (number of partitions, user provided input) as the degree of parallelism.
-
-            // When maxItemCount is set to -1, the SDK automatically finds the optimal
-            // value, depending on the document size
-            return new FeedOptions
-            {
-                EnableCrossPartitionQuery = true,
-                MaxDegreeOfParallelism = 100,
-                MaxItemCount = -1,
-            };
-        }
-        */
     }
 }

@@ -1,11 +1,11 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
+﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Azure;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Shared;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Bot.State
 {
@@ -54,20 +54,20 @@ namespace Bot.State
         /// <param name="conversationState">The state object that stores the conversation state.</param>
         public StateAccessors(ConversationState conversationState)
         {
-            this.ConversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
-            this.DialogContextAccessor = conversationState.CreateProperty<DialogState>(DialogContextName);
-            this.UserContextAccessor = conversationState.CreateProperty<UserContext>(UserContextName);
+            ConversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
+            DialogContextAccessor = conversationState.CreateProperty<DialogState>(DialogContextName);
+            UserContextAccessor = conversationState.CreateProperty<UserContext>(UserContextName);
         }
 
         public async Task<UserContext> GetUserContext(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            return await this.UserContextAccessor.GetAsync(turnContext, () =>
+            return await UserContextAccessor.GetAsync(turnContext, () =>
             { return new UserContext(); }, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task ClearUserContext(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            await this.UserContextAccessor.DeleteAsync(turnContext, cancellationToken);
+            await UserContextAccessor.DeleteAsync(turnContext, cancellationToken);
         }
 
         /// <summary>

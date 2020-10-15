@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
-using Bot.Dialogs.Preferences;
+﻿using Bot.Dialogs.Preferences;
 using BotTests.Setup;
 using Microsoft.Bot.Schema;
 using Shared;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace BotTests.Dialogs.Preferences
@@ -11,7 +11,8 @@ namespace BotTests.Dialogs.Preferences
     public class LocationDialogTests : DialogTestBase
     {
         public LocationDialogTests(TestFixture fixture) : base(fixture)
-        { }
+        {
+        }
 
         [Fact]
         public async Task LocationRetry()
@@ -30,7 +31,7 @@ namespace BotTests.Dialogs.Preferences
                 .Send("Seattle")
                 .StartTestAsync();
 
-            var user = await this.Api.GetUser(this.turnContext);
+            var user = await Api.GetUser(turnContext);
 
             await CreateTestFlow(LocationDialog.Name)
                 .AssertReply(StartsWith(Phrases.Preferences.GetLocationConfirm(user.Location)))
@@ -46,7 +47,7 @@ namespace BotTests.Dialogs.Preferences
                 .Send("Seattle")
                 .StartTestAsync();
 
-            var user = await this.Api.GetUser(this.turnContext);
+            var user = await Api.GetUser(turnContext);
 
             await CreateTestFlow(LocationDialog.Name)
                 .AssertReply(StartsWith(Phrases.Preferences.GetLocationConfirm(user.Location)))

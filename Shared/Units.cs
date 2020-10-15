@@ -8,8 +8,8 @@
 
     public static class UnitExtensions
     {
-        const double KilometersPerMile = 1.609344;
-        const double MetersPerKilometer = 1000;
+        private const double KilometersPerMile = 1.609344;
+        private const double MetersPerKilometer = 1000;
 
         public static double ToMeters(this Units units, int value)
         {

@@ -16,7 +16,9 @@ namespace Bot.Dialogs.Preferences
         public static string Name = typeof(DaysDialog).FullName;
 
         public DaysDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+            : base(state, dialogs, api, configuration)
+        {
+        }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
         {
@@ -42,7 +44,7 @@ namespace Bot.Dialogs.Preferences
 
                         var user = await api.GetUser(dialogContext.Context);
                         user.ReminderFrequency = dayFlags;
-                        await this.api.Update(user);
+                        await api.Update(user);
 
                         await Messages.SendAsync(Phrases.Preferences.UpdateDaysUpdated(dayFlags), dialogContext.Context, cancellationToken);
                         return await dialogContext.EndDialogAsync(null, cancellationToken);

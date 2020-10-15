@@ -8,7 +8,6 @@ namespace Shared.Models.Helpers
     public enum DayFlags : int
     {
         None = 0,
-
         Sunday = (1 << 0),
         Monday = (1 << 1),
         Tuesday = (1 << 2),
@@ -16,7 +15,6 @@ namespace Shared.Models.Helpers
         Thursday = (1 << 4),
         Friday = (1 << 5),
         Saturday = (1 << 6),
-
         Weekdays = Monday | Tuesday | Wednesday | Thursday | Friday,
         Weekends = Saturday | Sunday,
         Everyday = Weekdays | Weekends

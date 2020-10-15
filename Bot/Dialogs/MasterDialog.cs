@@ -1,18 +1,18 @@
-﻿using Microsoft.Bot.Builder;
+﻿using Bot.Dialogs.Provide;
+using Bot.Dialogs.Request;
+using Bot.State;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Extensions.Configuration;
-using Shared.ApiInterface;
-using System.Threading;
-using System.Threading.Tasks;
 using Shared;
-using System.Linq;
+using Shared.ApiInterface;
 using Shared.Prompts;
 using System;
-using Bot.State;
-using Bot.Dialogs.Request;
-using Bot.Dialogs.Provide;
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.Dialogs.Choices;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Bot.Dialogs
 {
@@ -21,7 +21,9 @@ namespace Bot.Dialogs
         public static string Name = typeof(MasterDialog).FullName;
 
         public MasterDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+            : base(state, dialogs, api, configuration)
+        {
+        }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
         {
@@ -32,7 +34,7 @@ namespace Bot.Dialogs
                     async (dialogContext, cancellationToken) =>
                     {
                         // Clear the user context when a new converation begins.
-                        await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
+                        await state.ClearUserContext(dialogContext.Context, cancellationToken);
 
                         var user = await api.GetUser(dialogContext.Context);
                         if (!user.IsConsentGiven)

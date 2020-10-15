@@ -12,7 +12,8 @@ namespace BotTests.Dialogs.Preferences
     public class DaysDialogTests : DialogTestBase
     {
         public DaysDialogTests(TestFixture fixture) : base(fixture)
-        { }
+        {
+        }
 
         [Theory]
         [MemberData(nameof(TestDays))]
@@ -27,7 +28,7 @@ namespace BotTests.Dialogs.Preferences
 
             if (reminderDaysIsValid)
             {
-                var user = await this.Api.GetUser(this.turnContext);
+                var user = await Api.GetUser(turnContext);
                 Assert.Equal(user.ReminderFrequency, dayFlags);
             }
         }

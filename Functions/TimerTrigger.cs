@@ -15,7 +15,7 @@ namespace ServiceProviderTriggers
     public static class TimerTrigger
     {
         [FunctionName(nameof(TimerTrigger))]
-        public static async Task Run([TimerTrigger("0 0 * * * *")]TimerInfo myTimer, ILogger log, ExecutionContext context)
+        public static async Task Run([TimerTrigger("0 0 * * * *")] TimerInfo myTimer, ILogger log, ExecutionContext context)
         {
             try
             {
@@ -29,7 +29,7 @@ namespace ServiceProviderTriggers
 
                 await DoWork(configuration, log);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Helpers.LogException(log, e);
                 throw e;

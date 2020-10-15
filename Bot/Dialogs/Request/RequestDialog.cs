@@ -20,13 +20,12 @@ namespace Bot.Dialogs.Request
     public class RequestDialog : DialogBase
     {
         public static string Name = typeof(RequestDialog).FullName;
-
-        Translator translator;
+        private readonly Translator translator;
 
         public RequestDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
             : base(state, dialogs, api, configuration)
         {
-            this.translator = new Translator(configuration);
+            translator = new Translator(configuration);
         }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
@@ -44,7 +43,7 @@ namespace Bot.Dialogs.Request
                         if (categories.Count == 1)
                         {
                             // No need to ask for a single category.
-                            var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+                            var userContext = await state.GetUserContext(dialogContext.Context, cancellationToken);
                             userContext.Category = schema.Categories.First().Name;
 
                             // Skip this step.
@@ -67,7 +66,7 @@ namespace Bot.Dialogs.Request
                     async (dialogContext, cancellationToken) =>
                     {
                         var schema = Helpers.GetSchema();
-                        var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+                        var userContext = await state.GetUserContext(dialogContext.Context, cancellationToken);
 
                         if (dialogContext.Result is FoundChoice)
                         {
@@ -110,7 +109,7 @@ namespace Bot.Dialogs.Request
                             return await dialogContext.EndDialogAsync(null, cancellationToken);
                         }
 
-                        var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+                        var userContext = await state.GetUserContext(dialogContext.Context, cancellationToken);
                         userContext.Resource = selectedResource;
 
                         // Ask how many they need.
@@ -121,17 +120,17 @@ namespace Bot.Dialogs.Request
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+                        var userContext = await state.GetUserContext(dialogContext.Context, cancellationToken);
                         userContext.NeedQuantity = (int)dialogContext.Result;
 
                         if (userContext.NeedQuantity == 0)
                         {
                             // Delete the need if it has already been added.
                             var user = await api.GetUser(dialogContext.Context);
-                            var need = await this.api.GetNeedForUser(user, userContext.Category, userContext.Resource);
+                            var need = await api.GetNeedForUser(user, userContext.Category, userContext.Resource);
                             if (need != null)
                             {
-                                await this.api.Delete(need);
+                                await api.Delete(need);
                                 await Messages.SendAsync(Phrases.Request.CompleteDelete, dialogContext.Context, cancellationToken);
                             }
                             else
@@ -150,7 +149,7 @@ namespace Bot.Dialogs.Request
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+                        var userContext = await state.GetUserContext(dialogContext.Context, cancellationToken);
                         userContext.NeedUnopenedOnly = !(bool)dialogContext.Result;
 
                         // Ask for any instructions.
@@ -162,23 +161,22 @@ namespace Bot.Dialogs.Request
                     async (dialogContext, cancellationToken) =>
                     {
                         var schema = Helpers.GetSchema();
-                        var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+                        var userContext = await state.GetUserContext(dialogContext.Context, cancellationToken);
 
                         // Check if they have already added this resource.
                         var user = await api.GetUser(dialogContext.Context);
-                        var need = await this.api.GetNeedForUser(user, userContext.Category, userContext.Resource);
+                        var need = await api.GetNeedForUser(user, userContext.Category, userContext.Resource);
 
                         // Create or update the need.
                         if (need == null)
                         {
-                            need = new Need();
-                            need.CreatedById = user.Id;
-                            need.Category = userContext.Category;
-                            need.Name = userContext.Resource;
-                            need.Quantity = userContext.NeedQuantity;
-                            need.UnopenedOnly = userContext.NeedUnopenedOnly;
-                            need.Instructions = (string)dialogContext.Result;
-                            await this.api.Create(need);
+                            need = new Need { CreatedById = user.Id,
+                            Category = userContext.Category,
+                            Name = userContext.Resource,
+                            Quantity = userContext.NeedQuantity,
+                            UnopenedOnly = userContext.NeedUnopenedOnly,
+                            Instructions = (string)dialogContext.Result };
+                            await api.Create(need);
                         }
                         else
                         {
@@ -186,7 +184,7 @@ namespace Bot.Dialogs.Request
                             need.Quantity = userContext.NeedQuantity;
                             need.UnopenedOnly = userContext.NeedUnopenedOnly;
                             need.Instructions = (string)dialogContext.Result;
-                            await this.api.Update(need);
+                            await api.Update(need);
                         }
 
                         // The API input requires meters.
@@ -194,12 +192,12 @@ namespace Bot.Dialogs.Request
                         double requestMeters = Units.Miles.ToMeters(50);
 
                         // Get all users within the distance from the user.
-                        var usersWithinDistance = await this.api.GetUsersWithinDistance(user.LocationCoordinates, requestMeters);
+                        var usersWithinDistance = await api.GetUsersWithinDistance(user.LocationCoordinates, requestMeters);
                         if (usersWithinDistance.Count > 0)
                         {
                             var organization = schema.VerifiedOrganizations.FirstOrDefault(o => o.PhoneNumbers.Contains(user.PhoneNumber));
                             var message = Phrases.Match.GetMessage(organization.Name, need.Name, need.Quantity, need.Instructions);
-                            var queueHelper = new OutgoingMessageQueueHelpers(this.configuration.AzureWebJobsStorage());
+                            var queueHelper = new OutgoingMessageQueueHelpers(configuration.AzureWebJobsStorage());
 
                             // Cache any translations to limit API calls.
                             var translationCache = new Dictionary<string, string>();
@@ -207,7 +205,7 @@ namespace Bot.Dialogs.Request
                             // Get any matching resources for the users.
                             foreach (var userWithinDistance in usersWithinDistance)
                             {
-                                var resource = await this.api.GetResourceForUser(userWithinDistance, need.Category, need.Name);
+                                var resource = await api.GetResourceForUser(userWithinDistance, need.Category, need.Name);
 
                                 if (!Helpers.DoesResourceMatchNeed(need, resource))
                                 {

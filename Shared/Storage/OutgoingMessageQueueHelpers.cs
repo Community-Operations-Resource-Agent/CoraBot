@@ -1,5 +1,4 @@
-﻿using Microsoft.Azure.Storage.Queue;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Threading.Tasks;
 
 namespace Shared.Storage
@@ -8,7 +7,7 @@ namespace Shared.Storage
     {
         public const string QueueName = "outgoing-messages";
 
-        private string connectionString;
+        private readonly string connectionString;
 
         public OutgoingMessageQueueHelpers(string connectionString)
         {
@@ -17,13 +16,14 @@ namespace Shared.Storage
 
         public async Task Enqueue(OutgoingMessageQueueData data)
         {
-            await AddMessage(this.connectionString, QueueName, JsonConvert.SerializeObject(data));
+            await AddMessage(connectionString, QueueName, JsonConvert.SerializeObject(data));
         }
     }
 
     public class OutgoingMessageQueueData
     {
         public string PhoneNumber { get; set; }
+
         public string Message { get; set; }
     }
 }

@@ -5,7 +5,6 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
-using Shared.Models;
 using Shared.Prompts;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +16,9 @@ namespace Bot.Dialogs
         public static string Name = typeof(NewUserDialog).FullName;
 
         public NewUserDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+            : base(state, dialogs, api, configuration)
+        {
+        }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
         {
@@ -40,7 +41,7 @@ namespace Bot.Dialogs
                         if (!(bool)dialogContext.Result)
                         {
                             // Did not consent. Delete their user record.
-                            await this.api.Delete(user);
+                            await api.Delete(user);
 
                             await Messages.SendAsync(Phrases.Greeting.NoConsent, dialogContext.Context, cancellationToken);
                             return await dialogContext.EndDialogAsync(false, cancellationToken);
@@ -48,7 +49,7 @@ namespace Bot.Dialogs
                         else
                         {
                             user.IsConsentGiven = true;
-                            await this.api.Update(user);
+                            await api.Update(user);
                         }
 
                         await Messages.SendAsync(Phrases.Greeting.Consent, dialogContext.Context, cancellationToken);

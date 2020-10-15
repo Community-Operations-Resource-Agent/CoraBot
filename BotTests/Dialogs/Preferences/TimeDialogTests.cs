@@ -12,7 +12,8 @@ namespace BotTests.Dialogs.Preferences
     public class TimeDialogTests : DialogTestBase
     {
         public TimeDialogTests(TestFixture fixture) : base(fixture)
-        { }
+        {
+        }
 
         [Theory]
         [MemberData(nameof(TestTimes))]

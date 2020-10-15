@@ -5,8 +5,8 @@ namespace Shared
 {
     public static class DateTimeHelpers
     {
-        static string[] hourFormats = { "htt", "h tt" };
-        static string[] hourMinuteFormats = { "htt", "h tt", "h:mmtt", "h:mm tt" };
+        private static readonly string[] hourFormats = { "htt", "h tt" };
+        private static readonly string[] hourMinuteFormats = { "htt", "h tt", "h:mmtt", "h:mm tt" };
 
         /// <summary>
         /// Parses a datetime string to match only hours.
@@ -29,7 +29,7 @@ namespace Shared
         /// </summary>
         public static bool Parse(string input, string[] formats, out DateTime dateTime)
         {
-            return DateTime.TryParseExact(input, formats,  CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime);
+            return DateTime.TryParseExact(input, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime);
         }
     }
 }

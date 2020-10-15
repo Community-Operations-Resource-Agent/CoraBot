@@ -19,7 +19,9 @@ namespace Bot.Dialogs
         public static string Name = typeof(OptionsExtendedDialog).FullName;
 
         public OptionsExtendedDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+            : base(state, dialogs, api, configuration)
+        {
+        }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
         {
@@ -66,11 +68,11 @@ namespace Bot.Dialogs
                             // Enable/disable contact.
                             var enable = string.Equals(result, Phrases.Options.Extended.Enable, StringComparison.OrdinalIgnoreCase);
 
-                            var user = await this.api.GetUser(dialogContext.Context);
+                            var user = await api.GetUser(dialogContext.Context);
                             if (user.ContactEnabled != enable)
                             {
                                 user.ContactEnabled = enable;
-                                await this.api.Update(user);
+                                await api.Update(user);
                             }
 
                             await Messages.SendAsync(Phrases.Preferences.ContactEnabledUpdated(user.ContactEnabled), dialogContext.Context, cancellationToken);

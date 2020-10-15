@@ -1,19 +1,22 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Bot.State;
+﻿using Bot.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Shared.ApiInterface;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Bot.Dialogs
 {
     public abstract class DialogBase
     {
         protected readonly StateAccessors state;
+
         protected readonly DialogSet dialogs;
+
         protected readonly IApiInterface api;
+
         protected readonly IConfiguration configuration;
 
         public DialogBase(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
@@ -39,7 +42,7 @@ namespace Bot.Dialogs
                 if (dialog != null)
                 {
                     var waterfallDialog = await dialog.GetWaterfallDialog(dialogContext.Context, cancellationToken);
-                    this.dialogs.Add(waterfallDialog);
+                    dialogs.Add(waterfallDialog);
                 }
             }
 
@@ -56,13 +59,13 @@ namespace Bot.Dialogs
             foreach (var entry in dialogContext.Stack)
             {
                 // Only create the dialog if it doesn't exist.
-                if (this.dialogs.Find(entry.Id) == null)
+                if (dialogs.Find(entry.Id) == null)
                 {
                     var dialog = CreateFromDialogId(entry.Id);
                     if (dialog != null)
                     {
                         var waterfallDialog = await dialog.GetWaterfallDialog(dialogContext.Context, cancellationToken);
-                        this.dialogs.Add(waterfallDialog);
+                        dialogs.Add(waterfallDialog);
                     }
                 }
             }
@@ -77,7 +80,7 @@ namespace Bot.Dialogs
             if (type != null && type.IsSubclassOf(typeof(DialogBase)))
             {
                 // Create an instance of the dialog and add it to the dialog set.
-                return (DialogBase)Activator.CreateInstance(type, this.state, this.dialogs, this.api, this.configuration);
+                return (DialogBase)Activator.CreateInstance(type, state, dialogs, api, configuration);
             }
 
             return null;

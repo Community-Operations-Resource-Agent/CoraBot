@@ -14,8 +14,8 @@ namespace Shared.Models
 
         public Model()
         {
-            this.Id = Guid.NewGuid().ToString();
-            this.CreatedOn = DateTime.UtcNow;
+            Id = Guid.NewGuid().ToString();
+            CreatedOn = DateTime.UtcNow;
         }
     }
 }

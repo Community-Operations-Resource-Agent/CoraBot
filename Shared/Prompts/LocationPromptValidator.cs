@@ -7,7 +7,7 @@ namespace Shared.Prompts
 {
     public static class LocationPromptValidator
     {
-        private static HttpClient httpClient = new HttpClient();
+        private static readonly HttpClient httpClient = new HttpClient();
 
         public static PromptValidator<string> Create(IConfiguration configuration)
         {

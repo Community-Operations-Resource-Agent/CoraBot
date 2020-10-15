@@ -16,7 +16,9 @@ namespace Bot.Dialogs.Preferences
         public static string Name = typeof(LocationDialog).FullName;
 
         public LocationDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+            : base(state, dialogs, api, configuration)
+        {
+        }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
         {
@@ -42,10 +44,10 @@ namespace Bot.Dialogs.Preferences
                         var locationString = (string)dialogContext.Result;
                         var location = await Helpers.StringToLocation(configuration, locationString);
 
-                        var user = await this.api.GetUser(dialogContext.Context);
+                        var user = await api.GetUser(dialogContext.Context);
                         user.Location = location.Address.ToString();
                         user.LocationCoordinates = new Point(location.Position.Lon, location.Position.Lat);
-                        await this.api.Update(user);
+                        await api.Update(user);
 
                         // Check if the location is correct.
                         return await dialogContext.PromptAsync(

@@ -1,6 +1,4 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Choices;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shared.Prompts

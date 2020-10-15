@@ -1,5 +1,4 @@
 ﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Schema;
 using Shared.ApiInterface;
 using System;
 using System.Threading;
@@ -9,7 +8,7 @@ namespace Bot.Middleware
 {
     public class InitApiMiddleware : IMiddleware
     {
-        IApiInterface api;
+        private readonly IApiInterface api;
 
         public InitApiMiddleware(IApiInterface api)
         {
@@ -18,7 +17,7 @@ namespace Bot.Middleware
 
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
         {
-            await this.api.Init();
+            await api.Init();
 
             // Invoke the next middleware.
             await next(cancellationToken).ConfigureAwait(false);
