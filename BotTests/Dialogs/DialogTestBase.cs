@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Bot.Dialogs;
+﻿using Bot.Dialogs;
 using Bot.Middleware;
 using Bot.State;
 using BotTests.Setup;
@@ -13,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
 using Shared.Prompts;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace BotTests.Dialogs
@@ -22,37 +22,41 @@ namespace BotTests.Dialogs
         protected const string TestCollectionName = "TestCollection";
 
         protected readonly StateAccessors state;
+
         protected readonly DialogSet dialogs;
+
         protected readonly TestAdapter adapter;
 
         protected readonly TestFixture fixture;
 
         protected ITurnContext turnContext;
+
         protected CancellationToken cancellationToken;
 
-        protected IConfiguration Configuration { get { return fixture?.Configuration; } }
-        protected IApiInterface Api { get { return fixture?.Api; } }
+        protected IConfiguration Configuration => fixture?.Configuration;
+
+        protected IApiInterface Api => fixture?.Api;
 
         protected DialogTestBase(TestFixture fixture)
         {
             this.fixture = fixture;
 
-            this.state = StateAccessors.Create();
-            this.dialogs = new DialogSet(state.DialogContextAccessor);
+            state = StateAccessors.Create();
+            dialogs = new DialogSet(state.DialogContextAccessor);
 
-            this.adapter = new TestAdapter()
+            adapter = new TestAdapter()
                 .Use(new TestSettingsMiddleware(fixture.Configuration))
                 .Use(new AutoSaveStateMiddleware(state.ConversationState))
                 .Use(new TrimIncomingMessageMiddleware())
                 .Use(new CreateUserMiddleware(fixture.Api))
-                .Use(new TranslationMiddleware(fixture.Api, this.state, fixture.Translator));
+                .Use(new TranslationMiddleware(fixture.Api, state, fixture.Translator));
 
-            Prompt.Register(this.dialogs, fixture.Configuration, fixture.Api);
+            Prompt.Register(dialogs, fixture.Configuration, fixture.Api);
         }
 
         protected TestFlow CreateTestFlow(string dialogName, bool userConsentGiven = true)
         {
-            return new TestFlow(this.adapter, async (turnContext, cancellationToken) =>
+            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 this.turnContext = turnContext;
                 this.cancellationToken = cancellationToken;
@@ -60,7 +64,7 @@ namespace BotTests.Dialogs
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
                     // Initialize the dialog context.
-                    DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
+                    DialogContext dialogContext = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                     // Make sure this channel is supported.
                     if (!Phrases.ValidChannels.Contains(turnContext.Activity.ChannelId))
@@ -70,7 +74,7 @@ namespace BotTests.Dialogs
                     }
 
                     // Create the master dialog.
-                    var masterDialog = new MasterDialog(this.state, this.dialogs, this.Api, this.Configuration);
+                    var masterDialog = new MasterDialog(state, dialogs, Api, Configuration);
 
                     // If the user sends the update keyword, clear the dialog stack and start a new update.
                     if (string.Equals(turnContext.Activity.Text, Phrases.Keywords.Update, StringComparison.OrdinalIgnoreCase))
@@ -86,7 +90,7 @@ namespace BotTests.Dialogs
                     if (result.Status == DialogTurnStatus.Empty)
                     {
                         // Clear the user context when a new conversation begins.
-                        await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
+                        await state.ClearUserContext(dialogContext.Context, cancellationToken);
 
                         // Tests must init the user once there is a turn context.
                         await InitUser(userConsentGiven);
@@ -109,11 +113,11 @@ namespace BotTests.Dialogs
             };
         }
 
-        async Task InitUser(bool userConsentGiven)
+        private async Task InitUser(bool userConsentGiven)
         {
-            var user = await this.Api.GetUser(this.turnContext);
+            var user = await Api.GetUser(turnContext);
             user.IsConsentGiven = userConsentGiven;
-            await this.Api.Update(user);
+            await Api.Update(user);
         }
     }
 }

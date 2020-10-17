@@ -16,7 +16,9 @@ namespace Bot.Dialogs
         public static string Name = typeof(FeedbackDialog).FullName;
 
         public FeedbackDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+            : base(state, dialogs, api, configuration)
+        {
+        }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
         {
@@ -34,12 +36,11 @@ namespace Bot.Dialogs
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        var user = await this.api.GetUser(dialogContext.Context);
+                        var user = await api.GetUser(dialogContext.Context);
 
-                        var feedback = new Feedback();
-                        feedback.CreatedById = user.Id;
-                        feedback.Text = (string)dialogContext.Result;
-                        await this.api.Create(feedback);
+                        var feedback = new Feedback { CreatedById = user.Id,
+                        Text = (string)dialogContext.Result };
+                        await api.Create(feedback);
 
                         await Messages.SendAsync(Phrases.Feedback.Thanks, dialogContext.Context, cancellationToken);
                         return await dialogContext.EndDialogAsync(null, cancellationToken);

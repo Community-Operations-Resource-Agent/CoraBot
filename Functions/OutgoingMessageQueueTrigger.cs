@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector.Authentication;
@@ -9,6 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Storage;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Functions
 {

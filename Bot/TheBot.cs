@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Bot.Dialogs;
+﻿using Bot.Dialogs;
 using Bot.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
@@ -10,14 +7,20 @@ using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
 using Shared.Prompts;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Bot
 {
     public class TheBot : IBot
     {
         private readonly StateAccessors state;
+
         private readonly DialogSet dialogs;
+
         private readonly IApiInterface api;
+
         private readonly IConfiguration configuration;
 
         public TheBot(IConfiguration configuration, StateAccessors state, CosmosInterface api)
@@ -25,12 +28,12 @@ namespace Bot
             this.configuration = configuration;
 
             this.state = state ?? throw new ArgumentNullException(nameof(state));
-            this.dialogs = new DialogSet(state.DialogContextAccessor);
+            dialogs = new DialogSet(state.DialogContextAccessor);
 
             this.api = api ?? throw new ArgumentNullException(nameof(api));
 
             // Register prompts.
-            Prompt.Register(this.dialogs, this.configuration, this.api);
+            Prompt.Register(dialogs, this.configuration, this.api);
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
@@ -38,7 +41,7 @@ namespace Bot
             if (turnContext.Activity.Type == ActivityTypes.Message)
             {
                 // Establish context for our dialog from the turn context.
-                DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
+                DialogContext dialogContext = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 // Make sure this channel is supported.
                 if (!Phrases.ValidChannels.Contains(turnContext.Activity.ChannelId))
@@ -55,7 +58,7 @@ namespace Bot
                 }
 
                 // Create the master dialog.
-                var masterDialog = new MasterDialog(this.state, this.dialogs, this.api, this.configuration);
+                var masterDialog = new MasterDialog(state, dialogs, api, configuration);
 
                 // If the user sends the update keyword, clear the dialog stack and start a new session.
                 if (string.Equals(turnContext.Activity.Text, Phrases.Keywords.Update, StringComparison.OrdinalIgnoreCase))

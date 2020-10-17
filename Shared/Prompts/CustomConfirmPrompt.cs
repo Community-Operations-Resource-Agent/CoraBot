@@ -8,7 +8,7 @@ namespace Shared.Prompts
         public CustomConfirmPrompt(string dialogId, PromptValidator<bool> validator = null, string defaultLocale = null)
             : base(dialogId, validator, defaultLocale)
         {
-            this.Style = ListStyle.List;
+            Style = ListStyle.List;
         }
     }
 }

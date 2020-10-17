@@ -5,6 +5,7 @@ namespace Shared.Translation
     public class TranslatorApiResponse
     {
         public TranslatorDetectedLanguage DetectedLanguage { get; set; }
+
         public List<TranslatorTranslation> Translations { get; set; }
     }
 

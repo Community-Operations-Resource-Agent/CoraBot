@@ -23,8 +23,8 @@ namespace Shared.Models
 
         public User() : base()
         {
-            this.ReminderFrequency = DayFlags.Everyday;
-            this.ContactEnabled = true;
+            ReminderFrequency = DayFlags.Everyday;
+            ContactEnabled = true;
         }
     }
 }

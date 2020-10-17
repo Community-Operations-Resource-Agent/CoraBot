@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Shared.Models;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -19,7 +18,7 @@ namespace Shared
         /// Twilio is currently the only supported interface and it does not support
         /// "\r\n" from Environment.NewLine. We need to use "\n" instead.
         /// </summary>
-        public static string NewLine { get { return "\n"; } }
+        public static string NewLine => "\n";
 
         /// <summary>
         /// Gets a user token from the turn context.

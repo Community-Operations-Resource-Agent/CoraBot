@@ -5,6 +5,7 @@ namespace Shared.Models
     public class LocationApiResponse
     {
         public LocationSummary Summary { get; set; }
+
         public List<LocationResult> Results { get; set; }
     }
 
@@ -16,6 +17,7 @@ namespace Shared.Models
     public class LocationResult
     {
         public EntityType EntityType { get; set; }
+
         public LocationAddress Address { get; set; }
 
         public LocationPosition Position { get; set; }
@@ -24,19 +26,23 @@ namespace Shared.Models
     public class LocationAddress
     {
         public string Municipality { get; set; }
+
         public string CountrySecondarySubdivision { get; set; }
+
         public string countrySubdivision { get; set; }
+
         public string Country { get; set; }
 
         public override string ToString()
         {
-            return $"{this.Municipality}, {this.CountrySecondarySubdivision}, {this.countrySubdivision}, {this.Country}";
+            return $"{Municipality}, {CountrySecondarySubdivision}, {countrySubdivision}, {Country}";
         }
     }
 
     public class LocationPosition
     {
         public double Lat { get; set; }
+
         public double Lon { get; set; }
     }
 

@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Bot.State;
+﻿using Bot.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Shared.ApiInterface;
 using Shared.Translation;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Bot.Middleware
 {
@@ -17,9 +17,9 @@ namespace Bot.Middleware
     /// </summary>
     public class TranslationMiddleware : IMiddleware
     {
-        IApiInterface api;
-        StateAccessors state;
-        Translator translator;
+        private readonly IApiInterface api;
+        private readonly StateAccessors state;
+        private readonly Translator translator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TranslationMiddleware"/> class.
@@ -60,7 +60,7 @@ namespace Bot.Middleware
 
         private async Task HandleIncomingMessage(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            if (!this.translator.IsConfigured || turnContext.Activity.Type != ActivityTypes.Message)
+            if (!translator.IsConfigured || turnContext.Activity.Type != ActivityTypes.Message)
             {
                 return;
             }
@@ -76,11 +76,11 @@ namespace Bot.Middleware
                 // For the first message we need to detect the user's language and store it.
                 if (string.IsNullOrEmpty(user.Language))
                 {
-                    var result = await this.translator.TranslateToDataAsync(turnContext.Activity.Text, Translator.DefaultLanguage, cancellationToken);
+                    var result = await translator.TranslateToDataAsync(turnContext.Activity.Text, Translator.DefaultLanguage, cancellationToken);
                     turnContext.Activity.Text = result?.Translations?.FirstOrDefault()?.Text;
 
                     user.Language = result?.DetectedLanguage?.Language ?? Translator.DefaultLanguage;
-                    await this.api.Update(user);
+                    await api.Update(user);
                 }
                 else
                 {
@@ -91,7 +91,7 @@ namespace Bot.Middleware
 
         private async Task HandleOutgoingMessage(List<Activity> activities, ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            if (!this.translator.IsConfigured)
+            if (!translator.IsConfigured)
             {
                 return;
             }
@@ -122,7 +122,7 @@ namespace Bot.Middleware
 
         private async Task TranslateAsync(Activity activity, string targetLocale, CancellationToken cancellationToken)
         {
-            activity.Text = await this.translator.TranslateAsync(activity.Text, targetLocale, cancellationToken);
+            activity.Text = await translator.TranslateAsync(activity.Text, targetLocale, cancellationToken);
         }
     }
 }

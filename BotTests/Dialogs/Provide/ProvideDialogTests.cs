@@ -1,10 +1,10 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Bot.Dialogs.Provide;
+﻿using Bot.Dialogs.Provide;
 using BotTests.Setup;
 using Microsoft.Bot.Schema;
 using Shared;
 using Shared.Models;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace BotTests.Dialogs.Provide
@@ -13,7 +13,8 @@ namespace BotTests.Dialogs.Provide
     public class ProvideDialogTests : DialogTestBase
     {
         public ProvideDialogTests(TestFixture fixture) : base(fixture)
-        { }
+        {
+        }
 
         [Fact]
         public async Task SingleCategory()
@@ -55,7 +56,6 @@ namespace BotTests.Dialogs.Provide
                 .StartTestAsync();
         }
         */
-
         [Fact]
         public async Task ResourceNone()
         {
@@ -94,9 +94,9 @@ namespace BotTests.Dialogs.Provide
                 .Send("test")
                 .StartTestAsync();
 
-            var user = await this.Api.GetUser(this.turnContext);
+            var user = await Api.GetUser(turnContext);
 
-            await this.Api.Create(new Resource
+            await Api.Create(new Resource
             {
                 CreatedById = user.Id,
                 Category = category.Name,
@@ -109,7 +109,7 @@ namespace BotTests.Dialogs.Provide
                 .Test("0", Phrases.Provide.CompleteDelete)
                 .StartTestAsync();
 
-            var existingResource = await this.Api.GetResourceForUser(user, category.Name, resource.Name);
+            var existingResource = await Api.GetResourceForUser(user, category.Name, resource.Name);
             Assert.Null(existingResource);
         }
 
@@ -124,7 +124,7 @@ namespace BotTests.Dialogs.Provide
                 .Send("test")
                 .StartTestAsync();
 
-            var user = await this.Api.GetUser(this.turnContext);
+            var user = await Api.GetUser(turnContext);
 
             await CreateTestFlow(ProvideDialog.Name)
                 .AssertReply(StartsWith(Phrases.Provide.GetResource(category.Name)))
@@ -133,7 +133,7 @@ namespace BotTests.Dialogs.Provide
                 .Test(TestHelpers.DefaultIsUnopened.ToString(), Phrases.Provide.CompleteCreate(user))
                 .StartTestAsync();
 
-            var newResource = await this.Api.GetResourceForUser(user, category.Name, resource.Name);
+            var newResource = await Api.GetResourceForUser(user, category.Name, resource.Name);
             Assert.NotNull(newResource);
             Assert.Equal(TestHelpers.DefaultQuantity, newResource.Quantity);
             Assert.Equal(TestHelpers.DefaultIsUnopened, newResource.IsUnopened);
@@ -150,9 +150,9 @@ namespace BotTests.Dialogs.Provide
                 .Send("test")
                 .StartTestAsync();
 
-            var user = await this.Api.GetUser(this.turnContext);
+            var user = await Api.GetUser(turnContext);
 
-            await this.Api.Create(new Resource
+            await Api.Create(new Resource
             {
                 CreatedById = user.Id,
                 Category = category.Name,
@@ -166,7 +166,7 @@ namespace BotTests.Dialogs.Provide
                 .Test(TestHelpers.DefaultIsUnopened.ToString(), Phrases.Provide.CompleteUpdate)
                 .StartTestAsync();
 
-            var existingResource = await this.Api.GetResourceForUser(user, category.Name, resource.Name);
+            var existingResource = await Api.GetResourceForUser(user, category.Name, resource.Name);
             Assert.NotNull(existingResource);
             Assert.Equal(TestHelpers.DefaultQuantity, existingResource.Quantity);
             Assert.Equal(TestHelpers.DefaultIsUnopened, existingResource.IsUnopened);
@@ -186,7 +186,7 @@ namespace BotTests.Dialogs.Provide
                 PhoneNumber = org.PhoneNumbers.First(),
                 LocationCoordinates = TestHelpers.LocationCoordinatesNewYork
             };
-            await this.Api.Create(orgUser);
+            await Api.Create(orgUser);
 
             var orgNeed = new Need
             {
@@ -197,15 +197,15 @@ namespace BotTests.Dialogs.Provide
                 UnopenedOnly = TestHelpers.DefaultIsUnopened,
                 Instructions = TestHelpers.DefaultInstructions
             };
-            await this.Api.Create(orgNeed);
+            await Api.Create(orgNeed);
 
             await CreateTestFlow(ProvideDialog.Name)
                 .Send("test")
                 .StartTestAsync();
 
-            var user = await this.Api.GetUser(this.turnContext);
+            var user = await Api.GetUser(turnContext);
             user.LocationCoordinates = TestHelpers.LocationCoordinatesSeattle;
-            await this.Api.Update(user);
+            await Api.Update(user);
 
             await CreateTestFlow(ProvideDialog.Name)
                 .AssertReply(StartsWith(Phrases.Provide.GetResource(category.Name)))
@@ -225,7 +225,6 @@ namespace BotTests.Dialogs.Provide
             // that it can be configured differently for tests.
         }
         */
-
         [Fact]
         public async Task NoMatchResource()
         {
@@ -240,7 +239,7 @@ namespace BotTests.Dialogs.Provide
                 PhoneNumber = org.PhoneNumbers.First(),
                 LocationCoordinates = TestHelpers.LocationCoordinatesSeattle
             };
-            await this.Api.Create(orgUser);
+            await Api.Create(orgUser);
 
             var orgNeed = new Need
             {
@@ -251,15 +250,15 @@ namespace BotTests.Dialogs.Provide
                 UnopenedOnly = TestHelpers.DefaultIsUnopened,
                 Instructions = TestHelpers.DefaultInstructions
             };
-            await this.Api.Create(orgNeed);
+            await Api.Create(orgNeed);
 
             await CreateTestFlow(ProvideDialog.Name)
                 .Send("test")
                 .StartTestAsync();
 
-            var user = await this.Api.GetUser(this.turnContext);
+            var user = await Api.GetUser(turnContext);
             user.LocationCoordinates = TestHelpers.LocationCoordinatesSeattle;
-            await this.Api.Update(user);
+            await Api.Update(user);
 
             await CreateTestFlow(ProvideDialog.Name)
                 .AssertReply(StartsWith(Phrases.Provide.GetResource(category.Name)))
@@ -284,7 +283,7 @@ namespace BotTests.Dialogs.Provide
                 PhoneNumber = org.PhoneNumbers.First(),
                 LocationCoordinates = TestHelpers.LocationCoordinatesSeattle
             };
-            await this.Api.Create(orgUser);
+            await Api.Create(orgUser);
 
             var orgNeed = new Need
             {
@@ -295,15 +294,15 @@ namespace BotTests.Dialogs.Provide
                 UnopenedOnly = TestHelpers.DefaultIsUnopened,
                 Instructions = TestHelpers.DefaultInstructions
             };
-            await this.Api.Create(orgNeed);
+            await Api.Create(orgNeed);
 
             await CreateTestFlow(ProvideDialog.Name)
                 .Send("test")
                 .StartTestAsync();
 
-            var user = await this.Api.GetUser(this.turnContext);
+            var user = await Api.GetUser(turnContext);
             user.LocationCoordinates = TestHelpers.LocationCoordinatesSeattle;
-            await this.Api.Update(user);
+            await Api.Update(user);
 
             await CreateTestFlow(ProvideDialog.Name)
                 .AssertReply(StartsWith(Phrases.Provide.GetResource(category.Name)))
@@ -328,7 +327,7 @@ namespace BotTests.Dialogs.Provide
                 PhoneNumber = org.PhoneNumbers.First(),
                 LocationCoordinates = TestHelpers.LocationCoordinatesSeattle
             };
-            await this.Api.Create(orgUser);
+            await Api.Create(orgUser);
 
             var orgNeed = new Need
             {
@@ -339,15 +338,15 @@ namespace BotTests.Dialogs.Provide
                 UnopenedOnly = false,
                 Instructions = TestHelpers.DefaultInstructions
             };
-            await this.Api.Create(orgNeed);
+            await Api.Create(orgNeed);
 
             await CreateTestFlow(ProvideDialog.Name)
                 .Send("test")
                 .StartTestAsync();
 
-            var user = await this.Api.GetUser(this.turnContext);
+            var user = await Api.GetUser(turnContext);
             user.LocationCoordinates = TestHelpers.LocationCoordinatesSeattle;
-            await this.Api.Update(user);
+            await Api.Update(user);
 
             await CreateTestFlow(ProvideDialog.Name)
                 .AssertReply(StartsWith(Phrases.Provide.GetResource(category.Name)))
@@ -373,14 +372,14 @@ namespace BotTests.Dialogs.Provide
                 PhoneNumber = org1.PhoneNumbers.First(),
                 LocationCoordinates = TestHelpers.LocationCoordinatesSeattle
             };
-            await this.Api.Create(orgUser1);
+            await Api.Create(orgUser1);
 
             var orgUser2 = new User
             {
                 PhoneNumber = org2.PhoneNumbers.First(),
                 LocationCoordinates = TestHelpers.LocationCoordinatesSeattle
             };
-            await this.Api.Create(orgUser2);
+            await Api.Create(orgUser2);
 
             var orgNeed1 = new Need
             {
@@ -391,7 +390,7 @@ namespace BotTests.Dialogs.Provide
                 UnopenedOnly = TestHelpers.DefaultIsUnopened,
                 Instructions = TestHelpers.DefaultInstructions
             };
-            await this.Api.Create(orgNeed1);
+            await Api.Create(orgNeed1);
 
             var orgNeed2 = new Need
             {
@@ -402,15 +401,15 @@ namespace BotTests.Dialogs.Provide
                 UnopenedOnly = TestHelpers.DefaultIsUnopened,
                 Instructions = TestHelpers.DefaultInstructions
             };
-            await this.Api.Create(orgNeed2);
+            await Api.Create(orgNeed2);
 
             await CreateTestFlow(ProvideDialog.Name)
                 .Send("test")
                 .StartTestAsync();
 
-            var user = await this.Api.GetUser(this.turnContext);
+            var user = await Api.GetUser(turnContext);
             user.LocationCoordinates = TestHelpers.LocationCoordinatesSeattle;
-            await this.Api.Update(user);
+            await Api.Update(user);
 
             await CreateTestFlow(ProvideDialog.Name)
                 .AssertReply(StartsWith(Phrases.Provide.GetResource(category.Name)))

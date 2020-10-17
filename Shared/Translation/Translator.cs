@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 
 namespace Shared.Translation
 {
@@ -13,16 +13,16 @@ namespace Shared.Translation
     {
         public static string DefaultLanguage = "en";
 
-        private static HttpClient client = new HttpClient();
+        private static readonly HttpClient client = new HttpClient();
+
         private readonly IConfiguration configuration;
 
         public bool IsConfigured { get; private set; }
 
-
         public Translator(IConfiguration configuration)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            this.IsConfigured = !string.IsNullOrEmpty(configuration.TranslationSubscriptionKey()) && !string.IsNullOrEmpty(configuration.TranslationUrlFormat());
+            IsConfigured = !string.IsNullOrEmpty(configuration.TranslationSubscriptionKey()) && !string.IsNullOrEmpty(configuration.TranslationUrlFormat());
         }
 
         public async Task<string> TranslateAsync(string text, string targetLocale, CancellationToken cancellationToken = default)
@@ -40,11 +40,11 @@ namespace Shared.Translation
 
             using (var request = new HttpRequestMessage())
             {
-                var uri = string.Format(this.configuration.TranslationUrlFormat(), targetLocale);
+                var uri = string.Format(configuration.TranslationUrlFormat(), targetLocale);
                 request.Method = HttpMethod.Post;
                 request.RequestUri = new Uri(uri);
                 request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
-                request.Headers.Add("Ocp-Apim-Subscription-Key", this.configuration.TranslationSubscriptionKey());
+                request.Headers.Add("Ocp-Apim-Subscription-Key", configuration.TranslationSubscriptionKey());
 
                 var response = await client.SendAsync(request, cancellationToken);
                 if (!response.IsSuccessStatusCode)

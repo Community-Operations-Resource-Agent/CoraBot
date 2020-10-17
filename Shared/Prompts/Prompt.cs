@@ -7,17 +7,26 @@ namespace Shared.Prompts
     public static class Prompt
     {
         public static string ChoicePrompt = "ChoicePrompt";
-        public static string ConfirmPrompt = "ConfirmPrompt";
-        public static string IntPrompt = "IntPrompt";
-        public static string TextPrompt = "TextPrompt";
-        public static string KeywordTextPrompt = "KeywordTextPrompt";
-        public static string LocationTextPrompt = "LocationTextPrompt";
-        public static string HourPrompt = "HourPrompt";
-        public static string HourMinutePrompt = "HourMinutePrompt";
-        public static string DaysPrompt = "DaysPrompt";
-        public static string CategoryPrompt = "CategoryPrompt";
-        public static string ResourcePrompt = "ResourcePrompt";
 
+        public static string ConfirmPrompt = "ConfirmPrompt";
+
+        public static string IntPrompt = "IntPrompt";
+
+        public static string TextPrompt = "TextPrompt";
+
+        public static string KeywordTextPrompt = "KeywordTextPrompt";
+
+        public static string LocationTextPrompt = "LocationTextPrompt";
+
+        public static string HourPrompt = "HourPrompt";
+
+        public static string HourMinutePrompt = "HourMinutePrompt";
+
+        public static string DaysPrompt = "DaysPrompt";
+
+        public static string CategoryPrompt = "CategoryPrompt";
+
+        public static string ResourcePrompt = "ResourcePrompt";
 
         /// <summary>
         /// Adds each prompt to the master dialog set

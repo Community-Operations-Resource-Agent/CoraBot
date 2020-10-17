@@ -9,9 +9,8 @@ namespace Bot.Middleware
 {
     public class TestSettingsMiddleware : IMiddleware
     {
-        const string DefaultFromId = "user1";
-
-        IConfiguration configuration;
+        private const string DefaultFromId = "user1";
+        private readonly IConfiguration configuration;
 
         public TestSettingsMiddleware(IConfiguration configuration)
         {
@@ -21,7 +20,7 @@ namespace Bot.Middleware
         public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default)
         {
             // Read configuration to test specific channel.
-            var channelId = this.configuration.TestChannel();
+            var channelId = configuration.TestChannel();
             if (!string.IsNullOrEmpty(channelId))
             {
                 turnContext.Activity.ChannelId = channelId;

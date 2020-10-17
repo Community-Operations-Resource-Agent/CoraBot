@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using Bot.Dialogs;
+﻿using Bot.Dialogs;
 using BotTests.Setup;
 using Microsoft.Bot.Schema;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace BotTests.Dialogs
@@ -10,7 +10,8 @@ namespace BotTests.Dialogs
     public class TranslatorTests : DialogTestBase
     {
         public TranslatorTests(TestFixture fixture) : base(fixture)
-        { }
+        {
+        }
 
         [Fact]
         public async Task Spanish()
@@ -20,7 +21,7 @@ namespace BotTests.Dialogs
                 .AssertReplyContains(string.Empty)
                 .StartTestAsync();
 
-            var user = await this.Api.GetUser(this.turnContext);
+            var user = await Api.GetUser(turnContext);
             Assert.Equal("es", user.Language);
         }
 
@@ -32,7 +33,7 @@ namespace BotTests.Dialogs
                 .AssertReplyContains(string.Empty)
                 .StartTestAsync();
 
-            var user = await this.Api.GetUser(this.turnContext);
+            var user = await Api.GetUser(turnContext);
             Assert.Equal("fr", user.Language);
         }
     }

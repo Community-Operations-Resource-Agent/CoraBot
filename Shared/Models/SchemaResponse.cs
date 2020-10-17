@@ -5,33 +5,36 @@ namespace Shared.Models
     public class SchemaResponse
     {
         public List<SchemaVerifiedOrganization> VerifiedOrganizations { get; set; }
+
         public List<SchemaCategory> Categories { get; set; }
 
         public SchemaResponse()
         {
-            this.VerifiedOrganizations = new List<SchemaVerifiedOrganization>();
+            VerifiedOrganizations = new List<SchemaVerifiedOrganization>();
         }
     }
 
     public class SchemaVerifiedOrganization
     {
         public string Name { get; set; }
+
         public List<string> PhoneNumbers { get; set; }
 
         public SchemaVerifiedOrganization()
         {
-            this.PhoneNumbers = new List<string>();
+            PhoneNumbers = new List<string>();
         }
     }
 
     public class SchemaCategory
     {
         public string Name { get; set; }
+
         public List<SchemaResource> Resources { get; set; }
 
         public SchemaCategory()
         {
-            this.Resources = new List<SchemaResource>();
+            Resources = new List<SchemaResource>();
         }
     }
 

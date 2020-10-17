@@ -4,10 +4,8 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
-using Shared.Models;
 using Shared.Prompts;
 using Shared.Translation;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,7 +16,9 @@ namespace Bot.Dialogs.Preferences
         public static string Name = typeof(LanguageDialog).FullName;
 
         public LanguageDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+            : base(state, dialogs, api, configuration)
+        {
+        }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
         {
@@ -39,12 +39,12 @@ namespace Bot.Dialogs.Preferences
                         // because the response is already translated to the bot language at this point.
                         if (dialogContext.Context.Activity.ChannelData is string originalResponse)
                         {
-                            var translator = new Translator(this.configuration);
+                            var translator = new Translator(configuration);
                             var response = await translator.TranslateToDataAsync(originalResponse, Translator.DefaultLanguage, cancellationToken);
 
                             var user = await api.GetUser(dialogContext.Context);
                             user.Language = response.DetectedLanguage.Language ?? Translator.DefaultLanguage;
-                            await this.api.Update(user);
+                            await api.Update(user);
                         }
 
                         await Messages.SendAsync(Phrases.Preferences.LanguageUpdated, dialogContext.Context, cancellationToken);

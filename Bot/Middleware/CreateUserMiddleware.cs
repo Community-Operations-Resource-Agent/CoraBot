@@ -1,5 +1,4 @@
 ﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Schema;
 using Shared;
 using Shared.ApiInterface;
 using Shared.Models;
@@ -11,7 +10,7 @@ namespace Bot.Middleware
 {
     public class CreateUserMiddleware : IMiddleware
     {
-        IApiInterface api;
+        private readonly IApiInterface api;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateUserMiddleware"/> class.
@@ -27,9 +26,11 @@ namespace Bot.Middleware
             var user = await api.GetUser(turnContext);
             if (user == null)
             {
-                user = new User();
-                user.PhoneNumber = Helpers.GetUserToken(turnContext);
-                await this.api.Create(user);
+                user = new User
+                {
+                    PhoneNumber = Helpers.GetUserToken(turnContext)
+                };
+                await api.Create(user);
             }
 
             // Invoke the next middleware.

@@ -16,7 +16,9 @@ namespace Bot.Dialogs.Provide
         public static string Name = typeof(MatchDialog).FullName;
 
         public MatchDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+            : base(state, dialogs, api, configuration)
+        {
+        }
 
         public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
         {
@@ -26,7 +28,7 @@ namespace Bot.Dialogs.Provide
                 {
                     async (dialogContext, cancellationToken) =>
                     {
-                        var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+                        var userContext = await state.GetUserContext(dialogContext.Context, cancellationToken);
                         if (userContext.ProvideMatches.Count == 0)
                         {
                             return await dialogContext.EndDialogAsync(null, cancellationToken);
@@ -35,8 +37,8 @@ namespace Bot.Dialogs.Provide
                         var nextMatch = userContext.ProvideMatches.First();
                         userContext.ProvideMatches.RemoveAt(0);
 
-                        var orgUser = await this.api.GetUser(nextMatch.OrgPhoneNumber);
-                        var orgNeed = await this.api.GetNeedById(nextMatch.NeedId);
+                        var orgUser = await api.GetUser(nextMatch.OrgPhoneNumber);
+                        var orgNeed = await api.GetNeedById(nextMatch.NeedId);
 
                         var schema = Helpers.GetSchema();
                         var organization = schema.VerifiedOrganizations.FirstOrDefault(o => o.PhoneNumbers.Contains(orgUser.PhoneNumber));
