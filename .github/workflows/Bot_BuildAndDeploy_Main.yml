@@ -2,7 +2,7 @@ name: Deploy Bot to Azure
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths:
     - 'Bot/**'
     - '.github/workflows/**'
@@ -15,7 +15,7 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: 'Checkout GitHub Action'
-      uses: actions/checkout@master
+      uses: actions/checkout@main
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v1
