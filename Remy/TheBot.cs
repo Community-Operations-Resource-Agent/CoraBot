@@ -1,16 +1,16 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Remy.Dialogs;
-using Remy.State;
-using Microsoft.Bot.Builder;
+﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
+using Remy.Dialogs;
+using Remy.State;
 using Shared;
 using Shared.ApiInterface;
 using Shared.Prompts;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Remy
 {

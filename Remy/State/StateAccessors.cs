@@ -1,11 +1,11 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
+﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Azure;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Shared;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Remy.State
 {

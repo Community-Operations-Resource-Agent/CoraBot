@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using Remy.State;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Remy.State;
 using Shared;
 using Shared.ApiInterface;
 using Shared.Middleware;
 using Shared.Translation;
-using Microsoft.Bot.Builder.LanguageGeneration;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 
 namespace Remy
 {

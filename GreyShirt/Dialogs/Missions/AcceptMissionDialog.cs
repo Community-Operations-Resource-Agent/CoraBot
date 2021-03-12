@@ -5,7 +5,6 @@ using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
-using System.ServiceModel.Channels;
 using System.Threading;
 using System.Threading.Tasks;
 

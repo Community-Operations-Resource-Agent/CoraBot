@@ -1,18 +1,17 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
+using Remy.Dialogs.Need;
+using Remy.Dialogs.NewUser;
+using Remy.State;
 using Shared.ApiInterface;
-using System.Threading;
-using System.Threading.Tasks;
 using Shared.Prompts;
 using System;
 using System.Collections.Generic;
-using Remy.State;
-using Remy.Dialogs.Need;
-using Remy.Dialogs.NewUser;
-using Shared;
-using Microsoft.Bot.Builder.LanguageGeneration;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Remy.Dialogs
 {

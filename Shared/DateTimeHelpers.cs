@@ -29,7 +29,7 @@ namespace Shared
         /// </summary>
         public static bool Parse(string input, string[] formats, out DateTime dateTime)
         {
-            return DateTime.TryParseExact(input, formats,  CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime);
+            return DateTime.TryParseExact(input, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime);
         }
     }
 }

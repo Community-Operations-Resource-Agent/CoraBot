@@ -2,11 +2,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Shared;
-using Shared.ApiInterface;
-using Shared.Models;
-using Shared.Storage;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ServiceProviderTriggers
@@ -14,7 +10,7 @@ namespace ServiceProviderTriggers
     public static class TimerTrigger
     {
         [FunctionName(nameof(TimerTrigger))]
-        public static async Task Run([TimerTrigger("0 0 * * * *")]TimerInfo myTimer, ILogger log, ExecutionContext context)
+        public static async Task Run([TimerTrigger("0 0 * * * *")] TimerInfo myTimer, ILogger log, ExecutionContext context)
         {
             try
             {
@@ -28,7 +24,7 @@ namespace ServiceProviderTriggers
 
                 await DoWork(configuration, log);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Helpers.LogException(log, e);
                 throw e;

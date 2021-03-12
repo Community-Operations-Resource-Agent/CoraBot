@@ -1,8 +1,8 @@
-﻿using Remy.State;
-using Microsoft.Bot.Builder;
+﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
+using Remy.State;
 using Shared;
 using Shared.ApiInterface;
 using Shared.Models;

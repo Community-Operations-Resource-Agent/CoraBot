@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Microsoft.Bot.Builder;
+using Microsoft.Bot.Schema;
+using Shared.ApiInterface;
+using Shared.Translation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Schema;
-using Shared.ApiInterface;
-using Shared.Translation;
 
 namespace Shared.Middleware
 {

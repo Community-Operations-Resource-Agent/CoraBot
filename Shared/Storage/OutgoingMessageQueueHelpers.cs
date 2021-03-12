@@ -1,5 +1,4 @@
-﻿using Microsoft.Azure.Storage.Queue;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Threading.Tasks;
 
 namespace Shared.Storage

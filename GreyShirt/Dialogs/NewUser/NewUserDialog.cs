@@ -5,7 +5,6 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
-using Shared;
 using Shared.ApiInterface;
 using Shared.Prompts;
 using System;
@@ -52,7 +51,7 @@ namespace Greyshirt.Dialogs.NewUser
                         {
                             // Did not consent. Delete their user record.
                             await this.api.Delete(greyshirt);
-                            
+
                             await dialogContext.Context.SendActivityAsync(ActivityFactory.FromObject(this.lgGenerator.Generate("NoConsent", null, turnContext.Activity.Locale)));
 
                             return await dialogContext.EndDialogAsync(false, cancellationToken);

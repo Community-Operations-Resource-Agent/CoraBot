@@ -1,14 +1,12 @@
-﻿using Microsoft.Bot.Builder;
+﻿using Greyshirt.Dialogs.NewUser;
+using Greyshirt.State;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Shared.ApiInterface;
 using System.Threading;
 using System.Threading.Tasks;
-using Shared;
-using Greyshirt.Dialogs.NewUser;
-using Greyshirt.State;
-using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Greyshirt.Dialogs
 {

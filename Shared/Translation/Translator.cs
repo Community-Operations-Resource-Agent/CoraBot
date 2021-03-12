@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 
 namespace Shared.Translation
 {

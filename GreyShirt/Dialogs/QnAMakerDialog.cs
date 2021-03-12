@@ -5,12 +5,11 @@ using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
+using Shared.Prompts;
 using Shared.QnAMaker;
 using Shared.Translation;
-using Shared.Prompts;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Schema;
 
 namespace Greyshirt.Dialogs
 {
@@ -22,7 +21,7 @@ namespace Greyshirt.Dialogs
         QnAMaker qnaMaker;
 
         public QnAMakerDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, MultiLanguageLG lgGenerator)
-            : base (state, dialogs, api, configuration, lgGenerator)
+            : base(state, dialogs, api, configuration, lgGenerator)
         {
             this.translator = new Translator(configuration);
             this.qnaMaker = new QnAMaker(configuration);

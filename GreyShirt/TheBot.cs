@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Greyshirt.Dialogs;
+﻿using Greyshirt.Dialogs;
 using Greyshirt.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
@@ -11,6 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.ApiInterface;
 using Shared.Prompts;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Greyshirt
 {
