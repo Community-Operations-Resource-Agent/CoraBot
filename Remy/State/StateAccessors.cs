@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Shared;
 
-namespace BotAgentRemi.State
+namespace Remy.State
 {
     public class StateAccessors
     {

@@ -1,4 +1,4 @@
-﻿using BotAgentRemi.State;
+﻿using Remy.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.LanguageGeneration;
@@ -12,7 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
-namespace BotAgentRemi.Dialogs
+namespace Remy.Dialogs
 {
     public class QnAMakerDialog : DialogBase
     {

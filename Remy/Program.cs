@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace BotAgentRemi
+namespace Remy
 {
     public class Program
     {

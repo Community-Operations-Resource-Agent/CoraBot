@@ -1,4 +1,4 @@
-﻿namespace BotAgentRemi.State
+﻿namespace Remy.State
 {
     public class UserContext
     {

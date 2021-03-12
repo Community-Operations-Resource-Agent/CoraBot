@@ -1,4 +1,4 @@
-﻿using BotAgentRemi.State;
+﻿using Remy.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.LanguageGeneration;
@@ -8,15 +8,15 @@ using Shared.Translation;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BotAgentRemi.Dialogs.Need
+namespace Remy.Dialogs.Need
 {
-    public class FoodAssistanceDialog : DialogBase
+    public class FoodBankDialog : DialogBase
     {
-        public static string Name = typeof(FoodAssistanceDialog).FullName;
+        public static string Name = typeof(FoodBankDialog).FullName;
 
         Translator translator;
 
-        public FoodAssistanceDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, MultiLanguageLG lgGenerator)
+        public FoodBankDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, MultiLanguageLG lgGenerator)
             : base(state, dialogs, api, configuration, lgGenerator)
         {
             this.translator = new Translator(configuration);
@@ -30,10 +30,10 @@ namespace BotAgentRemi.Dialogs.Need
                 {
                     async (dialogContext, cancellationToken) =>
                     {
-                        // TODO: Cosmos lookup for programs near user
+                        // TODO: Cosmos lookup for food banks near user
                         var user = await this.api.GetUserFromContext(turnContext);
 
-                        await turnContext.SendActivityAsync(ActivityFactory.FromObject(this.lgGenerator.Generate("FoodAssistanceExample", new { userLocation = user.Location }, turnContext.Activity.Locale)));
+                        await turnContext.SendActivityAsync(ActivityFactory.FromObject(this.lgGenerator.Generate("FoodBanksExample", new { userLocation = user.Location }, turnContext.Activity.Locale)));
                         return await dialogContext.EndDialogAsync(null, cancellationToken);
                     },
                 });

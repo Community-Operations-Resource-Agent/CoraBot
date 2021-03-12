@@ -1,4 +1,4 @@
-﻿using BotAgentRemi.State;
+﻿using Remy.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.LanguageGeneration;
@@ -10,7 +10,7 @@ using Shared.Prompts;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BotAgentRemi.Dialogs
+namespace Remy.Dialogs
 {
     public class FeedbackDialog : DialogBase
     {

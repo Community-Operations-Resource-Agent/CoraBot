@@ -1,4 +1,4 @@
-﻿using BotAgentRemi.State;
+﻿using Remy.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BotAgentRemi.Dialogs.Need
+namespace Remy.Dialogs.Need
 {
     public class ShoppingDeliveryDialog : DialogBase
     {

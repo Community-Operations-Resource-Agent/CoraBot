@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using BotAgentRemi.Dialogs;
-using BotAgentRemi.State;
+using Remy.Dialogs;
+using Remy.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.LanguageGeneration;
@@ -12,7 +12,7 @@ using Shared;
 using Shared.ApiInterface;
 using Shared.Prompts;
 
-namespace BotAgentRemi
+namespace Remy
 {
     public class TheBot : IBot
     {

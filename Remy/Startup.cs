@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using BotAgentRemi.State;
+using Remy.State;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
@@ -16,7 +16,7 @@ using Shared.Middleware;
 using Shared.Translation;
 using Microsoft.Bot.Builder.LanguageGeneration;
 
-namespace BotAgentRemi
+namespace Remy
 {
     public class Startup
     {

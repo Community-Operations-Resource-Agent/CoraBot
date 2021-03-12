@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using BotAgentRemi.State;
+using Remy.State;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Shared.ApiInterface;
 
-namespace BotAgentRemi.Dialogs
+namespace Remy.Dialogs
 {
     public abstract class DialogBase
     {
