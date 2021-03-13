@@ -60,6 +60,7 @@ namespace Remy.Dialogs.NewUser
                         user.IsConsentGiven = true;
                         await this.api.Update(user);
 
+                        await dialogContext.Context.SendActivityAsync(ActivityFactory.FromObject(this.lgGenerator.Generate("Emergency", null, turnContext.Activity.Locale)));
                         await dialogContext.Context.SendActivityAsync(ActivityFactory.FromObject(this.lgGenerator.Generate("Consent", null, turnContext.Activity.Locale)));
                         return await BeginDialogAsync(dialogContext, LocationDialog.Name, null, cancellationToken);
                     },
