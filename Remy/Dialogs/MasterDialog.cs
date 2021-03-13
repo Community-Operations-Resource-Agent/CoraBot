@@ -78,13 +78,17 @@ namespace Remy.Dialogs
                         {
                             var result = choice.Value;
 
-                            if (string.Equals(result, Phrases.Options.FoodAssistance, StringComparison.OrdinalIgnoreCase))
-                            {
-                                return await BeginDialogAsync(dialogContext, FoodAssistanceDialog.Name, null, cancellationToken);
-                            }
-                            else if (string.Equals(result, Phrases.Options.FoodBank, StringComparison.OrdinalIgnoreCase))
+                            if (string.Equals(result, Phrases.Options.FoodBank, StringComparison.OrdinalIgnoreCase))
                             {
                                 return await BeginDialogAsync(dialogContext, FoodBankDialog.Name, null, cancellationToken);
+                            }
+                            else if (string.Equals(result, Phrases.Options.CovidTestingSites, StringComparison.OrdinalIgnoreCase))
+                            {
+                                return await BeginDialogAsync(dialogContext, CovidDialog.Name, null, cancellationToken);
+                            }
+                            else if (string.Equals(result, Phrases.Options.HomelessShelters, StringComparison.OrdinalIgnoreCase))
+                            {
+                                return await BeginDialogAsync(dialogContext, ShelterDialog.Name, null, cancellationToken);
                             }
                             else if (string.Equals(result, Phrases.Options.ShoppingDelivery, StringComparison.OrdinalIgnoreCase))
                             {

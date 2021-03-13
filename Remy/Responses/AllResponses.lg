@@ -33,13 +33,22 @@
 - Your location has been updated!
 
 # GetOptions
-- How can I help? Choose from the following or ask a question.
+- How can I help? Choose from the following.
 
 # FoodBank
 - Find nearest food bank
 
+# CovidTestingSites
+- COVID-19 testing sites
+
+# HomelessShelters
+- Homeless shelters
+
 # ShoppingDelivery
 - Shopping and delivery assistance
+
+# AskAQuestion
+- Ask a question
 
 # FoodAssistance
 - Food assistance options
@@ -54,6 +63,34 @@
         - 456 State Rd. (Open 6a-9p)
         - 789 Rubicon Way (Open 6a-9p)
     ```
+
+# SheltersExample
+    - ```
+        Here are the homeless shelters near ${userLocation}:
+        - 123 Main St. (Open 6a-9p)
+        - 456 State Rd. (Open 6a-9p)
+        - 789 Rubicon Way (Open 6a-9p)
+    ```
+
+# CovidExample
+    - ```
+        Here are the COVID-19 testing sites near ${userLocation}:
+        - 123 Main St. (Open 6a-9p)
+        - 456 State Rd. (Open 6a-9p)
+        - 789 Rubicon Way (Open 6a-9p)
+    ```
+
+# DoesThisHelp
+- Does this help?
+
+# Yes
+- Yes
+
+# No
+- No
+
+# NeedAssistanceQuestion
+- Do you need assistance from one of our volunteers?
 
 # GetShoppingDeliveryTime
 - I'll let the team know you're in need. When do you need it by?

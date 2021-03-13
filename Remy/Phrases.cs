@@ -10,11 +10,13 @@ namespace Remy
         {
             public static string FoodBank = "Find nearest food bank";
             public static string ShoppingDelivery = "Shopping and delivery assistance";
-            public static string FoodAssistance = "Food assistance options";
+            //public static string FoodAssistance = "Food assistance options";
+            public static string CovidTestingSites = "COVID-19 testing sites";
+            public static string HomelessShelters = "Homeless shelters";
             public static string AskAQuestion = "Ask a question";
             public static string MoreOptions = "More options";
 
-            public static List<string> List = new List<string> { FoodBank, ShoppingDelivery, FoodAssistance, AskAQuestion, MoreOptions };
+            public static List<string> List = new List<string> { FoodBank, CovidTestingSites, HomelessShelters, ShoppingDelivery, AskAQuestion, MoreOptions };
 
 
             public static Activity GetOptions = MessageFactory.Text($"How can I help? {Shared.Phrases.EnterNumber}");
