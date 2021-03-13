@@ -33,27 +33,32 @@ namespace Remy.Dialogs.Need
                 {
                     async (dialogContext, cancellationToken) =>
                     {
-                        // TODO: Get from LG
-                        var choices = new List<Choice>();
-                        Phrases.ShoppingDelivery.WhenOptions.ForEach(s => choices.Add(new Choice { Value = s }));
+                        await turnContext.SendActivityAsync(ActivityFactory.FromObject(this.lgGenerator.Generate("ShoppingDeliveryResponse", null, turnContext.Activity.Locale)));
+                        return await dialogContext.NextAsync(null, cancellationToken);
 
-                        return await dialogContext.PromptAsync(
-                            Prompt.ChoicePrompt,
-                            new PromptOptions()
-                            {
-                                Prompt = ActivityFactory.FromObject(this.lgGenerator.Generate("GetShoppingDeliveryTime", null, turnContext.Activity.Locale)),
-                                Choices = choices
-                            },
-                            cancellationToken);
+                        // v2
+                        //var choices = new List<Choice>();
+                        //Phrases.ShoppingDelivery.WhenOptions.ForEach(s => choices.Add(new Choice { Value = s }));
+
+                        //return await dialogContext.PromptAsync(
+                        //    Prompt.ChoicePrompt,
+                        //    new PromptOptions()
+                        //    {
+                        //        Prompt = ActivityFactory.FromObject(this.lgGenerator.Generate("GetShoppingDeliveryTime", null, turnContext.Activity.Locale)),
+                        //        Choices = choices
+                        //    },
+                        //    cancellationToken);
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        var result = (dialogContext.Result as FoundChoice).Value;
-                        // TODO save information
+                        // v2
+                        //var result = (dialogContext.Result as FoundChoice).Value;
+                        //// TODO save information
 
                         // TODO: Get from LG
                         var choices = new List<Choice>();
                         Phrases.ShoppingDelivery.MethodOptions.ForEach(s => choices.Add(new Choice { Value = s }));
+
 
                         return await dialogContext.PromptAsync(
                             Prompt.ChoicePrompt,

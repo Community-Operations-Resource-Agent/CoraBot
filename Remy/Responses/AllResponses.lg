@@ -92,6 +92,9 @@
 # NeedAssistanceQuestion
 - Do you need assistance from one of our volunteers?
 
+# ShoppingDeliveryResponse
+- I'll let the team know you're in need.
+
 # GetShoppingDeliveryTime
 - I'll let the team know you're in need. When do you need it by?
 
@@ -105,7 +108,7 @@
 - Future date
 
 # GetShoppingDeliveryMethod
-- Ok. Which one of these applies to you?
+- Which one of these applies to you?
 
 # OnlineMethod
 - I'll order my groceries online
@@ -114,7 +117,7 @@
 - I'd like a volunteer to shop and deliver for me
 
 # ShoppingDeliveryConfirmation
-- Thank you, I'll let my team know your need. Someone will contact you to arrange further details.
+- Thank you. This is an experimental system. We will make our best effort at pairing you with a Greyshirt volunteer within a week. Someone will contact you to arrange further details once we find a volunteer. After 1 week, your request will expire in our system.
 
 # AnythingElse
 - Is there anything else I can help with today?
