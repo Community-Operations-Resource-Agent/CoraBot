@@ -61,3 +61,55 @@
 
 # Goodbye
 - Goodbye!
+
+# Yes
+- Yes
+
+# No
+- No
+
+# NewMissionExample
+    - ```
+        Great. I found this request:
+          Status: Needs reassigned
+          Type: Shopping delivery
+          ZipCode: 33594
+          Language: Spanish
+    ```
+
+
+# AnotherMissionExample
+    - ```
+        Here's another option:
+          Status: New
+          Type: Shopping delivery
+          ZipCode: 33594
+          Language: English
+    ```
+
+# AbleToAccept
+- Are you able to accept?
+
+# MissionAcceptedDialog
+- Excellent. Your mission will start when you get a message from the switchboard. Come back here to let me know how it went with these options:
+
+# MissionComplete
+- Mission complete
+
+# UnableToComplete
+- I'm unable to complete my mission
+
+# DontKnowWhatToDo
+- I don't know what to do
+
+# DoneWithMissions
+- Sure thing. Thanks for serving. You can message me any time in the future if you change your mind.
+
+# MissionCompleteMessage
+- Thanks for earning your shirt and helping Team Rubicon serve the community. You can message me any time in the future to start another mission.
+
+# UnableToCompleteMessage
+- Thanks for letting me know. I will update the switchboard. You can message me any time in the future to start another mission.
+
+# DontKnowWhatToDoMessage
+- Please see http://mission for help on how to complete your mission.
