@@ -12,5 +12,6 @@
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.10.3" />
     <PackageReference Include="Microsoft.Bot.Schema" Version="4.10.3" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.8" />
+    <PackageReference Include="SendGrid" Version="*" />
   </ItemGroup>
 </Project>

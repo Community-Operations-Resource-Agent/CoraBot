@@ -3,8 +3,11 @@ using Microsoft.Bot.Connector;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 using Shared.Models;
 using System;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -125,6 +128,18 @@ namespace Shared
             {
                 log.LogError(exception, exception.Message);
             }
+        }
+
+        public static async Task SendIssueEmail(string apiKey, System.Exception exception)
+        {
+            var apiKey = configuration.GetSection("SENDGRID_API_KEY").Value;
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress("rbest@microsoft.com", "Project CORA Issues");
+            var templateId = "d-26476c338b914af2b0d85f223acb8904";
+
+            var msg = MailHelper.CreateSingleTemplateEmail(from, from, templateId, exception);
+
+            await client.SendEmailAsync(msg).ConfigureAwait(false);
         }
     }
 }
